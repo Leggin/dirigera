@@ -83,7 +83,11 @@ Available methods for light are:
 
     light.set_startup_behaviour(behaviour=StartupEnum.START_OFF)
 ```
-
+## Motivation
+The primary motivation for this project was to provide users with the ability to control the startup behavior of their smart home lamps when there is a power outage.  
+The default behavior of the hub is to turn on all lights when power is restored, which can be problematic if the user is away from home or on vacation, and a small power fluctuation causes all lights to turn on and stay on. Unfortunately, the IKEA app does not offer a way to change this default behavior.  
+The `set_startup_behaviour()` function enables users to override the default behavior and choose the startup behavior that best suits their needs (START_ON = turn on light when power is back, START_OFF = light stays off when power is back).  
+I can not guarantee that all IKEA lamps offer this functionality.
 
 ## Contributing
 

@@ -1,0 +1,10 @@
+.DS_STORE
+/.idea/
+/pipeforce-service-template-python.iml
+**/.pytest_cache/
+/venv/
+.env
+__pycache__/
+result.xml
+*.xml
+.coverage

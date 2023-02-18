@@ -1,0 +1,19 @@
+{
+    "python.linting.pylintEnabled": true,
+    "python.linting.pylintArgs": [
+        "--rcfile=${workspaceFolder}/.pylintrc"
+    ],
+    "python.testing.unittestArgs": [
+        "-v",
+        "-s",
+        ".",
+        "-p",
+        "test*.py"
+    ],
+    "python.testing.pytestEnabled": true,
+    "python.testing.unittestEnabled": true,
+    "python.formatting.provider": "black",
+    "python.linting.mypyEnabled": true,
+    "python.linting.mypyArgs": ["--config-file=${workspaceFolder}/mypy.ini"],
+    "python.envFile": "${workspaceFolder}/.env",
+}

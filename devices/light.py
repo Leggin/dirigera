@@ -26,7 +26,23 @@ class Light:
     color_saturation: float | None
     can_receive: List[str]
 
-    def set_name(self, name: str):
+    def refresh(self) -> None:
+        data = self.dirigera_client.get(route=f"/devices/{self.lamp_id}")
+        attributes: Dict[str, Any] = data["attributes"]
+        self.lamp_id=data["id"]
+        self.is_reachable=data["isReachable"]
+        self.custom_name=attributes["customName"]
+        self.is_on=attributes["isOn"]
+        self.startup_on_off=attributes["startupOnOff"]
+        self.light_level=attributes.get("lightLevel")
+        self.color_temp=attributes.get("colorTemperature")
+        self.color_temp_min=attributes.get("colorTemperatureMin")
+        self.color_temp_max=attributes.get("colorTemperatureMax")
+        self.color_hue=attributes.get("colorHue")
+        self.color_saturation=attributes.get("colorSaturation")
+        self.can_receive=data["capabilities"]["canReceive"]
+
+    def set_name(self, name: str) -> None:
         if "customName" not in self.can_receive:
             raise AssertionError("This lamp does not support the swith-off function")
 

@@ -4,23 +4,22 @@ import requests
 import websocket
 from urllib3.exceptions import InsecureRequestWarning
 
-from hub.abstract_smart_home_hub import AbstractSmartHomeHub
-from devices.light import dict_to_light
-from devices.light import Light
-import config
+from src.dirigera.hub.abstract_smart_home_hub import AbstractSmartHomeHub
+from src.dirigera.devices.light import dict_to_light
+from src.dirigera.devices.light import Light
 
 requests.packages.urllib3.disable_warnings(  # pylint: disable=no-member
     category=InsecureRequestWarning
 )
 
 
-class DirigeraHub(AbstractSmartHomeHub):
+class Hub(AbstractSmartHomeHub):
     def __init__(
         self,
         token: str,
         ip_address: str,
-        port: str = config.DIRIGERA_PORT,
-        api_version: str = config.DIRIGERA_API_VERSION,
+        port: str = "8443",
+        api_version: str = "v1",
     ) -> None:
         self.api_base_url = f"https://{ip_address}:{port}/{api_version}"
         self.websocket_base_url = f"wss://{ip_address}:{port}/{api_version}"
@@ -68,12 +67,18 @@ class DirigeraHub(AbstractSmartHomeHub):
 
     def get(self, route: str) -> Dict[str, Any]:
         response = requests.get(
-            f"{self.api_base_url}{route}", headers=self.headers(), timeout=10, verify=False
+            f"{self.api_base_url}{route}",
+            headers=self.headers(),
+            timeout=10,
+            verify=False,
         )
         response.raise_for_status()
         return response.json()
 
     def get_lights(self) -> List[Light]:
+        """
+        Fetches all lights registered in the Hub
+        """
         devices = self.get("/devices")
         lights = list(filter(lambda x: x["type"] == "light", devices))
         return [dict_to_light(light, self) for light in lights]

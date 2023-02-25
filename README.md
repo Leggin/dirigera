@@ -4,10 +4,8 @@ This repository provides an unofficial Python client for controlling the IKEA Di
 
 ## Installation
 
-Install the requirements with:
-
 ```bash
-bash setup.sh
+pip install dirigera
 ```
 
 ## Quickstart
@@ -27,23 +25,22 @@ bash setup.sh
     mgwB.aXqwpzV89N0aUwBhZMJjD8a.UBPyzy2InGtqgwo2MO5.xX4ug7.uBcVJquwYzLnAijF7SdYKvNxTo0uzQKahV10A-3ZQOz-UAubGP6sHWt1CJx3QmWZyE7ZcMZKgODXjSzWL1lumKgGz5dUIwFi3rhNxgK-IsBGeGVhNXPt8vGrYEcZePwPvNAIg8RqmlH27L-JZPnkAtP2wHoOdW72Djot3yJsohtEsb0p9mJvoZFSavTlTr4LDuf584vuH5fha5xoR9QhhIvvgbAP-s4EHFqENNi6vrYLHKR.sdqnv4sYw6UH-l6oiPnnRLxinoqBPOlWhlcL9doFviXQE.tZ9X8WVqyBrd0NYHlo9iorEvUbnZuD02BEJrg4NLwgh3rZtyF0Mi46HenynzBohbPn4RnuSYYCiHt5EZnWedxBtDqc7mSTm1ZtyD
    ```
 5. Copy your full token and set the value of `DIRIGERA_TOKEN` in the `.env` file
-6. Run the example
-    ```bash
-    bash run-example.sh
-    ```
+6. Done
 
 ## Dirigera Hub
 
 Setting up the client works by providing the token and ip address that is read from your .env file by the `config.py`
 
 ```python
-dirigera_hub = DirigeraHub(
+import dirigera
+
+dirigera_hub = dirigera.Hub(
     token=config.DIRIGERA_TOKEN,
     base_url=config.DIRIGERA_IP_ADDRESS
 )
 ```
 
-## [Controlling Lights](./models/light.py)
+## [Controlling Lights](./src/devices/light.py)
 
 To get information about the available lights, you can use the `get_lights()` method:
 

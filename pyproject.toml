@@ -1,0 +1,36 @@
+[build-system]
+requires = [
+   "setuptools",
+   "wheel"
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dirigera"
+version = "0.0.1"
+description = "An unofficial Python client for controlling the IKEA Dirigera Smart Home Hub"
+readme = "README.md"
+authors = [{ name = "Leggin", email = "legginsun@gmail.com" }]
+license = { file = "LICENSE" }
+keywords = ["python", "iot", "smarthome", "hub", "lighting", "ikea", "tradfri", "dirigera"]
+dependencies = [
+    "requests >= 2.22.0",
+    "websocket-client >= 1.0.0",
+]
+requires-python = ">=3.10"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.optional-dependencies]
+dev = ["black", "pytest"]
+
+[project.urls]
+Homepage = "https://github.com/Leggin/dirigera"
+
+# [tool.setuptools.packages.find]
+# where = ["src"]
+# include = ["pkg*"]  # alternatively: `exclude = ["additional*"]`
+# #namespaces = false

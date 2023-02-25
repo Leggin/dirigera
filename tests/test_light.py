@@ -1,7 +1,7 @@
 import pytest
-from hub.abstract_smart_home_hub import FakeDirigeraHub
-from devices.light import dict_to_light
-from devices.light import Light, StartupEnum
+from src.dirigera.hub.abstract_smart_home_hub import FakeDirigeraHub
+from src.dirigera.devices.light import dict_to_light
+from src.dirigera.devices.light import Light, StartupEnum
 
 
 @pytest.fixture(name="fake_client")

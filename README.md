@@ -54,7 +54,7 @@ light = dirigera_hub.get_lights()
 The light object has the following attributes:
 
 ```python
-    lamp_id: str
+    light_id: str
     is_reachable: bool
     custom_name: str
     is_on: bool
@@ -83,6 +83,30 @@ Available methods for light are:
 
     light.set_startup_behaviour(behaviour=StartupEnum.START_OFF)
 ```
+
+
+## Event Listener
+The event listener allows you to listen to events that are published by your Dirigera hub. This is useful if you want to automate tasks based on events such as when a light is turned on or off, or when the color temperature of a light is changed.
+
+```python
+
+def on_message(ws: Any, message: str):
+    message_dict = json.loads(message)
+    data = message_dict["data"]
+    if data["id"] == bed_light.light_id:
+        print(f"{message_dict['type']} event on {bed_light.custom_name}, attributes: {data['attributes']}")
+
+def on_error(ws: Any, message: str):
+    print(message)
+
+dirigera_hub.create_event_listener(
+    on_message=on_message, on_error=on_error
+)
+```
+```
+deviceStateChanged event on Bed Light, attributes: {'isOn': False}
+```
+
 ## Motivation
 The primary motivation for this project was to provide users with the ability to control the startup behavior of their smart home lamps when there is a power outage.  
 The default behavior of the hub is to turn on all lights when power is restored, which can be problematic if the user is away from home or on vacation, and a small power fluctuation causes all lights to turn on and stay on. Unfortunately, the IKEA app does not offer a way to change this default behavior.  

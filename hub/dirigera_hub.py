@@ -1,5 +1,7 @@
+import ssl
 from typing import Any, Dict, List
 import requests
+import websocket
 from urllib3.exceptions import InsecureRequestWarning
 
 from hub.abstract_smart_home_hub import AbstractSmartHomeHub
@@ -16,19 +18,46 @@ class DirigeraHub(AbstractSmartHomeHub):
     def __init__(
         self,
         token: str,
-        base_url: str,
+        ip_address: str,
         port: str = config.DIRIGERA_PORT,
         api_version: str = config.DIRIGERA_API_VERSION,
     ) -> None:
-        self.base_url = f"https://{base_url}:{port}/{api_version}"
+        self.api_base_url = f"https://{ip_address}:{port}/{api_version}"
+        self.websocket_base_url = f"wss://{ip_address}:{port}/{api_version}"
         self.token = token
 
     def headers(self):
         return {"Authorization": f"Bearer {self.token}"}
 
+    def create_event_listener(
+        self,
+        on_open: Any | None = None,
+        on_message: Any | None = None,
+        on_error: Any | None = None,
+        on_close: Any | None = None,
+        on_ping: Any | None = None,
+        on_pong: Any | None = None,
+        on_data: Any | None = None,
+        on_cont_message: Any | None = None,
+    ):
+        wsapp = websocket.WebSocketApp(
+            self.websocket_base_url,
+            header={"Authorization": f"Bearer {self.token}"},
+            on_open=on_open,
+            on_message=on_message,
+            on_error=on_error,
+            on_close=on_close,
+            on_ping=on_ping,
+            on_pong=on_pong,
+            on_data=on_data,
+            on_cont_message=on_cont_message,
+        )
+
+        wsapp.run_forever(sslopt={"cert_reqs": ssl.CERT_NONE})
+
     def patch(self, route: str, data: Dict[str, Any]) -> Dict[str, Any]:
         response = requests.patch(
-            f"{self.base_url}{route}",
+            f"{self.api_base_url}{route}",
             headers=self.headers(),
             json=data,
             timeout=10,
@@ -39,7 +68,7 @@ class DirigeraHub(AbstractSmartHomeHub):
 
     def get(self, route: str) -> Dict[str, Any]:
         response = requests.get(
-            f"{self.base_url}{route}", headers=self.headers(), timeout=10, verify=False
+            f"{self.api_base_url}{route}", headers=self.headers(), timeout=10, verify=False
         )
         response.raise_for_status()
         return response.json()

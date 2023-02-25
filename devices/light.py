@@ -13,7 +13,7 @@ class StartupEnum(Enum):
 @dataclass
 class Light:
     dirigera_client: AbstractSmartHomeHub
-    lamp_id: str
+    light_id: str
     is_reachable: bool
     custom_name: str
     is_on: bool
@@ -27,9 +27,9 @@ class Light:
     can_receive: List[str]
 
     def refresh(self) -> None:
-        data = self.dirigera_client.get(route=f"/devices/{self.lamp_id}")
+        data = self.dirigera_client.get(route=f"/devices/{self.light_id}")
         attributes: Dict[str, Any] = data["attributes"]
-        self.lamp_id=data["id"]
+        self.light_id=data["id"]
         self.is_reachable=data["isReachable"]
         self.custom_name=attributes["customName"]
         self.is_on=attributes["isOn"]
@@ -47,7 +47,7 @@ class Light:
             raise AssertionError("This lamp does not support the swith-off function")
 
         data = [{"attributes": {"customName": name}}]
-        self.dirigera_client.patch(route=f"/devices/{self.lamp_id}", data=data)
+        self.dirigera_client.patch(route=f"/devices/{self.light_id}", data=data)
         self.custom_name = name
 
     def set_light(self, lamp_on: bool) -> None:
@@ -55,7 +55,7 @@ class Light:
             raise AssertionError("This lamp does not support the swith-off function")
 
         data = [{"attributes": {"isOn": lamp_on}}]
-        self.dirigera_client.patch(route=f"/devices/{self.lamp_id}", data=data)
+        self.dirigera_client.patch(route=f"/devices/{self.light_id}", data=data)
         self.is_on = lamp_on
 
     def set_light_level(self, light_level: int) -> None:
@@ -67,7 +67,7 @@ class Light:
             raise AssertionError("light_level must be a value between 0 and 100")
 
         data = [{"attributes": {"lightLevel": light_level}}]
-        self.dirigera_client.patch(route=f"/devices/{self.lamp_id}", data=data)
+        self.dirigera_client.patch(route=f"/devices/{self.light_id}", data=data)
         self.light_level = light_level
 
     def set_color_temperature(self, color_temp: int) -> None:
@@ -81,7 +81,7 @@ class Light:
             )
 
         data = [{"attributes": {"colorTemperature": color_temp}}]
-        self.dirigera_client.patch(route=f"/devices/{self.lamp_id}", data=data)
+        self.dirigera_client.patch(route=f"/devices/{self.light_id}", data=data)
         self.color_temp = color_temp
 
     def set_light_color(self, hue: int, saturation: float) -> None:
@@ -98,7 +98,7 @@ class Light:
             raise AssertionError("saturation must be a value between 0.0 and 1.0")
 
         data = [{"attributes": {"colorHue": hue, "colorSaturation": saturation}}]
-        self.dirigera_client.patch(route=f"/devices/{self.lamp_id}", data=data)
+        self.dirigera_client.patch(route=f"/devices/{self.light_id}", data=data)
         self.color_hue = hue
         self.color_saturation = saturation
 
@@ -109,7 +109,7 @@ class Light:
         When set to START_OFF the lamp will stay off once the power is back.
         """
         data = [{"attributes": {"startupOnOff": behaviour}}]
-        self.dirigera_client.patch(route=f"/devices/{self.lamp_id}", data=data)
+        self.dirigera_client.patch(route=f"/devices/{self.light_id}", data=data)
         self.startup_on_off = behaviour
 
 
@@ -124,7 +124,7 @@ def dict_to_light(data: Dict[str, Any], dirigera_client: AbstractSmartHomeHub):
 
     return Light(
         dirigera_client=dirigera_client,
-        lamp_id=data["id"],
+        light_id=data["id"],
         is_reachable=data["isReachable"],
         custom_name=attributes["customName"],
         is_on=attributes["isOn"],

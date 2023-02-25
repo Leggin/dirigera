@@ -40,7 +40,7 @@ dirigera_hub = dirigera.Hub(
 )
 ```
 
-## [Controlling Lights](./src/devices/light.py)
+## [Controlling Lights](./src/dirigera/devices/light.py)
 
 To get information about the available lights, you can use the `get_lights()` method:
 

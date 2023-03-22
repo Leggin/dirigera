@@ -42,7 +42,7 @@ dirigera_hub = dirigera.Hub(
 To get information about the available lights, you can use the `get_lights()` method:
 
 ```python
-light = dirigera_hub.get_lights()
+lights = dirigera_hub.get_lights()
 ```
 
 The light object has the following attributes:

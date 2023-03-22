@@ -1,1 +1,1 @@
-from src.dirigera.hub.hub import Hub
+from .hub.hub import Hub

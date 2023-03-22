@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Any, Dict, List
 
-from src.dirigera.hub.abstract_smart_home_hub import AbstractSmartHomeHub
+from ..hub.abstract_smart_home_hub import AbstractSmartHomeHub
 
 
 class StartupEnum(Enum):

@@ -3,9 +3,9 @@ import hashlib
 import random
 import socket
 import base64
+import sys
 import requests
 from urllib3.exceptions import InsecureRequestWarning
-import config
 
 requests.packages.urllib3.disable_warnings(  # pylint: disable=no-member
     category=InsecureRequestWarning
@@ -33,8 +33,8 @@ def code_challenge(code_verifier: str):
     return sha256_hash_as_base64
 
 
-def send_challenge(code_verifier: str) -> str:
-    auth_url = f"https://{config.DIRIGERA_IP_ADDRESS}:8443/v1/oauth/authorize"
+def send_challenge(ip_address: str, code_verifier: str) -> str:
+    auth_url = f"https://{ip_address}:8443/v1/oauth/authorize"
     params = {
         "audience": "homesmart.local",
         "response_type": "code",
@@ -46,7 +46,7 @@ def send_challenge(code_verifier: str) -> str:
     return response.json()["code"]
 
 
-def get_token(code: str, code_verifier: str) -> str:
+def get_token(ip_address: str, code: str, code_verifier: str) -> str:
     data = str(
         "code="
         + code
@@ -58,7 +58,7 @@ def get_token(code: str, code_verifier: str) -> str:
         + code_verifier
     )
     headers = {"Content-Type": "application/x-www-form-urlencoded"}
-    token_url = f"https://{config.DIRIGERA_IP_ADDRESS}:8443/v1/oauth/token"
+    token_url = f"https://{ip_address}:8443/v1/oauth/token"
 
     response = requests.post(
         token_url, headers=headers, data=data, verify=False, timeout=10
@@ -68,13 +68,13 @@ def get_token(code: str, code_verifier: str) -> str:
 
 
 def main():
+    if len(sys.argv) > 1:
+        ip_address = sys.argv[1]
+    else:
+        ip_address = input("Input the ip address of your Dirigera then hit ENTER ...\n")
     code_verifier = random_code(ALPHABET, CODE_LENGTH)
-    code = send_challenge(code_verifier)
+    code = send_challenge(ip_address, code_verifier)
     input("Press the action button on Dirigera then hit ENTER ...")
-    token = get_token(code, code_verifier)
-    print("Your Token (put this into your .env file):")
+    token = get_token(ip_address, code, code_verifier)
+    print("Your TOKEN :")
     print(token)
-
-
-if __name__ == "__main__":
-    main()

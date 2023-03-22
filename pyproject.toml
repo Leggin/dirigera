@@ -7,7 +7,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "dirigera"
-version = "0.0.1"
+version = "0.0.2"
 description = "An unofficial Python client for controlling the IKEA Dirigera Smart Home Hub"
 readme = "README.md"
 authors = [{ name = "Leggin", email = "legginsun@gmail.com" }]
@@ -24,13 +24,12 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 
+
 [project.optional-dependencies]
 dev = ["black", "pytest"]
 
+[project.scripts]
+generate-token = "dirigera.hub.auth:main"
+
 [project.urls]
 Homepage = "https://github.com/Leggin/dirigera"
-
-# [tool.setuptools.packages.find]
-# where = ["src"]
-# include = ["pkg*"]  # alternatively: `exclude = ["additional*"]`
-# #namespaces = false

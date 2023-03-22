@@ -4,9 +4,8 @@ import requests
 import websocket
 from urllib3.exceptions import InsecureRequestWarning
 
-from src.dirigera.hub.abstract_smart_home_hub import AbstractSmartHomeHub
-from src.dirigera.devices.light import dict_to_light
-from src.dirigera.devices.light import Light
+from .abstract_smart_home_hub import AbstractSmartHomeHub
+from ..devices.light import Light, dict_to_light
 
 requests.packages.urllib3.disable_warnings(  # pylint: disable=no-member
     category=InsecureRequestWarning
@@ -21,6 +20,15 @@ class Hub(AbstractSmartHomeHub):
         port: str = "8443",
         api_version: str = "v1",
     ) -> None:
+        """
+        Initializes a new instance of the Hub class.
+
+        Args:
+            token (str): The authentication token for the hub.
+            ip_address (str): The IP address of the hub.
+            port (str, optional): The port number for the hub API. Defaults to "8443".
+            api_version (str, optional): The version of the API to use. Defaults to "v1".
+        """
         self.api_base_url = f"https://{ip_address}:{port}/{api_version}"
         self.websocket_base_url = f"wss://{ip_address}:{port}/{api_version}"
         self.token = token

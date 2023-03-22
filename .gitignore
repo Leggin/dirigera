@@ -10,3 +10,4 @@ result.xml
 .coverage
 *.egg-info
 /dist
+/build

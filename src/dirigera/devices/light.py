@@ -17,7 +17,7 @@ class Light:
     is_reachable: bool
     custom_name: str
     is_on: bool
-    startup_on_off: StartupEnum
+    startup_on_off: StartupEnum | None
     light_level: int | None
     color_temp: int | None
     color_temp_min: int | None
@@ -33,7 +33,7 @@ class Light:
         self.is_reachable=data["isReachable"]
         self.custom_name=attributes["customName"]
         self.is_on=attributes["isOn"]
-        self.startup_on_off=attributes["startupOnOff"]
+        self.startup_on_off=attributes.get("startupOnOff")
         self.light_level=attributes.get("lightLevel")
         self.color_temp=attributes.get("colorTemperature")
         self.color_temp_min=attributes.get("colorTemperatureMin")
@@ -115,6 +115,7 @@ class Light:
 
 def dict_to_light(data: Dict[str, Any], dirigera_client: AbstractSmartHomeHub):
     attributes: Dict[str, Any] = data["attributes"]
+
     light_level = attributes.get("lightLevel")
     color_temp = attributes.get("colorTemperature")
     color_temp_min = attributes.get("colorTemperatureMin")
@@ -128,7 +129,7 @@ def dict_to_light(data: Dict[str, Any], dirigera_client: AbstractSmartHomeHub):
         is_reachable=data["isReachable"],
         custom_name=attributes["customName"],
         is_on=attributes["isOn"],
-        startup_on_off=attributes["startupOnOff"],
+        startup_on_off=attributes.get("startupOnOff"),
         light_level=light_level,
         color_temp=color_temp,
         color_temp_min=color_temp_min,

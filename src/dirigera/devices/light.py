@@ -24,23 +24,25 @@ class Light(Device):
     color_temp_max: int | None
     color_hue: int | None
     color_saturation: float | None
-    
 
     def refresh(self) -> None:
         data = self.dirigera_client.get(route=f"/devices/{self.device_id}")
         attributes: dict[str, Any] = data["attributes"]
-        self.device_id=data["id"]
-        self.is_reachable=data["isReachable"]
-        self.custom_name=attributes["customName"]
-        self.is_on=attributes["isOn"]
-        self.startup_on_off=attributes.get("startupOnOff")
-        self.light_level=attributes.get("lightLevel")
-        self.color_temp=attributes.get("colorTemperature")
-        self.color_temp_min=attributes.get("colorTemperatureMin")
-        self.color_temp_max=attributes.get("colorTemperatureMax")
-        self.color_hue=attributes.get("colorHue")
-        self.color_saturation=attributes.get("colorSaturation")
-        self.can_receive=data["capabilities"]["canReceive"]
+        self.device_id = data["id"]
+        self.is_reachable = data["isReachable"]
+        self.custom_name = attributes["customName"]
+        self.is_on = attributes["isOn"]
+        self.startup_on_off = attributes.get("startupOnOff")
+        self.light_level = attributes.get("lightLevel")
+        self.color_temp = attributes.get("colorTemperature")
+        self.color_temp_min = attributes.get("colorTemperatureMin")
+        self.color_temp_max = attributes.get("colorTemperatureMax")
+        self.color_hue = attributes.get("colorHue")
+        self.color_saturation = attributes.get("colorSaturation")
+        self.firmware_version = attributes.get("firmwareVersion")
+        self.room_id = data["room"]["id"]
+        self.room_name = data["room"]["name"]
+        self.can_receive = data["capabilities"]["canReceive"]
 
     def set_name(self, name: str) -> None:
         if "customName" not in self.can_receive:
@@ -131,5 +133,10 @@ def dict_to_light(data: dict[str, Any], dirigera_client: AbstractSmartHomeHub):
         color_saturation=attributes.get("colorSaturation"),
         can_receive=data["capabilities"]["canReceive"],
         room_id=data["room"]["id"],
-        room_name=data["room"]["name"]
+        room_name=data["room"]["name"],
+        firmware_version=attributes.get("firmwareVersion"),
+        hardware_version=attributes.get("hardwareVersion"),
+        model=attributes.get("model"),
+        manufacturer=attributes.get("manufacturer"),
+        serial_number=attributes.get("serialNumber"),
     )

@@ -26,6 +26,11 @@ def fixture_light(fake_client: FakeDirigeraHub):
         color_saturation=0.7,
         room_id="123",
         room_name="Upstairs",
+        firmware_version="1",
+        hardware_version="1",
+        model="a",
+        manufacturer="IKEA",
+        serial_number="abc-abc",
         can_receive=[
             "customName",
             "isOn",
@@ -123,6 +128,10 @@ def test_dict_to_light(fake_client: FakeDirigeraHub):
         "isReachable": True,
         "attributes": {
             "customName": "Light 2",
+            "model": "TRADFRI bulb E27 WW 806lm",
+            "manufacturer": "IKEA of Sweden",
+            "firmwareVersion": "2.3.093",
+            "hardwareVersion": "2",
             "isOn": False,
             "startupOnOff": "startOn",
             "lightLevel": 100,
@@ -155,3 +164,7 @@ def test_dict_to_light(fake_client: FakeDirigeraHub):
     assert light.can_receive == data["capabilities"]["canReceive"]
     assert light.room_id == data["room"]["id"]
     assert light.room_name == data["room"]["name"]
+    assert light.firmware_version == data["attributes"]["firmwareVersion"]
+    assert light.hardware_version == data["attributes"]["hardwareVersion"]
+    assert light.model == data["attributes"]["model"]
+    assert light.manufacturer == data["attributes"]["manufacturer"]

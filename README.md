@@ -48,17 +48,19 @@ lights = dirigera_hub.get_lights()
 The light object has the following attributes:
 
 ```python
-    light_id: str
+    device_id: str
     is_reachable: bool
     custom_name: str
     is_on: bool
-    startup_on_off: StartupEnum
+    startup_on_off: StartupEnum | None
     light_level: int | None  # not all lights have a light level
     color_temp: int | None  # not all lights have a color temperature
     color_temp_min: int | None
     color_temp_max: int | None
     color_hue: int | None  # not all lights have a color hue
     color_saturation: float | None  # not all lights have a color saturation
+    room_id: str
+    room_name: str
     can_receive: List[str]  # list of all available commands ["customName", "isOn", "lightLevel", ...]
 ```
 

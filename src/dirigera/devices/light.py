@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Dict, List
+from typing import Any
+
+from .device import Device
 
 from ..hub.abstract_smart_home_hub import AbstractSmartHomeHub
 
@@ -11,11 +13,9 @@ class StartupEnum(Enum):
 
 
 @dataclass
-class Light:
+class Light(Device):
     dirigera_client: AbstractSmartHomeHub
-    light_id: str
     is_reachable: bool
-    custom_name: str
     is_on: bool
     startup_on_off: StartupEnum | None
     light_level: int | None
@@ -24,12 +24,12 @@ class Light:
     color_temp_max: int | None
     color_hue: int | None
     color_saturation: float | None
-    can_receive: List[str]
+    
 
     def refresh(self) -> None:
-        data = self.dirigera_client.get(route=f"/devices/{self.light_id}")
-        attributes: Dict[str, Any] = data["attributes"]
-        self.light_id=data["id"]
+        data = self.dirigera_client.get(route=f"/devices/{self.device_id}")
+        attributes: dict[str, Any] = data["attributes"]
+        self.device_id=data["id"]
         self.is_reachable=data["isReachable"]
         self.custom_name=attributes["customName"]
         self.is_on=attributes["isOn"]
@@ -47,7 +47,7 @@ class Light:
             raise AssertionError("This lamp does not support the swith-off function")
 
         data = [{"attributes": {"customName": name}}]
-        self.dirigera_client.patch(route=f"/devices/{self.light_id}", data=data)
+        self.dirigera_client.patch(route=f"/devices/{self.device_id}", data=data)
         self.custom_name = name
 
     def set_light(self, lamp_on: bool) -> None:
@@ -55,7 +55,7 @@ class Light:
             raise AssertionError("This lamp does not support the swith-off function")
 
         data = [{"attributes": {"isOn": lamp_on}}]
-        self.dirigera_client.patch(route=f"/devices/{self.light_id}", data=data)
+        self.dirigera_client.patch(route=f"/devices/{self.device_id}", data=data)
         self.is_on = lamp_on
 
     def set_light_level(self, light_level: int) -> None:
@@ -67,7 +67,7 @@ class Light:
             raise AssertionError("light_level must be a value between 0 and 100")
 
         data = [{"attributes": {"lightLevel": light_level}}]
-        self.dirigera_client.patch(route=f"/devices/{self.light_id}", data=data)
+        self.dirigera_client.patch(route=f"/devices/{self.device_id}", data=data)
         self.light_level = light_level
 
     def set_color_temperature(self, color_temp: int) -> None:
@@ -81,7 +81,7 @@ class Light:
             )
 
         data = [{"attributes": {"colorTemperature": color_temp}}]
-        self.dirigera_client.patch(route=f"/devices/{self.light_id}", data=data)
+        self.dirigera_client.patch(route=f"/devices/{self.device_id}", data=data)
         self.color_temp = color_temp
 
     def set_light_color(self, hue: int, saturation: float) -> None:
@@ -98,7 +98,7 @@ class Light:
             raise AssertionError("saturation must be a value between 0.0 and 1.0")
 
         data = [{"attributes": {"colorHue": hue, "colorSaturation": saturation}}]
-        self.dirigera_client.patch(route=f"/devices/{self.light_id}", data=data)
+        self.dirigera_client.patch(route=f"/devices/{self.device_id}", data=data)
         self.color_hue = hue
         self.color_saturation = saturation
 
@@ -109,32 +109,27 @@ class Light:
         When set to START_OFF the lamp will stay off once the power is back.
         """
         data = [{"attributes": {"startupOnOff": behaviour}}]
-        self.dirigera_client.patch(route=f"/devices/{self.light_id}", data=data)
+        self.dirigera_client.patch(route=f"/devices/{self.device_id}", data=data)
         self.startup_on_off = behaviour
 
 
-def dict_to_light(data: Dict[str, Any], dirigera_client: AbstractSmartHomeHub):
-    attributes: Dict[str, Any] = data["attributes"]
-
-    light_level = attributes.get("lightLevel")
-    color_temp = attributes.get("colorTemperature")
-    color_temp_min = attributes.get("colorTemperatureMin")
-    color_temp_max = attributes.get("colorTemperatureMax")
-    color_hue = attributes.get("colorHue")
-    color_saturation = attributes.get("colorSaturation")
+def dict_to_light(data: dict[str, Any], dirigera_client: AbstractSmartHomeHub):
+    attributes: dict[str, Any] = data["attributes"]
 
     return Light(
         dirigera_client=dirigera_client,
-        light_id=data["id"],
+        device_id=data["id"],
         is_reachable=data["isReachable"],
         custom_name=attributes["customName"],
         is_on=attributes["isOn"],
         startup_on_off=attributes.get("startupOnOff"),
-        light_level=light_level,
-        color_temp=color_temp,
-        color_temp_min=color_temp_min,
-        color_temp_max=color_temp_max,
-        color_hue=color_hue,
-        color_saturation=color_saturation,
+        light_level=attributes.get("lightLevel"),
+        color_temp=attributes.get("colorTemperature"),
+        color_temp_min=attributes.get("colorTemperatureMin"),
+        color_temp_max=attributes.get("colorTemperatureMax"),
+        color_hue=attributes.get("colorHue"),
+        color_saturation=attributes.get("colorSaturation"),
         can_receive=data["capabilities"]["canReceive"],
+        room_id=data["room"]["id"],
+        room_name=data["room"]["name"]
     )

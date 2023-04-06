@@ -13,7 +13,7 @@ def fixture_fake_client():
 def fixture_light(fake_client: FakeDirigeraHub):
     return Light(
         dirigera_client=fake_client,
-        light_id="abcd",
+        device_id="abcd",
         is_reachable=True,
         custom_name="good lamp",
         is_on=True,
@@ -24,6 +24,8 @@ def fixture_light(fake_client: FakeDirigeraHub):
         color_temp_max=2000,
         color_hue=200,
         color_saturation=0.7,
+        room_id="123",
+        room_name="Upstairs",
         can_receive=[
             "customName",
             "isOn",
@@ -39,7 +41,7 @@ def test_set_name(fake_light: Light, fake_client: FakeDirigeraHub):
     new_name = "stadtlampefluss"
     fake_light.set_name(new_name)
     action = fake_client.patch_actions.pop()
-    assert action["route"] == f"/devices/{fake_light.light_id}"
+    assert action["route"] == f"/devices/{fake_light.device_id}"
     assert action["data"] == [{"attributes": {"customName": new_name}}]
     assert fake_light.custom_name == new_name
 
@@ -47,7 +49,7 @@ def test_set_name(fake_light: Light, fake_client: FakeDirigeraHub):
 def test_set_light_on(fake_light: Light, fake_client: FakeDirigeraHub) -> None:
     fake_light.set_light(True)
     action = fake_client.patch_actions.pop()
-    assert action["route"] == f"/devices/{fake_light.light_id}"
+    assert action["route"] == f"/devices/{fake_light.device_id}"
     assert action["data"] == [{"attributes": {"isOn": True}}]
     assert fake_light.is_on
 
@@ -55,7 +57,7 @@ def test_set_light_on(fake_light: Light, fake_client: FakeDirigeraHub) -> None:
 def test_set_light_off(fake_light: Light, fake_client: FakeDirigeraHub) -> None:
     fake_light.set_light(False)
     action = fake_client.patch_actions.pop()
-    assert action["route"] == f"/devices/{fake_light.light_id}"
+    assert action["route"] == f"/devices/{fake_light.device_id}"
     assert action["data"] == [{"attributes": {"isOn": False}}]
     assert not fake_light.is_on
 
@@ -64,7 +66,7 @@ def test_set_light_level(fake_light: Light, fake_client: FakeDirigeraHub) -> Non
     level = 80
     fake_light.set_light_level(level)
     action = fake_client.patch_actions.pop()
-    assert action["route"] == f"/devices/{fake_light.light_id}"
+    assert action["route"] == f"/devices/{fake_light.device_id}"
     assert action["data"] == [{"attributes": {"lightLevel": level}}]
     assert fake_light.light_level == level
 
@@ -73,7 +75,7 @@ def test_set_color_temperature(fake_light: Light, fake_client: FakeDirigeraHub) 
     temp = 2200
     fake_light.set_color_temperature(temp)
     action = fake_client.patch_actions.pop()
-    assert action["route"] == f"/devices/{fake_light.light_id}"
+    assert action["route"] == f"/devices/{fake_light.device_id}"
     assert action["data"] == [{"attributes": {"colorTemperature": temp}}]
     assert fake_light.color_temp == temp
 
@@ -83,7 +85,7 @@ def test_set_light_color(fake_light: Light, fake_client: FakeDirigeraHub) -> Non
     saturation = 0.9
     fake_light.set_light_color(hue, saturation)
     action = fake_client.patch_actions.pop()
-    assert action["route"] == f"/devices/{fake_light.light_id}"
+    assert action["route"] == f"/devices/{fake_light.device_id}"
     assert action["data"] == [
         {"attributes": {"colorHue": hue, "colorSaturation": saturation}}
     ]
@@ -97,7 +99,7 @@ def test_set_startup_behaviour_off(
     behaviour = StartupEnum.START_OFF
     fake_light.set_startup_behaviour(behaviour)
     action = fake_client.patch_actions.pop()
-    assert action["route"] == f"/devices/{fake_light.light_id}"
+    assert action["route"] == f"/devices/{fake_light.device_id}"
     assert action["data"] == [{"attributes": {"startupOnOff": behaviour}}]
     assert fake_light.startup_on_off == behaviour
 
@@ -108,7 +110,7 @@ def test_set_startup_behaviour_on(
     behaviour = StartupEnum.START_ON
     fake_light.set_startup_behaviour(behaviour)
     action = fake_client.patch_actions.pop()
-    assert action["route"] == f"/devices/{fake_light.light_id}"
+    assert action["route"] == f"/devices/{fake_light.device_id}"
     assert action["data"] == [{"attributes": {"startupOnOff": behaviour}}]
     assert fake_light.startup_on_off == behaviour
 
@@ -133,11 +135,15 @@ def test_dict_to_light(fake_client: FakeDirigeraHub):
             "canSend": [],
             "canReceive": ["customName", "isOn", "lightLevel"],
         },
+        "room": {
+            "id": "19aa77553369",
+            "name": "Living room",
+        },
     }
 
     light = dict_to_light(data, fake_client)
     assert light.dirigera_client == fake_client
-    assert light.light_id == data["id"]
+    assert light.device_id == data["id"]
     assert light.is_reachable == data["isReachable"]
     assert light.custom_name == data["attributes"]["customName"]
     assert light.is_on == data["attributes"]["isOn"]
@@ -147,3 +153,5 @@ def test_dict_to_light(fake_client: FakeDirigeraHub):
     assert light.color_temp_min == data["attributes"]["colorTemperatureMin"]
     assert light.color_temp_max == data["attributes"]["colorTemperatureMax"]
     assert light.can_receive == data["capabilities"]["canReceive"]
+    assert light.room_id == data["room"]["id"]
+    assert light.room_name == data["room"]["name"]

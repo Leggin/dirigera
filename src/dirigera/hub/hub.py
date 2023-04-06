@@ -1,5 +1,5 @@
 import ssl
-from typing import Any, Dict, List
+from typing import Any
 import requests
 import websocket
 from urllib3.exceptions import InsecureRequestWarning
@@ -62,7 +62,7 @@ class Hub(AbstractSmartHomeHub):
 
         wsapp.run_forever(sslopt={"cert_reqs": ssl.CERT_NONE})
 
-    def patch(self, route: str, data: Dict[str, Any]) -> Dict[str, Any]:
+    def patch(self, route: str, data: dict[str, Any]) -> dict[str, Any]:
         response = requests.patch(
             f"{self.api_base_url}{route}",
             headers=self.headers(),
@@ -73,7 +73,7 @@ class Hub(AbstractSmartHomeHub):
         response.raise_for_status()
         return response.text
 
-    def get(self, route: str) -> Dict[str, Any]:
+    def get(self, route: str) -> dict[str, Any]:
         response = requests.get(
             f"{self.api_base_url}{route}",
             headers=self.headers(),
@@ -83,7 +83,7 @@ class Hub(AbstractSmartHomeHub):
         response.raise_for_status()
         return response.json()
 
-    def get_lights(self) -> List[Light]:
+    def get_lights(self) -> list[Light]:
         """
         Fetches all lights registered in the Hub
         """

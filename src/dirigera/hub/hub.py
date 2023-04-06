@@ -6,6 +6,7 @@ from urllib3.exceptions import InsecureRequestWarning
 
 from .abstract_smart_home_hub import AbstractSmartHomeHub
 from ..devices.light import Light, dict_to_light
+from ..devices.environment_sensor import EnvironmentSensor, dict_to_environment_sensor
 
 requests.packages.urllib3.disable_warnings(  # pylint: disable=no-member
     category=InsecureRequestWarning
@@ -100,3 +101,13 @@ class Hub(AbstractSmartHomeHub):
         if len(lights) == 0:
             raise AssertionError(f"No light found with name {lamp_name}")
         return lights[0]
+
+    def get_environment_sensors(self) -> list[EnvironmentSensor]:
+        """
+        Fetches all environment sensors registered in the Hub
+        """
+        devices = self.get("/devices")
+        sensors = list(
+            filter(lambda x: x["deviceType"] == "environmentSensor", devices)
+        )
+        return [dict_to_environment_sensor(sensor, self) for sensor in sensors]

@@ -1,26 +1,20 @@
 from dataclasses import dataclass
 from typing import Any
+
+from .device import Device
 from ..hub.abstract_smart_home_hub import AbstractSmartHomeHub
 
 
 @dataclass
-class EnvironmentSensor:
+class EnvironmentSensor(Device):
     dirigera_client: AbstractSmartHomeHub
-    device_id: str
     is_reachable: bool
-    custom_name: str
-    firmware_version: str
-    hardware_version: str
-    model: str
-    product_code: str
-    serial_number: str
     current_temperature: str
     current_rh: int
     current_pm25: int
     max_measured_pm25: int
     min_measured_pm25: int
     voc_index: int
-    can_receive: list[str]
 
     def refresh(self) -> None:
         data = self.dirigera_client.get(route=f"/devices/{self.device_id}")
@@ -30,6 +24,8 @@ class EnvironmentSensor:
         self.current_rh = attributes["currentRH"]
         self.current_pm25 = attributes["currentPM25"]
         self.voc_index = attributes["vocIndex"]
+        self.room_id = data["room"]["id"]
+        self.room_name = data["room"]["name"]
 
     def set_name(self, name: str) -> None:
         if "customName" not in self.can_receive:
@@ -40,23 +36,27 @@ class EnvironmentSensor:
         self.custom_name = name
 
 
-def dict_to_environment_sensor(data: dict[str, Any], dirigera_client: AbstractSmartHomeHub):
+def dict_to_environment_sensor(
+    data: dict[str, Any], dirigera_client: AbstractSmartHomeHub
+):
     attributes: dict[str, Any] = data["attributes"]
     return EnvironmentSensor(
         dirigera_client=dirigera_client,
         device_id=data["id"],
         is_reachable=data["isReachable"],
         custom_name=attributes["customName"],
-        firmware_version=attributes["firmwareVersion"],
-        hardware_version=attributes["hardwareVersion"],
-        model=attributes["model"],
-        product_code=attributes["productCode"],
-        serial_number=attributes["serialNumber"],
+        firmware_version=attributes.get("firmwareVersion"),
+        hardware_version=attributes.get("hardwareVersion"),
+        model=attributes.get("model"),
+        manufacturer=attributes.get("manufacturer"),
+        serial_number=attributes.get("serialNumber"),
         current_temperature=attributes["currentTemperature"],
         current_rh=attributes["currentRH"],
         current_pm25=attributes["currentPM25"],
         max_measured_pm25=attributes["maxMeasuredPM25"],
         min_measured_pm25=attributes["minMeasuredPM25"],
         voc_index=attributes["vocIndex"],
+        room_id=data["room"]["id"],
+        room_name=data["room"]["name"],
         can_receive=data["capabilities"]["canReceive"],
     )

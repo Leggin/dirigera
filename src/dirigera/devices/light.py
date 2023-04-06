@@ -116,8 +116,6 @@ class Light:
 def dict_to_light(data: Dict[str, Any], dirigera_client: AbstractSmartHomeHub):
     attributes: Dict[str, Any] = data["attributes"]
 
-    print(attributes)
-
     light_level = attributes.get("lightLevel")
     color_temp = attributes.get("colorTemperature")
     color_temp_min = attributes.get("colorTemperatureMin")

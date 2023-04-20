@@ -10,6 +10,8 @@ from ..hub.abstract_smart_home_hub import AbstractSmartHomeHub
 class StartupEnum(Enum):
     START_ON = "startOn"
     START_OFF = "startOff"
+    START_PREVIOUS = "startPrevious"
+    START_TOGGLE = "startToggle"
 
 
 @dataclass
@@ -109,6 +111,8 @@ class Light(Device):
         Sets the behaviour of the lamp in case of a power outage.
         When set to START_ON the lamp will turn on once the power is back.
         When set to START_OFF the lamp will stay off once the power is back.
+        When set to START_PREVIOUS the lamp will resume its state at power outage.
+        When set to START_TOGGLE, a sequence of power-off -> power-on, will toggle the lamp state
         """
         data = [{"attributes": {"startupOnOff": behaviour}}]
         self.dirigera_client.patch(route=f"/devices/{self.device_id}", data=data)

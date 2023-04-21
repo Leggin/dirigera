@@ -119,6 +119,25 @@ def test_set_startup_behaviour_on(
     assert action["data"] == [{"attributes": {"startupOnOff": behaviour}}]
     assert fake_light.startup_on_off == behaviour
 
+def test_set_startup_behaviour_previous(
+    fake_light: Light, fake_client: FakeDirigeraHub
+) -> None:
+    behaviour = StartupEnum.START_PREVIOUS
+    fake_light.set_startup_behaviour(behaviour)
+    action = fake_client.patch_actions.pop()
+    assert action["route"] == f"/devices/{fake_light.device_id}"
+    assert action["data"] == [{"attributes": {"startupOnOff": behaviour}}]
+    assert fake_light.startup_on_off == behaviour
+
+def test_set_startup_behaviour_toggle(
+    fake_light: Light, fake_client: FakeDirigeraHub
+) -> None:
+    behaviour = StartupEnum.START_TOGGLE
+    fake_light.set_startup_behaviour(behaviour)
+    action = fake_client.patch_actions.pop()
+    assert action["route"] == f"/devices/{fake_light.device_id}"
+    assert action["data"] == [{"attributes": {"startupOnOff": behaviour}}]
+    assert fake_light.startup_on_off == behaviour
 
 def test_dict_to_light(fake_client: FakeDirigeraHub):
     data = {

@@ -1,5 +1,5 @@
 # Dirigera Python Client
-![Test](https://github.com/Leggin/dirigera/actions/workflows/test.yml/badge.svg)
+![Test](https://github.com/Leggin/dirigera/actions/workflows/tests.yml/badge.svg)
 ![Pypi](https://img.shields.io/pypi/v/dirigera)
 [![Downloads](https://static.pepy.tech/badge/dirigera/month)](https://pepy.tech/project/dirigera)
 

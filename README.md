@@ -85,6 +85,9 @@ Available methods for light are:
 The event listener allows you to listen to events that are published by your Dirigera hub. This is useful if you want to automate tasks based on events such as when a light is turned on or off, or when the color temperature of a light is changed.
 
 ```python
+import json
+from typing import Any
+
 
 def on_message(ws: Any, message: str):
     message_dict = json.loads(message)

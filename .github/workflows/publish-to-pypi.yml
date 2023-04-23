@@ -2,7 +2,9 @@ name: Publish Python dist to PyPI
 
 on:
   push:
-    branches: [ "main" ]
+    tags:
+      - '*'
+
 
 jobs:
   build-n-publish:

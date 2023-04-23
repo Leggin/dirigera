@@ -6,7 +6,7 @@
 
 This repository provides an unofficial Python client for controlling the IKEA Dirigera Smart Home Hub. Current features:
  - [light control](#controlling-lights)
- - environment sensor VINDSTYRKA
+ - [environment sensor](#environment-sensor) (tested with VINDSTYRKA)
  - [event listener](#event-listener) for hub events
 
 Support for other features will be added in the future and your input in form of issues and PRs is greatly appreciated.
@@ -33,9 +33,9 @@ pip install dirigera
    ```
 6. Done
 
-## Dirigera Hub
+## [Dirigera Hub](./src/dirigera/hub/hub.py)
 
-Setting up the client works by providing the token and ip address that is read from your .env file by the `config.py`
+Setting up the client works by providing the token and ip address.
 
 ```python
 import dirigera

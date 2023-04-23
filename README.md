@@ -1,6 +1,15 @@
-# Dirigera Python client
+# Dirigera Python Client
+![Test](https://github.com/Leggin/dirigera/actions/workflows/test.yml/badge.svg)
+![Pypi](https://img.shields.io/pypi/v/dirigera)
+[![Downloads](https://static.pepy.tech/badge/dirigera/month)](https://pepy.tech/project/dirigera)
 
-This repository provides an unofficial Python client for controlling the IKEA Dirigera Smart Home Hub. Currently, only light control is supported, but support for other features will be added in the future.
+
+This repository provides an unofficial Python client for controlling the IKEA Dirigera Smart Home Hub. Current features:
+ - [light control](#controlling-lights)
+ - environment sensor VINDSTYRKA
+ - [event listener](#event-listener) for hub events
+
+Support for other features will be added in the future and your input in form of issues and PRs is greatly appreciated.
 
 ## Installation
 
@@ -48,36 +57,61 @@ lights = dirigera_hub.get_lights()
 The light object has the following attributes:
 
 ```python
-    device_id: str
-    is_reachable: bool
-    custom_name: str
-    is_on: bool
-    startup_on_off: StartupEnum | None
-    light_level: int | None  # not all lights have a light level
-    color_temp: int | None  # not all lights have a color temperature
-    color_temp_min: int | None
-    color_temp_max: int | None
-    color_hue: int | None  # not all lights have a color hue
-    color_saturation: float | None  # not all lights have a color saturation
-    room_id: str
-    room_name: str
-    can_receive: List[str]  # list of all available commands ["customName", "isOn", "lightLevel", ...]
+device_id: str
+is_reachable: bool
+custom_name: str
+is_on: bool
+startup_on_off: StartupEnum | None
+light_level: int | None  # not all lights have a light level
+color_temp: int | None  # not all lights have a color temperature
+color_temp_min: int | None
+color_temp_max: int | None
+color_hue: int | None  # not all lights have a color hue
+color_saturation: float | None  # not all lights have a color saturation
+room_id: str
+room_name: str
+can_receive: List[str]  # list of all available commands ["customName", "isOn", "lightLevel", ...]
 ```
 
 Available methods for light are:
 
 ```python
-    light.set_name(name="kitchen light 1")
+light.set_name(name="kitchen light 1")
 
-    light.set_light(lamp_on=True)
+light.set_light(lamp_on=True)
 
-    light.set_light_level(light_level=90)
+light.set_light_level(light_level=90)
 
-    light.set_color_temperature(color_temp=3000)
+light.set_color_temperature(color_temp=3000)
 
-    light.set_light_color(hue=128, saturation=0.5)
+light.set_light_color(hue=128, saturation=0.5)
 
-    light.set_startup_behaviour(behaviour=StartupEnum.START_OFF)
+light.set_startup_behaviour(behaviour=StartupEnum.START_OFF)
+```
+
+## [Environment Sensor](./src/dirigera/devices/environment_sensor.py)
+Currently only tested with the VINDSTYRKA sensor. If you have other sensors please send me the json and I will add support or create a PR.
+
+
+To get the environment sensors use:
+```python
+sensors = dirigera_hub.get_environment_sensors()
+```
+
+The environment sensor object has the following attributes:
+```python
+device_id: str
+is_reachable: bool
+custom_name: str
+current_temperature: str
+current_rh: int  # current humidity
+current_pm25: int  # current particulate matter 2.5
+max_measured_pm25: int  # maximum measurable particulate matter 2.5
+min_measured_pm25: int  # minimum measurable particulate matter 2.5
+voc_index: int  # current volatile organic compound
+room_id: str
+room_name: str
+can_receive: list[str]  # list of all available commands ["customName"]
 ```
 
 
@@ -114,7 +148,7 @@ I can not guarantee that all IKEA lamps offer this functionality.
 
 ## Contributing
 
-Contributions are welcome! If you have an idea for a new feature or a bug fix, please submit a pull request.
+Contributions are welcome! If you have an idea for a new feature or a bug fix, please post and issue or submit a pull request.
 
 ## License
 

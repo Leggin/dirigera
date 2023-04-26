@@ -89,7 +89,7 @@ class Hub(AbstractSmartHomeHub):
         Fetches all lights registered in the Hub
         """
         devices = self.get("/devices")
-        lights = List(filter(lambda x: x["type"] == "light", devices))
+        lights = list(filter(lambda x: x["type"] == "light", devices))
         return [dict_to_light(light, self) for light in lights]
 
     def get_light_by_name(self, lamp_name: str) -> Light:
@@ -97,7 +97,7 @@ class Hub(AbstractSmartHomeHub):
         Fetches all lights and returns first result that matches this name
         """
         lights = self.get_lights()
-        lights = List(filter(lambda x: x.custom_name == lamp_name, lights))
+        lights = list(filter(lambda x: x.custom_name == lamp_name, lights))
         if len(lights) == 0:
             raise AssertionError(f"No light found with name {lamp_name}")
         return lights[0]
@@ -107,7 +107,7 @@ class Hub(AbstractSmartHomeHub):
         Fetches all environment sensors registered in the Hub
         """
         devices = self.get("/devices")
-        sensors = List(
+        sensors = list(
             filter(lambda x: x["deviceType"] == "environmentSensor", devices)
         )
         return [dict_to_environment_sensor(sensor, self) for sensor in sensors]

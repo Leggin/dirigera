@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Dict
 
 from .device import Device
 from ..hub.abstract_smart_home_hub import AbstractSmartHomeHub
@@ -18,7 +18,7 @@ class EnvironmentSensor(Device):
 
     def refresh(self) -> None:
         data = self.dirigera_client.get(route=f"/devices/{self.device_id}")
-        attributes: dict[str, Any] = data["attributes"]
+        attributes: Dict[str, Any] = data["attributes"]
         self.firmware_version = attributes["firmwareVersion"]
         self.current_temperature = attributes["currentTemperature"]
         self.current_rh = attributes["currentRH"]
@@ -37,9 +37,9 @@ class EnvironmentSensor(Device):
 
 
 def dict_to_environment_sensor(
-    data: dict[str, Any], dirigera_client: AbstractSmartHomeHub
+    data: Dict[str, Any], dirigera_client: AbstractSmartHomeHub
 ):
-    attributes: dict[str, Any] = data["attributes"]
+    attributes: Dict[str, Any] = data["attributes"]
     return EnvironmentSensor(
         dirigera_client=dirigera_client,
         device_id=data["id"],

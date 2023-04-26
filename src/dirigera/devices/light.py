@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any
+from typing import Any, Optional, Dict
 
 from .device import Device
 
@@ -19,17 +19,17 @@ class Light(Device):
     dirigera_client: AbstractSmartHomeHub
     is_reachable: bool
     is_on: bool
-    startup_on_off: StartupEnum | None
-    light_level: int | None
-    color_temp: int | None
-    color_temp_min: int | None
-    color_temp_max: int | None
-    color_hue: int | None
-    color_saturation: float | None
+    startup_on_off: Optional[StartupEnum]
+    light_level: Optional[int]
+    color_temp: Optional[int]
+    color_temp_min: Optional[int]
+    color_temp_max: Optional[int]
+    color_hue: Optional[int]
+    color_saturation: Optional[float]
 
     def refresh(self) -> None:
         data = self.dirigera_client.get(route=f"/devices/{self.device_id}")
-        attributes: dict[str, Any] = data["attributes"]
+        attributes: Dict[str, Any] = data["attributes"]
         self.device_id = data["id"]
         self.is_reachable = data["isReachable"]
         self.custom_name = attributes["customName"]
@@ -119,8 +119,8 @@ class Light(Device):
         self.startup_on_off = behaviour
 
 
-def dict_to_light(data: dict[str, Any], dirigera_client: AbstractSmartHomeHub):
-    attributes: dict[str, Any] = data["attributes"]
+def dict_to_light(data: Dict[str, Any], dirigera_client: AbstractSmartHomeHub):
+    attributes: Dict[str, Any] = data["attributes"]
 
     return Light(
         dirigera_client=dirigera_client,

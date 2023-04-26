@@ -1,5 +1,5 @@
 import ssl
-from typing import Any
+from typing import Any, Dict, List
 import requests
 import websocket
 from urllib3.exceptions import InsecureRequestWarning
@@ -39,14 +39,14 @@ class Hub(AbstractSmartHomeHub):
 
     def create_event_listener(
         self,
-        on_open: Any | None = None,
-        on_message: Any | None = None,
-        on_error: Any | None = None,
-        on_close: Any | None = None,
-        on_ping: Any | None = None,
-        on_pong: Any | None = None,
-        on_data: Any | None = None,
-        on_cont_message: Any | None = None,
+        on_open: Any = None,
+        on_message: Any = None,
+        on_error: Any = None,
+        on_close: Any = None,
+        on_ping: Any = None,
+        on_pong: Any = None,
+        on_data: Any = None,
+        on_cont_message: Any = None,
     ):
         wsapp = websocket.WebSocketApp(
             self.websocket_base_url,
@@ -63,7 +63,7 @@ class Hub(AbstractSmartHomeHub):
 
         wsapp.run_forever(sslopt={"cert_reqs": ssl.CERT_NONE})
 
-    def patch(self, route: str, data: dict[str, Any]) -> dict[str, Any]:
+    def patch(self, route: str, data: Dict[str, Any]) -> Dict[str, Any]:
         response = requests.patch(
             f"{self.api_base_url}{route}",
             headers=self.headers(),
@@ -74,7 +74,7 @@ class Hub(AbstractSmartHomeHub):
         response.raise_for_status()
         return response.text
 
-    def get(self, route: str) -> dict[str, Any]:
+    def get(self, route: str) -> Dict[str, Any]:
         response = requests.get(
             f"{self.api_base_url}{route}",
             headers=self.headers(),
@@ -84,7 +84,7 @@ class Hub(AbstractSmartHomeHub):
         response.raise_for_status()
         return response.json()
 
-    def get_lights(self) -> list[Light]:
+    def get_lights(self) -> List[Light]:
         """
         Fetches all lights registered in the Hub
         """
@@ -102,7 +102,7 @@ class Hub(AbstractSmartHomeHub):
             raise AssertionError(f"No light found with name {lamp_name}")
         return lights[0]
 
-    def get_environment_sensors(self) -> list[EnvironmentSensor]:
+    def get_environment_sensors(self) -> List[EnvironmentSensor]:
         """
         Fetches all environment sensors registered in the Hub
         """

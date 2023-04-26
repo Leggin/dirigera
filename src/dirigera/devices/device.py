@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Optional, List
 
 
 @dataclass
@@ -7,9 +8,9 @@ class Device:
     custom_name: str
     room_id: str
     room_name: str
-    firmware_version: str | None
-    hardware_version: str | None
-    model: str | None
-    manufacturer: str | None
-    serial_number: str | None
-    can_receive: list[str]
+    firmware_version: Optional[str]
+    hardware_version: Optional[str]
+    model: Optional[str]
+    manufacturer: Optional[str]
+    serial_number: Optional[str]
+    can_receive: List[str]

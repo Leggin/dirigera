@@ -1,3 +1,4 @@
+from typing import Dict
 import pytest
 from src.dirigera.hub.abstract_smart_home_hub import FakeDirigeraHub
 from src.dirigera.devices.environment_sensor import (
@@ -71,7 +72,7 @@ def test_set_name(fake_sensor: EnvironmentSensor, fake_client: FakeDirigeraHub):
     assert fake_sensor.custom_name == new_name
 
 
-def test_dict_to_sensor(fake_client: FakeDirigeraHub, sensor_dict: dict):
+def test_dict_to_sensor(fake_client: FakeDirigeraHub, sensor_dict: Dict):
     sensor = dict_to_environment_sensor(sensor_dict, fake_client)
     assert sensor.device_id == sensor_dict["id"]
     assert sensor.is_reachable == sensor_dict["isReachable"]

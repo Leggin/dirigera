@@ -20,18 +20,25 @@ pip install dirigera
 ## Quickstart
 
 1. Find out the ip-address of your Dirigera (check your router)
-2. Run the generate-token script:
+2. Once you installed `dirigera` with pip you can run the included generate-token script. Here you can directly set the ip-address of you dirigera as parameter.
    ```bash
    generate-token <Dirigera ip-address>
    ```
-   When prompted, you must push the action button on Dirigera. After that hit ENTER and your `token` will be printed to the console.  
+3. The script starts the auth process. When prompted, you must push the action button on the bottom of your Dirigera. 
+4. After that hit ENTER and your `token` will be printed to the console.  
    Example:
-   ```
+    ```
     Press the action button on Dirigera then hit ENTER ...
     Your Token:
     mgwB.aXqwpzV89N0aUwBhZMJjD8a.UBPyzy2InGtqgwo2MO5.xX4ug7.uBcVJquwYzLnAijF7SdYKvNxTo0uzQKahV10A-3ZQOz-UAubGP6sHWt1CJx3QmWZyE7ZcMZKgODXjSzWL1lumKgGz5dUIwFi3rhNxgK-IsBGeGVhNXPt8vGrYEcZePwPvNAIg8RqmlH27L-JZPnkAtP2wHoOdW72Djot3yJsohtEsb0p9mJvoZFSavTlTr4LDuf584vuH5fha5xoR9QhhIvvgbAP-s4EHFqENNi6vrYLHKR.sdqnv4sYw6UH-l6oiPnnRLxinoqBPOlWhlcL9doFviXQE.tZ9X8WVqyBrd0NYHlo9iorEvUbnZuD02BEJrg4NLwgh3rZtyF0Mi46HenynzBohbPn4RnuSYYCiHt5EZnWedxBtDqc7mSTm1ZtyD
-   ```
-6. Done
+    ```
+5. Done. Use this token in the hub setup.
+     ```
+    dirigera.Hub(
+        token="mgwB.aXqwpzV89N0aUwBhZMJjD8a...",
+        ip_address="192.1..."
+    )
+    ```
 
 ## [Dirigera Hub](./src/dirigera/hub/hub.py)
 

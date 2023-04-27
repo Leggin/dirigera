@@ -1,9 +1,10 @@
 import ssl
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 import requests
 import websocket
 from urllib3.exceptions import InsecureRequestWarning
 
+from .room import Color, Room, dict_to_room
 from .abstract_smart_home_hub import AbstractSmartHomeHub
 from ..devices.light import Light, dict_to_light
 from ..devices.environment_sensor import EnvironmentSensor, dict_to_environment_sensor
@@ -74,6 +75,28 @@ class Hub(AbstractSmartHomeHub):
         response.raise_for_status()
         return response.text
 
+    def post(self, route: str, data: Dict[str, Any]) -> Dict[str, Any]:
+        response = requests.post(
+            f"{self.api_base_url}{route}",
+            headers=self.headers(),
+            json=data,
+            timeout=10,
+            verify=False,
+        )
+        response.raise_for_status()
+        return response.json()
+
+    def delete(self, route: str, data: Optional[Dict[str, Any]]) -> Dict[str, Any]:
+        response = requests.delete(
+            f"{self.api_base_url}{route}",
+            headers=self.headers(),
+            json=data,
+            timeout=10,
+            verify=False,
+        )
+        response.raise_for_status()
+        return response.text
+
     def get(self, route: str) -> Dict[str, Any]:
         response = requests.get(
             f"{self.api_base_url}{route}",
@@ -111,3 +134,26 @@ class Hub(AbstractSmartHomeHub):
             filter(lambda x: x["deviceType"] == "environmentSensor", devices)
         )
         return [dict_to_environment_sensor(sensor, self) for sensor in sensors]
+
+    def get_rooms(self) -> List[Room]:
+        """
+        Fetches all rooms registered in the Hub
+        """
+        rooms = self.get("/rooms")
+
+        return [dict_to_room(room) for room in rooms]
+
+    def create_room(self, name: str, color: Color, icon: str) -> Room:
+        """
+        Creates a new room with a given name, color and icon.
+        """
+        data = self.post("/rooms", data={"name": name, "color": color, "icon": icon})
+        print(data["id"])
+        room_id = data["id"]
+        return Room(room_id=room_id, name=name, color=color, icon=icon)
+
+    def delete_room(self, room: Room) -> None:
+        """
+        Deletes a room.
+        """
+        self.delete(f"/rooms/{room.room_id}", data=None)

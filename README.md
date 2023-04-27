@@ -2,7 +2,7 @@
 ![Test](https://github.com/Leggin/dirigera/actions/workflows/tests.yml/badge.svg)
 ![Pypi](https://img.shields.io/pypi/v/dirigera)
 [![Downloads](https://static.pepy.tech/badge/dirigera/month)](https://pepy.tech/project/dirigera)
-
+![Downloads](https://img.shields.io/pypi/pyversions/dirigera)
 
 This repository provides an unofficial Python client for controlling the IKEA Dirigera Smart Home Hub. Current features:
  - [light control](#controlling-lights)

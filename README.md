@@ -6,6 +6,7 @@
 
 This repository provides an unofficial Python client for controlling the IKEA Dirigera Smart Home Hub. Current features:
  - [light control](#controlling-lights)
+ - [blinds control](#controlling-blinds)
  - [environment sensor](#environment-sensor) (tested with VINDSTYRKA)
  - [event listener](#event-listener) for hub events
 
@@ -95,6 +96,37 @@ light.set_light_color(hue=128, saturation=0.5)
 
 light.set_startup_behaviour(behaviour=StartupEnum.START_OFF)
 ```
+
+## [Controlling Blinds](./src/dirigera/devices/blinds.py)
+
+To get information about the available blinds, you can use the `get_blinds()` method:
+
+```python
+blinds = dirigera_hub.get_blinds()
+```
+
+The blind object has the following attributes:
+
+```python
+device_id: str
+is_reachable: bool
+custom_name: str
+target_level: int
+current_level: int
+state: str
+room_id: str
+room_name: str
+can_receive: List[str]  # list of all available commands ["customName", "blindsCurrentLevel", "blindsTargetLevel", "blindsState"]
+```
+
+Available methods for blinds are:
+
+```python
+blind.set_name(name="kitchen blind 1")
+
+blind.set_target_level(target_level=90)
+```
+
 
 ## [Environment Sensor](./src/dirigera/devices/environment_sensor.py)
 Currently only tested with the VINDSTYRKA sensor. If you have other sensors please send me the json and I will add support or create a PR.

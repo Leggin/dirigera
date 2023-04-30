@@ -6,6 +6,7 @@ from urllib3.exceptions import InsecureRequestWarning
 
 from .abstract_smart_home_hub import AbstractSmartHomeHub
 from ..devices.light import Light, dict_to_light
+from ..devices.blinds import Blind, dict_to_blind
 from ..devices.environment_sensor import EnvironmentSensor, dict_to_environment_sensor
 
 requests.packages.urllib3.disable_warnings(  # pylint: disable=no-member
@@ -111,3 +112,21 @@ class Hub(AbstractSmartHomeHub):
             filter(lambda x: x["deviceType"] == "environmentSensor", devices)
         )
         return [dict_to_environment_sensor(sensor, self) for sensor in sensors]
+
+    def get_blinds(self) -> List[Blind]:
+        """
+        Fetches all blinds registered in the Hub
+        """
+        devices = self.get("/devices")
+        blinds = list(filter(lambda x: x["type"] == "blinds", devices))
+        return [dict_to_blind(blind, self) for blind in blinds]
+
+    def get_blind_by_name(self, blind_name: str) -> Blind:
+        """
+        Fetches all blinds and returns first result that matches this name
+        """
+        blinds = self.get_blinds()
+        blinds = list(filter(lambda x: x.custom_name == blind_name, blinds))
+        if len(blinds) == 0:
+            raise AssertionError(f"No blind found with name {blind_name}")
+        return blinds[0]

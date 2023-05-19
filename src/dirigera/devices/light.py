@@ -1,17 +1,9 @@
 from dataclasses import dataclass
-from enum import Enum
 from typing import Any, Optional, Dict
 
-from .device import Device
+from .device import Device, StartupEnum
 
 from ..hub.abstract_smart_home_hub import AbstractSmartHomeHub
-
-
-class StartupEnum(Enum):
-    START_ON = "startOn"
-    START_OFF = "startOff"
-    START_PREVIOUS = "startPrevious"
-    START_TOGGLE = "startToggle"
 
 
 @dataclass
@@ -30,11 +22,17 @@ class Light(Device):
     def refresh(self) -> None:
         data = self.dirigera_client.get(route=f"/devices/{self.device_id}")
         attributes: Dict[str, Any] = data["attributes"]
+
+        if "startupOnOff" in attributes:
+            startup_on_off = StartupEnum(attributes.get("startupOnOff"))
+        else:
+            startup_on_off = None
+
         self.device_id = data["id"]
         self.is_reachable = data["isReachable"]
         self.custom_name = attributes["customName"]
         self.is_on = attributes["isOn"]
-        self.startup_on_off = attributes.get("startupOnOff")
+        self.startup_on_off = startup_on_off
         self.light_level = attributes.get("lightLevel")
         self.color_temp = attributes.get("colorTemperature")
         self.color_temp_min = attributes.get("colorTemperatureMin")
@@ -42,9 +40,13 @@ class Light(Device):
         self.color_hue = attributes.get("colorHue")
         self.color_saturation = attributes.get("colorSaturation")
         self.firmware_version = attributes.get("firmwareVersion")
+        self.hardware_version = attributes.get("hardwareVersion")
         self.room_id = data["room"]["id"]
         self.room_name = data["room"]["name"]
         self.can_receive = data["capabilities"]["canReceive"]
+        self.model = attributes.get("model")
+        self.manufacturer=attributes.get("manufacturer")
+        self.serial_number=attributes.get("serialNumber")
 
     def set_name(self, name: str) -> None:
         if "customName" not in self.can_receive:
@@ -114,7 +116,7 @@ class Light(Device):
         When set to START_PREVIOUS the lamp will resume its state at power outage.
         When set to START_TOGGLE, a sequence of power-off -> power-on, will toggle the lamp state
         """
-        data = [{"attributes": {"startupOnOff": behaviour}}]
+        data = [{"attributes": {"startupOnOff": behaviour.value}}]
         self.dirigera_client.patch(route=f"/devices/{self.device_id}", data=data)
         self.startup_on_off = behaviour
 
@@ -122,13 +124,18 @@ class Light(Device):
 def dict_to_light(data: Dict[str, Any], dirigera_client: AbstractSmartHomeHub):
     attributes: Dict[str, Any] = data["attributes"]
 
+    if "startupOnOff" in attributes:
+        startup_on_off = StartupEnum(attributes.get("startupOnOff"))
+    else:
+        startup_on_off = None
+
     return Light(
         dirigera_client=dirigera_client,
         device_id=data["id"],
         is_reachable=data["isReachable"],
         custom_name=attributes["customName"],
         is_on=attributes["isOn"],
-        startup_on_off=attributes.get("startupOnOff"),
+        startup_on_off=startup_on_off,
         light_level=attributes.get("lightLevel"),
         color_temp=attributes.get("colorTemperature"),
         color_temp_min=attributes.get("colorTemperatureMin"),

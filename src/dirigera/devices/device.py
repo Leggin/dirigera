@@ -1,5 +1,13 @@
 from dataclasses import dataclass
+from enum import Enum
 from typing import Optional, List
+
+
+class StartupEnum(Enum):
+    START_ON = "startOn"
+    START_OFF = "startOff"
+    START_PREVIOUS = "startPrevious"
+    START_TOGGLE = "startToggle"
 
 
 @dataclass

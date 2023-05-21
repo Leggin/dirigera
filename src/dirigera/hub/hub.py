@@ -7,6 +7,7 @@ from urllib3.exceptions import InsecureRequestWarning
 from .abstract_smart_home_hub import AbstractSmartHomeHub
 from ..devices.light import Light, dict_to_light
 from ..devices.blinds import Blind, dict_to_blind
+from ..devices.air_purifier import AirPurifier, dict_to_air_purifier
 from ..devices.outlet import Outlet, dict_to_outlet
 from ..devices.environment_sensor import EnvironmentSensor, dict_to_environment_sensor
 from ..devices.open_close_sensor import OpenCloseSensor, dict_to_open_close_sensor
@@ -86,6 +87,14 @@ class Hub(AbstractSmartHomeHub):
         )
         response.raise_for_status()
         return response.json()
+
+    def get_air_purifiers(self) -> List[AirPurifier]:
+        """
+        Fetches as registered air purifiers.
+        """
+        devices = self.get("/devices")
+        filtered_devices = list(filter(lambda x: x["type"] == "airPurifier", devices))
+        return [dict_to_air_purifier(air_p, self) for air_p in filtered_devices]
 
     def get_lights(self) -> List[Light]:
         """

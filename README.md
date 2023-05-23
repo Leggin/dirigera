@@ -127,6 +127,34 @@ blind.set_name(name="kitchen blind 1")
 blind.set_target_level(target_level=90)
 ```
 
+## [Remote Controllers](./src/dirigera/devices/controller.py)
+
+Currently only tested with the STYRBAR remote.
+
+To get information about the available controllers, you can use the `get_controllers()` method:
+
+```python
+controllers = dirigera_hub.get_controllers()
+```
+
+The controller object has the following attributes:
+
+```python
+device_id: str
+is_reachable: bool
+custom_name: str
+is_on: bool
+battery_percentage: int
+room_id: str
+room_name: str
+can_receive: List[str]  # list of all available commands ["customName"]
+```
+
+Available methods for light are:
+
+```python
+light.set_name(name="kitchen remote 1")
+```
 
 ## [Environment Sensor](./src/dirigera/devices/environment_sensor.py)
 Currently only tested with the VINDSTYRKA sensor. If you have other sensors please send me the json and I will add support or create a PR.

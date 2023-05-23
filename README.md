@@ -7,6 +7,7 @@
 This repository provides an unofficial Python client for controlling the IKEA Dirigera Smart Home Hub. Current features:
  - [light control](#controlling-lights)
  - [blinds control](#controlling-blinds)
+ - [remote controllers](#remote-controllers) (tested with STYRBAR)
  - [environment sensor](#environment-sensor) (tested with VINDSTYRKA)
  - [event listener](#event-listener) for hub events
 

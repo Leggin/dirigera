@@ -6,6 +6,7 @@
 
 This repository provides an unofficial Python client for controlling the IKEA Dirigera Smart Home Hub. Current features:
  - [light control](#controlling-lights)
+ - [outlet control](#controlling-outlets)
  - [blinds control](#controlling-blinds)
  - [environment sensor](#environment-sensor) (tested with VINDSTYRKA)
  - [event listener](#event-listener) for hub events
@@ -95,6 +96,37 @@ light.set_color_temperature(color_temp=3000)
 light.set_light_color(hue=128, saturation=0.5)
 
 light.set_startup_behaviour(behaviour=StartupEnum.START_OFF)
+```
+
+## [Controlling Outlets](./src/dirigera/devices/outlet.py)
+
+To get information about the available outlets, you can use the `get_outlets()` method:
+
+```python
+outlets = dirigera_hub.get_outlets()
+```
+
+The outlet object has the following attributes:
+
+```python
+device_id: str
+is_reachable: bool
+custom_name: str
+is_on: bool
+startup_on_off: StartupEnum | None
+room_id: str
+room_name: str
+can_receive: List[str]  # list of all available commands ["customName", "isOn", "lightLevel", ...]
+```
+
+Available methods for outlet are:
+
+```python
+outlet.set_name(name="kitchen socket 1")
+
+outlet.set_on(outlet_on=True)
+
+outlet.set_startup_behaviour(behaviour=StartupEnum.START_OFF)
 ```
 
 ## [Controlling Blinds](./src/dirigera/devices/blinds.py)

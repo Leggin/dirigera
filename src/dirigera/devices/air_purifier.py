@@ -83,6 +83,18 @@ class AirPurifier(Device):
         """Sets the fan mode (low, medium, high, auto)."""
         self._set_data(data={"attributes": {"fanMode": fan_mode.value}})
 
+    def set_motor_state(self, motor_state) -> None:
+        """Set the motor speed. Accepted values: 0-50.
+
+        Notes:
+        - values <10 are interpreted as "set mode to auto"
+        - values will be rounded down to multiples of 5
+          (e.g. 17 gets interpreted as 15)
+        """
+        desired_motor_state = int(motor_state)
+        if desired_motor_state < 0 or desired_motor_state > 50:
+            raise ValueError("Value must be in range 0-50")
+        self._set_data(data={"attributes": {"motorState": desired_motor_state}})
 
 def dict_to_air_purifier(data: Dict[str, Any], dirigera_client: AbstractSmartHomeHub):
     attributes: Dict[str, Any] = data["attributes"]

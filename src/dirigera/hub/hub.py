@@ -113,6 +113,16 @@ class Hub(AbstractSmartHomeHub):
         outlets = list(filter(lambda x: x["type"] == "outlet", devices))
         return [dict_to_outlet(outlet, self) for outlet in outlets]
 
+    def get_outlet_by_name(self, outlet_name: str) -> Outlet:
+        """
+        Fetches all outlets and returns first result that matches this name
+        """
+        outlets = self.get_outlets()
+        outlets = list(filter(lambda x: x.custom_name == outlet_name, outlets))
+        if len(outlets) == 0:
+            raise AssertionError(f"No outlet found with name {outlet_name}")
+        return outlets[0]
+
     def get_environment_sensors(self) -> List[EnvironmentSensor]:
         """
         Fetches all environment sensors registered in the Hub

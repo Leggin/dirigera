@@ -153,6 +153,9 @@ class Hub(AbstractSmartHomeHub):
         return blinds[0]
 
     def get_controllers(self) -> List[Controller]:
+        """
+        Fetches all controllers registered in the Hub
+        """
         devices = self.get("/devices")
         controllers = list(
             filter(lambda x: x["type"] == "controller", devices)
@@ -162,6 +165,9 @@ class Hub(AbstractSmartHomeHub):
         ]
 
     def get_controller_by_name(self, controller_name: str) -> Controller:
+        """
+        Fetches all controllers and returns first result that matches this name
+        """
         controllers = self.get_controllers()
         controllers = list(
             filter(lambda x: x.custom_name == controller_name, controllers)

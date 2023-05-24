@@ -73,7 +73,7 @@ class AirPurifier(Device):
         self.filter_lifetime = attributes.get("filterLifetime")
         self.current_pm25 = attributes.get("currentPM25")
 
-    def _set_data(self, data: Union[List[Dict], Dict]) -> None:
+    def _send_data(self, data: Union[List[Dict], Dict]) -> None:
         if isinstance(data, dict):
             data = [data]
         self.dirigera_client.patch(route=f"/devices/{self.device_id}", data=data)
@@ -81,7 +81,7 @@ class AirPurifier(Device):
 
     def set_fan_mode(self, fan_mode: FanModeEnum) -> None:
         """Sets the fan mode (low, medium, high, auto)."""
-        self._set_data(data={"attributes": {"fanMode": fan_mode.value}})
+        self._send_data(data={"attributes": {"fanMode": fan_mode.value}})
 
     def set_motor_state(self, motor_state) -> None:
         """Set the motor speed. Accepted values: 0-50.
@@ -94,7 +94,20 @@ class AirPurifier(Device):
         desired_motor_state = int(motor_state)
         if desired_motor_state < 0 or desired_motor_state > 50:
             raise ValueError("Value must be in range 0-50")
-        self._set_data(data={"attributes": {"motorState": desired_motor_state}})
+        self._send_data(data={"attributes": {"motorState": desired_motor_state}})
+
+    def set_child_lock(self, child_lock: bool) -> None:
+        """Call with True to enable child lock, False for disable."""
+        self._send_data({"attributes": {"childLock": child_lock}})
+
+    def set_status_light(self, light_state: bool) -> None:
+        """Call with False to disable the status lights.
+
+        Note: changing values (e.g. motor state, child lock) can lead to the
+        status light to light up again, requiring to set the value to False again.
+        """
+        self._send_data({"attributes": {"statusLight": light_state}})
+
 
 def dict_to_air_purifier(data: Dict[str, Any], dirigera_client: AbstractSmartHomeHub):
     attributes: Dict[str, Any] = data["attributes"]

@@ -1,16 +1,17 @@
 import ssl
 from typing import Any, Dict, List
+
 import requests
 import websocket
 from urllib3.exceptions import InsecureRequestWarning
 
 from .abstract_smart_home_hub import AbstractSmartHomeHub
-from ..devices.light import Light, dict_to_light
-from ..devices.blinds import Blind, dict_to_blind
 from ..devices.air_purifier import AirPurifier, dict_to_air_purifier
-from ..devices.outlet import Outlet, dict_to_outlet
+from ..devices.blinds import Blind, dict_to_blind
 from ..devices.environment_sensor import EnvironmentSensor, dict_to_environment_sensor
+from ..devices.light import Light, dict_to_light
 from ..devices.open_close_sensor import OpenCloseSensor, dict_to_open_close_sensor
+from ..devices.outlet import Outlet, dict_to_outlet
 
 requests.packages.urllib3.disable_warnings(  # pylint: disable=no-member
     category=InsecureRequestWarning

@@ -10,7 +10,7 @@ def fixture_fake_client():
 
 
 @pytest.fixture(name="fake_controller")
-def fixture_blind(fake_client: FakeDirigeraHub):
+def fixture_controller(fake_client: FakeDirigeraHub):
     return Controller(
         dirigera_client=fake_client,
         device_id="abcd",

@@ -151,10 +151,10 @@ room_name: str
 can_receive: List[str]  # list of all available commands ["customName"]
 ```
 
-Available methods for light are:
+Available methods for controller are:
 
 ```python
-light.set_name(name="kitchen remote 1")
+controller.set_name(name="kitchen remote 1")
 ```
 
 ## [Environment Sensor](./src/dirigera/devices/environment_sensor.py)

@@ -158,5 +158,5 @@ class Hub(AbstractSmartHomeHub):
             filter(lambda x: x.custom_name == controller_name, controllers)
         )
         if len(controllers) == 0:
-            raise AssertionError(f"No blind found with name {controller_name}")
+            raise AssertionError(f"No controller found with name {controller_name}")
         return controllers[0]

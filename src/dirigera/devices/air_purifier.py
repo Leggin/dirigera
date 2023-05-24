@@ -73,6 +73,15 @@ class AirPurifier(Device):
         self.filter_lifetime = attributes.get("filterLifetime")
         self.current_pm25 = attributes.get("currentPM25")
 
+    def _set_data(self, data: Union[List[Dict], Dict]) -> None:
+        if isinstance(data, dict):
+            data = [data]
+        self.dirigera_client.patch(route=f"/devices/{self.device_id}", data=data)
+        self.refresh()
+
+    def set_fan_mode(self, fan_mode: FanModeEnum) -> None:
+        """Sets the fan mode (low, medium, high, auto)."""
+        self._set_data(data={"attributes": {"fanMode": fan_mode.value}})
 
 
 def dict_to_air_purifier(data: Dict[str, Any], dirigera_client: AbstractSmartHomeHub):

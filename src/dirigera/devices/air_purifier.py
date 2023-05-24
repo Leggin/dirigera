@@ -16,23 +16,6 @@ class FanModeEnum(Enum):
     AUTO = "auto"
 
 
-data = {'id': '73b704c0-f619-4cdb-b144-79a92d6e3102_1', 'type': 'airPurifier', 'deviceType': 'airPurifier',
-        'createdAt': '2023-05-05T19:45:07.000Z', 'isReachable': True, 'lastSeen': '2023-05-21T20:17:21.000Z',
-        'attributes': {'customName': 'Air purifier 1', 'firmwareVersion': '1.1.001', 'hardwareVersion': '1',
-                       'manufacturer': 'IKEA of Sweden', 'model': 'STARKVIND Air purifier', 'productCode': 'E2007',
-                       'serialNumber': '0C4314FFFED62050', 'fanMode': 'auto', 'fanModeSequence': 'lowMediumHighAuto',
-                       'motorRuntime': 6729, 'motorState': 10, 'filterAlarmStatus': False, 'filterElapsedTime': 23134,
-                       'filterLifetime': 259200, 'childLock': False, 'statusLight': True, 'currentPM25': 19,
-                       'identifyPeriod': 0, 'identifyStarted': '2000-01-01T00:00:00.000Z', 'permittingJoin': False,
-                       'otaPolicy': 'autoUpdate', 'otaProgress': 0, 'otaScheduleEnd': '00:00',
-                       'otaScheduleStart': '00:00', 'otaState': 'readyToCheck', 'otaStatus': 'upToDate'},
-        'capabilities': {'canSend': [],
-                         'canReceive': ['customName', 'fanMode', 'fanModeSequence', 'motorState', 'childLock',
-                                        'statusLight']},
-        'room': {'id': 'a9d6ac9a-12ac-401e-b104-e15d45a32afa', 'name': 'Office', 'color': 'ikea_blue_no_63',
-                 'icon': 'rooms_office_chair'}, 'deviceSet': [], 'remoteLinks': [], 'isHidden': False}
-
-
 @dataclass
 class AirPurifier(Device):
     dirigera_client: AbstractSmartHomeHub

@@ -9,7 +9,6 @@ from .abstract_smart_home_hub import AbstractSmartHomeHub
 from ..devices.air_purifier import AirPurifier, dict_to_air_purifier
 from ..devices.blinds import Blind, dict_to_blind
 from ..devices.controller import Controller, dict_to_controller
-from ..devices.outlet import Outlet, dict_to_outlet
 from ..devices.environment_sensor import EnvironmentSensor, dict_to_environment_sensor
 from ..devices.light import Light, dict_to_light
 from ..devices.open_close_sensor import OpenCloseSensor, dict_to_open_close_sensor

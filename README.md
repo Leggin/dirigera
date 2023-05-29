@@ -8,6 +8,7 @@ This repository provides an unofficial Python client for controlling the IKEA Di
  - [light control](#controlling-lights)
  - [outlet control](#controlling-outlets)
  - [blinds control](#controlling-blinds)
+ - [remote controllers](#remote-controllers) (tested with STYRBAR)
  - [environment sensor](#environment-sensor) (tested with VINDSTYRKA)
  - [event listener](#event-listener) for hub events
 
@@ -159,6 +160,34 @@ blind.set_name(name="kitchen blind 1")
 blind.set_target_level(target_level=90)
 ```
 
+## [Remote Controllers](./src/dirigera/devices/controller.py)
+
+Currently only tested with the STYRBAR remote.
+
+To get information about the available controllers, you can use the `get_controllers()` method:
+
+```python
+controllers = dirigera_hub.get_controllers()
+```
+
+The controller object has the following attributes:
+
+```python
+device_id: str
+is_reachable: bool
+custom_name: str
+is_on: bool
+battery_percentage: int
+room_id: str
+room_name: str
+can_receive: List[str]  # list of all available commands ["customName"]
+```
+
+Available methods for controller are:
+
+```python
+controller.set_name(name="kitchen remote 1")
+```
 
 ## [Environment Sensor](./src/dirigera/devices/environment_sensor.py)
 Currently only tested with the VINDSTYRKA sensor. If you have other sensors please send me the json and I will add support or create a PR.

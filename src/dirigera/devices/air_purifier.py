@@ -21,6 +21,7 @@ class AirPurifier(Device):
     fan_mode: str
     fan_mode_sequence: str
     child_lock: Optional[bool]
+    status_light: Optional[bool]
     motor_runtime: int
     motor_state: int
     filter_alarm_status: bool
@@ -53,6 +54,7 @@ class AirPurifier(Device):
         self.filter_elapsed_time = attributes.get("filterElapsedTime")
         self.filter_lifetime = attributes.get("filterLifetime")
         self.current_pm25 = attributes.get("currentPM25")
+        self.status_light = attributes.get("statusLight")
 
     def _send_data(self, data: Union[List[Dict], Dict]) -> None:
         if isinstance(data, dict):
@@ -115,4 +117,5 @@ def dict_to_air_purifier(data: Dict[str, Any], dirigera_client: AbstractSmartHom
         filter_elapsed_time=attributes.get("filterElapsedTime"),
         filter_lifetime=attributes.get("filterLifetime"),
         current_pm25=attributes.get("currentPM25"),
+        status_light=attributes.get("statusLight"),
     )

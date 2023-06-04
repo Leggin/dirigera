@@ -214,6 +214,55 @@ room_name: str
 can_receive: list[str]  # list of all available commands ["customName"]
 ```
 
+## [Air Purifier](./src/dirigera/devices/air_purifier.py)
+
+Tested with the Starkvind air purifier.
+
+In order to get all air purifiers use this:
+
+```python
+purifiers = dirigera_hub.get_air_purifiers()
+```
+
+The air purifier has the default attributes of every other device (see ``Device`` base class), it also provides the
+following
+attributes that are specific to this device:
+
+```python
+fan_mode: str  # low, medium, high, auto
+fan_mode_sequence: str  # unknown meaning
+child_lock: bool  # child lock enabled?
+status_light: True  # False if status lights are disabled
+motor_runtime: int  # motor runtime in minutes 
+motor_state: int  # motors speed [0-50]
+filter_alarm_status: bool  # True if filter needs changing
+filter_elapsed_time: int  # unit: minutes 
+filter_lifetime: int  # unit: minutes
+current_pm25: int  # current particulate matter 2.5
+```
+
+Notes:
+
+* the meaning of ``fan_mode_sequence`` is not known, the used device sets this to "lowMediumHighAuto"
+* the ``filter_elapsed_time`` starts at zero whenever the device is first started or the user indicates
+  that a filter was changed
+
+The air purififer class provides the following methods to control the air filter. Note that all listed "special rules"
+are not implemented in this Python library, but the behavior of the firmware.
+
+* ``set_motor_state``: set the fan speed as a numerical value. The accepted range is 0-50, the air purifier will round
+  the number down to multiples of 5, the following special rules apply:
+   * the value 0 shuts the fan off
+   * the value 1 sets the air purifier to auto mode
+   * values from 2-10 will be rounded up to 10
+* ``set_fan_mode``: accepts "low", "medium", "high" and "auto"
+   * value low maps to fan speed 10
+   * value medium maps to fan speed 30
+   * value high maps to the highest fan speed of high
+* ``set_child_lock``: enable or disable the child lock
+* ``set_status_light``: set to False in order to disable status lights (e.g. if you don't want lights in your bedroom)
+   * note that after certain API calls the lights come back on again, so
+     that a repeated call to disable them again would be necessary.
 
 ## Event Listener
 The event listener allows you to listen to events that are published by your Dirigera hub. This is useful if you want to automate tasks based on events such as when a light is turned on or off, or when the color temperature of a light is changed.

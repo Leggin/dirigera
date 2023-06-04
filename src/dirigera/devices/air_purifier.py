@@ -62,9 +62,13 @@ class AirPurifier(Device):
         self.dirigera_client.patch(route=f"/devices/{self.device_id}", data=data)
         self.refresh()
 
-    def set_fan_mode(self, fan_mode: FanModeEnum) -> None:
+    def set_fan_mode(self, fan_mode: Union[FanModeEnum, str]) -> None:
         """Sets the fan mode (low, medium, high, auto)."""
-        self._send_data(data={"attributes": {"fanMode": fan_mode.value}})
+        if isinstance(fan_mode, FanModeEnum):
+            new_mode = fan_mode
+        else:
+            new_mode = FanModeEnum(fan_mode)
+        self._send_data(data={"attributes": {"fanMode": new_mode.value}})
 
     def set_motor_state(self, motor_state) -> None:
         """Set the motor speed. Accepted values: 0-50.

@@ -2,8 +2,6 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Any, Optional, Dict, List, Union
 
-from packaging._parser import Op
-
 from .device import Device
 
 from ..hub.abstract_smart_home_hub import AbstractSmartHomeHub
@@ -20,8 +18,8 @@ class FanModeEnum(Enum):
 class AirPurifier(Device):
     dirigera_client: AbstractSmartHomeHub
     is_reachable: bool
-    fan_mode: Optional[None]
-    fan_mode_sequence: Optional[None]  # todo
+    fan_mode: str
+    fan_mode_sequence: str
     child_lock: Optional[bool]
     motor_runtime: int
     motor_state: int

@@ -118,11 +118,11 @@ def test_set_motor_state(fake_purifier: AirPurifier, fake_client: FakeDirigeraHu
 
 
 def test_set_child_lock(fake_purifier: AirPurifier, fake_client: FakeDirigeraHub):
-    for cl in [True, False, False, True]:
-        fake_purifier.set_child_lock(cl)
+    for new_cl_state in [True, False, False, True]:
+        fake_purifier.set_child_lock(new_cl_state)
         action = fake_client.patch_actions.pop()
         assert action["route"] == f"/devices/{fake_purifier.device_id}"
-        assert action["data"] == [{"attributes": {"childLock": cl}}]
+        assert action["data"] == [{"attributes": {"childLock": new_cl_state}}]
 
 
 def test_status_light(fake_purifier: AirPurifier, fake_client: FakeDirigeraHub):

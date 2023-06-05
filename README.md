@@ -10,6 +10,7 @@ This repository provides an unofficial Python client for controlling the IKEA Di
  - [blinds control](#controlling-blinds)
  - [remote controllers](#remote-controllers) (tested with STYRBAR)
  - [environment sensor](#environment-sensor) (tested with VINDSTYRKA)
+ - [air purifier](#air-purifier) (tested with STARKVIND)
  - [event listener](#event-listener) for hub events
 
 Support for other features will be added in the future and your input in form of issues and PRs is greatly appreciated.

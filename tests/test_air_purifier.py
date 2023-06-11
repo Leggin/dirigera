@@ -1,6 +1,6 @@
 import pytest
 
-from dirigera.devices.air_purifier import AirPurifier, dict_to_air_purifier, FanModeEnum
+from src.dirigera.devices.air_purifier import AirPurifier, dict_to_air_purifier, FanModeEnum
 from src.dirigera.hub.abstract_smart_home_hub import FakeDirigeraHub
 
 FAKE_DEVICE_ID = "abcd"

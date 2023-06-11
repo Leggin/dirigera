@@ -69,8 +69,8 @@ class Light(Device):
             raise AssertionError(
                 "This lamp does not support the set lightLevel function"
             )
-        if light_level < 0 or light_level > 100:
-            raise AssertionError("light_level must be a value between 0 and 100")
+        if light_level < 1 or light_level > 100:
+            raise AssertionError("light_level must be a value between 1 and 100")
 
         data = [{"attributes": {"lightLevel": light_level}}]
         self.dirigera_client.patch(route=f"/devices/{self.device_id}", data=data)

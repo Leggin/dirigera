@@ -81,7 +81,7 @@ class AirPurifier(Device):
 
     def set_child_lock(self, child_lock: bool) -> None:
         """Call with True to enable child lock, False for disable."""
-        self._send_data({"attributes": {"childLock": child_lock}})
+        self._send_data(data={"attributes": {"childLock": child_lock}})
 
     def set_status_light(self, light_state: bool) -> None:
         """Call with False to disable the status lights.

@@ -64,11 +64,13 @@ class AirPurifier(Device):
         """Sets the fan mode (low, medium, high, auto)."""
         self._send_data(data={"attributes": {"fanMode": fan_mode.value}})
 
-    def set_motor_state(self, motor_state) -> None:
+    def set_motor_state(self, motor_state: int) -> None:
         """Set the motor speed. Accepted values: 0-50.
 
         Notes:
-        - values <10 are interpreted as "set mode to auto"
+        - the value 0 shuts the fan off
+        - the value 1 sets the air purifier to auto mode
+        - values from 2-10 will be rounded up to 10
         - values will be rounded down to multiples of 5
           (e.g. 17 gets interpreted as 15)
         """

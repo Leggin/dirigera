@@ -1,6 +1,10 @@
 import pytest
 
-from src.dirigera.devices.air_purifier import AirPurifier, dict_to_air_purifier, FanModeEnum
+from src.dirigera.devices.air_purifier import (
+    AirPurifier,
+    dict_to_air_purifier,
+    FanModeEnum,
+)
 from src.dirigera.hub.abstract_smart_home_hub import FakeDirigeraHub
 
 FAKE_DEVICE_ID = "abcd"
@@ -45,7 +49,14 @@ def fixture_fake_air_purifier_dict() -> dict:
         },
         "capabilities": {
             "canSend": [],
-            "canReceive": ["customName", "fanMode", "fanModeSequence", "motorState", "childLock", "statusLight"],
+            "canReceive": [
+                "customName",
+                "fanMode",
+                "fanModeSequence",
+                "motorState",
+                "childLock",
+                "statusLight",
+            ],
         },
         "room": {
             "id": "a9d6ac9a-12ac-401e-b104-e15d45a32afa",
@@ -62,7 +73,9 @@ def fixture_fake_air_purifier_dict() -> dict:
 @pytest.fixture(name="fake_client")
 def fixture_fake_client(fake_air_purifier_dict: dict):
     noisy_fake_hub = FakeDirigeraHub()
-    noisy_fake_hub.get_action_replys = {f"/devices/{FAKE_DEVICE_ID}": fake_air_purifier_dict}
+    noisy_fake_hub.get_action_replys = {
+        f"/devices/{FAKE_DEVICE_ID}": fake_air_purifier_dict
+    }
     return noisy_fake_hub
 
 
@@ -82,7 +95,14 @@ def fixture_purifier(fake_client: FakeDirigeraHub):
         filter_elapsed_time=100,
         filter_lifetime=1000,
         current_pm25=42,
-        can_receive=["customName", "fanMode", "fanModeSequence", "motorState", "childLock", "statusLight"],
+        can_receive=[
+            "customName",
+            "fanMode",
+            "fanModeSequence",
+            "motorState",
+            "childLock",
+            "statusLight",
+        ],
         serial_number="987654321",
         manufacturer="AcmeCorp",
         firmware_version="23",

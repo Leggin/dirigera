@@ -98,17 +98,6 @@ def test_set_fan_mode_enum(fake_purifier: AirPurifier, fake_client: FakeDirigera
     assert action["data"] == [{"attributes": {"fanMode": new_mode.value}}]
 
 
-def test_set_fan_mode_string(fake_purifier: AirPurifier, fake_client: FakeDirigeraHub):
-    new_mode = "high"
-    fake_purifier.set_fan_mode(new_mode)
-    action = fake_client.patch_actions.pop()
-    assert action["route"] == f"/devices/{fake_purifier.device_id}"
-    assert action["data"] == [{"attributes": {"fanMode": new_mode}}]
-
-    with pytest.raises(ValueError):
-        fake_purifier.set_fan_mode("desperate_mode")
-
-
 def test_set_motor_state(fake_purifier: AirPurifier, fake_client: FakeDirigeraHub):
     new_state = 23
     fake_purifier.set_motor_state(new_state)

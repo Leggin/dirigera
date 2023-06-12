@@ -18,7 +18,7 @@ class FanModeEnum(Enum):
 class AirPurifier(Device):
     dirigera_client: AbstractSmartHomeHub
     is_reachable: bool
-    fan_mode: str
+    fan_mode: FanModeEnum
     fan_mode_sequence: str
     child_lock: Optional[bool]
     status_light: Optional[bool]
@@ -45,7 +45,7 @@ class AirPurifier(Device):
         self.model = attributes.get("model")
         self.manufacturer = attributes.get("manufacturer")
         self.serial_number = attributes.get("serialNumber")
-        self.fan_mode = attributes.get("fanMode")
+        self.fan_mode = FanModeEnum(attributes.get("fanMode"))
         self.fan_mode_sequence = attributes.get("fanModeSequence")
         self.motor_state = attributes.get("motorState")
         self.motor_runtime = attributes.get("motorRuntime")

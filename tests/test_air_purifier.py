@@ -69,7 +69,7 @@ def fixture_purifier(fake_client: FakeDirigeraHub):
         device_id=FAKE_DEVICE_ID,
         is_reachable=True,
         custom_name="purifierMcPurifierFace",
-        fan_mode="auto",
+        fan_mode=FanModeEnum("auto"),
         fan_mode_sequence="lowMediumHighAuto",
         child_lock=False,
         motor_runtime=10,

@@ -4,61 +4,65 @@ from src.dirigera.devices.air_purifier import AirPurifier, dict_to_air_purifier,
 from src.dirigera.hub.abstract_smart_home_hub import FakeDirigeraHub
 
 FAKE_DEVICE_ID = "abcd"
-FAKE_PURIFIER_DATA = {
-    "id": FAKE_DEVICE_ID,
-    "type": "airPurifier",
-    "deviceType": "airPurifier",
-    "createdAt": "2023-05-05T19:45:07.000Z",
-    "isReachable": True,
-    "lastSeen": "2023-05-21T20:17:21.000Z",
-    "attributes": {
-        "customName": "Air purifier 1",
-        "firmwareVersion": "1.1.001",
-        "hardwareVersion": "1",
-        "manufacturer": "IKEA of Sweden",
-        "model": "STARKVIND Air purifier",
-        "productCode": "E2007",
-        "serialNumber": "0C4314FFFED62050",
-        "fanMode": "auto",
-        "fanModeSequence": "lowMediumHighAuto",
-        "motorRuntime": 6729,
-        "motorState": 10,
-        "filterAlarmStatus": False,
-        "filterElapsedTime": 23134,
-        "filterLifetime": 259200,
-        "childLock": False,
-        "statusLight": True,
-        "currentPM25": 19,
-        "identifyPeriod": 0,
-        "identifyStarted": "2000-01-01T00:00:00.000Z",
-        "permittingJoin": False,
-        "otaPolicy": "autoUpdate",
-        "otaProgress": 0,
-        "otaScheduleEnd": "00:00",
-        "otaScheduleStart": "00:00",
-        "otaState": "readyToCheck",
-        "otaStatus": "upToDate",
-    },
-    "capabilities": {
-        "canSend": [],
-        "canReceive": ["customName", "fanMode", "fanModeSequence", "motorState", "childLock", "statusLight"],
-    },
-    "room": {
-        "id": "a9d6ac9a-12ac-401e-b104-e15d45a32afa",
-        "name": "Office",
-        "color": "ikea_blue_no_63",
-        "icon": "rooms_office_chair",
-    },
-    "deviceSet": [],
-    "remoteLinks": [],
-    "isHidden": False,
-}
+
+
+@pytest.fixture(name="fake_air_purifier_dict")
+def fixture_fake_air_purifier_dict() -> dict:
+    return {
+        "id": FAKE_DEVICE_ID,
+        "type": "airPurifier",
+        "deviceType": "airPurifier",
+        "createdAt": "2023-05-05T19:45:07.000Z",
+        "isReachable": True,
+        "lastSeen": "2023-05-21T20:17:21.000Z",
+        "attributes": {
+            "customName": "Air purifier 1",
+            "firmwareVersion": "1.1.001",
+            "hardwareVersion": "1",
+            "manufacturer": "IKEA of Sweden",
+            "model": "STARKVIND Air purifier",
+            "productCode": "E2007",
+            "serialNumber": "0C4314FFFED62050",
+            "fanMode": "auto",
+            "fanModeSequence": "lowMediumHighAuto",
+            "motorRuntime": 6729,
+            "motorState": 10,
+            "filterAlarmStatus": False,
+            "filterElapsedTime": 23134,
+            "filterLifetime": 259200,
+            "childLock": False,
+            "statusLight": True,
+            "currentPM25": 19,
+            "identifyPeriod": 0,
+            "identifyStarted": "2000-01-01T00:00:00.000Z",
+            "permittingJoin": False,
+            "otaPolicy": "autoUpdate",
+            "otaProgress": 0,
+            "otaScheduleEnd": "00:00",
+            "otaScheduleStart": "00:00",
+            "otaState": "readyToCheck",
+            "otaStatus": "upToDate",
+        },
+        "capabilities": {
+            "canSend": [],
+            "canReceive": ["customName", "fanMode", "fanModeSequence", "motorState", "childLock", "statusLight"],
+        },
+        "room": {
+            "id": "a9d6ac9a-12ac-401e-b104-e15d45a32afa",
+            "name": "Office",
+            "color": "ikea_blue_no_63",
+            "icon": "rooms_office_chair",
+        },
+        "deviceSet": [],
+        "remoteLinks": [],
+        "isHidden": False,
+    }
 
 
 @pytest.fixture(name="fake_client")
-def fixture_fake_client():
+def fixture_fake_client(fake_air_purifier_dict: dict):
     noisy_fake_hub = FakeDirigeraHub()
-    noisy_fake_hub.get_action_replys = {f"/devices/{FAKE_DEVICE_ID}": FAKE_PURIFIER_DATA}
+    noisy_fake_hub.get_action_replys = {f"/devices/{FAKE_DEVICE_ID}": fake_air_purifier_dict}
     return noisy_fake_hub
 
 
@@ -122,8 +126,8 @@ def test_status_light(fake_purifier: AirPurifier, fake_client: FakeDirigeraHub):
         assert action["data"] == [{"attributes": {"statusLight": st_light}}]
 
 
-def test_dict_to_outlet(fake_client: FakeDirigeraHub):
-    data = FAKE_PURIFIER_DATA
+def test_dict_to_outlet(fake_client: FakeDirigeraHub, fake_air_purifier_dict: dict):
+    data = fake_air_purifier_dict
 
     air_purifier = dict_to_air_purifier(data=data, dirigera_client=fake_client)
     assert air_purifier.dirigera_client == fake_client

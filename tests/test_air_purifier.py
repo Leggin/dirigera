@@ -71,10 +71,10 @@ def fixture_purifier(fake_client: FakeDirigeraHub):
         custom_name="purifierMcPurifierFace",
         fan_mode=FanModeEnum("auto"),
         fan_mode_sequence="lowMediumHighAuto",
-        child_lock=False,
+        is_child_lock_on=False,
         motor_runtime=10,
         motor_state=50,
-        filter_alarm_status=False,
+        filter_change_needed=False,
         filter_elapsed_time=100,
         filter_lifetime=1000,
         current_pm25=42,
@@ -86,7 +86,7 @@ def fixture_purifier(fake_client: FakeDirigeraHub):
         model="T-800",
         room_id="234",
         room_name="Downstairs",
-        status_light=False,
+        is_status_light_on=False,
     )
 
 
@@ -151,4 +151,4 @@ def test_dict_to_outlet(fake_client: FakeDirigeraHub):
     assert air_purifier.serial_number == data["attributes"]["serialNumber"]
     assert air_purifier.fan_mode == data["attributes"]["fanMode"]
     assert air_purifier.fan_mode_sequence == data["attributes"]["fanModeSequence"]
-    assert air_purifier.status_light == data["attributes"]["statusLight"]
+    assert air_purifier.is_status_light_on == data["attributes"]["statusLight"]

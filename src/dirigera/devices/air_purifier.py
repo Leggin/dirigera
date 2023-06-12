@@ -20,11 +20,11 @@ class AirPurifier(Device):
     is_reachable: bool
     fan_mode: FanModeEnum
     fan_mode_sequence: str
-    child_lock: Optional[bool]
-    status_light: Optional[bool]
+    is_child_lock_on: bool
+    is_status_light_on: bool
     motor_runtime: int
     motor_state: int
-    filter_alarm_status: bool
+    filter_change_needed: bool
     filter_elapsed_time: int
     filter_lifetime: int
     current_pm25: int
@@ -49,17 +49,15 @@ class AirPurifier(Device):
         self.fan_mode_sequence = attributes.get("fanModeSequence")
         self.motor_state = attributes.get("motorState")
         self.motor_runtime = attributes.get("motorRuntime")
-        self.child_lock = attributes.get("childLock")
-        self.filter_alarm_status = attributes.get("filterAlarmStatus")
+        self.is_child_lock_on = attributes.get("childLock")
+        self.filter_change_needed = attributes.get("filterAlarmStatus")
         self.filter_elapsed_time = attributes.get("filterElapsedTime")
         self.filter_lifetime = attributes.get("filterLifetime")
         self.current_pm25 = attributes.get("currentPM25")
-        self.status_light = attributes.get("statusLight")
+        self.is_status_light_on = attributes.get("statusLight")
 
-    def _send_data(self, data: Union[List[Dict], Dict]) -> None:
-        if isinstance(data, dict):
-            data = [data]
-        self.dirigera_client.patch(route=f"/devices/{self.device_id}", data=data)
+    def _send_data(self, data: Dict) -> None:
+        self.dirigera_client.patch(route=f"/devices/{self.device_id}", data=[data])
         self.refresh()
 
     def set_fan_mode(self, fan_mode: Union[FanModeEnum, str]) -> None:
@@ -116,10 +114,10 @@ def dict_to_air_purifier(data: Dict[str, Any], dirigera_client: AbstractSmartHom
         fan_mode_sequence=attributes.get("fanModeSequence"),
         motor_state=attributes.get("motorState"),
         motor_runtime=attributes.get("motorRuntime"),
-        child_lock=attributes.get("childLock"),
-        filter_alarm_status=attributes.get("filterAlarmStatus"),
+        is_child_lock_on=attributes.get("childLock"),
+        filter_change_needed=attributes.get("filterAlarmStatus"),
         filter_elapsed_time=attributes.get("filterElapsedTime"),
         filter_lifetime=attributes.get("filterLifetime"),
         current_pm25=attributes.get("currentPM25"),
-        status_light=attributes.get("statusLight"),
+        is_status_light_on=attributes.get("statusLight"),
     )

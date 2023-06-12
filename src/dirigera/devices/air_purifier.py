@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Optional, Dict, List, Union
+from typing import Any, Dict
 
 from .device import Device
 

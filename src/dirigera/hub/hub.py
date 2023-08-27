@@ -1,7 +1,8 @@
 import ssl
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 import requests
 import websocket
+from requests import HTTPError
 from urllib3.exceptions import InsecureRequestWarning
 
 from .abstract_smart_home_hub import AbstractSmartHomeHub
@@ -11,6 +12,7 @@ from ..devices.controller import Controller, dict_to_controller
 from ..devices.outlet import Outlet, dict_to_outlet
 from ..devices.environment_sensor import EnvironmentSensor, dict_to_environment_sensor
 from ..devices.open_close_sensor import OpenCloseSensor, dict_to_open_close_sensor
+from ..devices.scene import Scene, dict_to_scene
 
 requests.packages.urllib3.disable_warnings(  # pylint: disable=no-member
     category=InsecureRequestWarning
@@ -42,15 +44,15 @@ class Hub(AbstractSmartHomeHub):
         return {"Authorization": f"Bearer {self.token}"}
 
     def create_event_listener(
-        self,
-        on_open: Any = None,
-        on_message: Any = None,
-        on_error: Any = None,
-        on_close: Any = None,
-        on_ping: Any = None,
-        on_pong: Any = None,
-        on_data: Any = None,
-        on_cont_message: Any = None,
+            self,
+            on_open: Any = None,
+            on_message: Any = None,
+            on_error: Any = None,
+            on_close: Any = None,
+            on_ping: Any = None,
+            on_pong: Any = None,
+            on_data: Any = None,
+            on_cont_message: Any = None,
     ):
         wsapp = websocket.WebSocketApp(
             self.websocket_base_url,
@@ -86,6 +88,21 @@ class Hub(AbstractSmartHomeHub):
             verify=False,
         )
         response.raise_for_status()
+        return response.json()
+
+    def post(self, route: str, data: Dict[str, Any] = None) -> Optional[Dict[str, Any]]:
+        response = requests.post(
+            f"{self.api_base_url}{route}",
+            headers=self.headers(),
+            json=data,
+            timeout=10,
+            verify=False,
+        )
+        response.raise_for_status()
+
+        if len(response.content) == 0:
+            return None
+
         return response.json()
 
     def get_lights(self) -> List[Light]:
@@ -185,3 +202,19 @@ class Hub(AbstractSmartHomeHub):
         if len(controllers) == 0:
             raise AssertionError(f"No controller found with name {controller_name}")
         return controllers[0]
+
+    def get_scenes(self) -> List[Scene]:
+        """
+        Fetches all scenes
+        """
+        scenes = self.get("/scenes")
+        return [dict_to_scene(data, self) for data in scenes]
+
+    def get_scene_by_id(self, scene_id) -> Scene:
+        try:
+            data = self.get(f"/scenes/{scene_id}")
+        except HTTPError as err:
+            if err.response.status_code == 404:
+                raise ValueError("Scene not found") from err
+            raise err
+        return dict_to_scene(data, self)

@@ -1,5 +1,5 @@
 import ssl
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 import requests
 import websocket
 from requests import HTTPError
@@ -21,11 +21,11 @@ requests.packages.urllib3.disable_warnings(  # pylint: disable=no-member
 
 class Hub(AbstractSmartHomeHub):
     def __init__(
-            self,
-            token: str,
-            ip_address: str,
-            port: str = "8443",
-            api_version: str = "v1",
+        self,
+        token: str,
+        ip_address: str,
+        port: str = "8443",
+        api_version: str = "v1",
     ) -> None:
         """
         Initializes a new instance of the Hub class.
@@ -78,7 +78,7 @@ class Hub(AbstractSmartHomeHub):
             verify=False,
         )
         response.raise_for_status()
-        return response.text
+        return response.json()
 
     def get(self, route: str) -> Dict[str, Any]:
         response = requests.get(
@@ -90,7 +90,7 @@ class Hub(AbstractSmartHomeHub):
         response.raise_for_status()
         return response.json()
 
-    def post(self, route: str, data: Dict[str, Any] = None) -> Dict[str, Any]:
+    def post(self, route: str, data: Dict[str, Any] = None) -> Optional[Dict[str, Any]]:
         response = requests.post(
             f"{self.api_base_url}{route}",
             headers=self.headers(),
@@ -99,7 +99,11 @@ class Hub(AbstractSmartHomeHub):
             verify=False,
         )
         response.raise_for_status()
-        return response.text
+
+        if len(response.content) == 0:
+            return
+
+        return response.json()
 
     def get_lights(self) -> List[Light]:
         """
@@ -211,6 +215,6 @@ class Hub(AbstractSmartHomeHub):
             data = self.get(f"/scenes/{scene_id}")
         except HTTPError as err:
             if err.response.status_code == 404:
-                raise ValueError("Scene not found")
+                raise ValueError("Scene not found") from err
             raise err
         return dict_to_scene(data, self)

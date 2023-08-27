@@ -15,7 +15,7 @@ class Scene:
         self.dirigera_client.post(route=f"/scenes/{self.scene_id}/trigger")
 
 
-def dict_to_scene(data: Dict[str, Any], dirigera_client: AbstractSmartHomeHub):
+def dict_to_scene(data: Dict[str, Any], dirigera_client: AbstractSmartHomeHub) -> Scene:
     return Scene(
         dirigera_client=dirigera_client,
         scene_id=data["id"],

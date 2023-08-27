@@ -2,7 +2,6 @@ import ssl
 from typing import Any, Dict, List, Optional
 import requests
 import websocket
-from requests import HTTPError
 from urllib3.exceptions import InsecureRequestWarning
 
 from .abstract_smart_home_hub import AbstractSmartHomeHub

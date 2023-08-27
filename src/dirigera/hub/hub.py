@@ -2,7 +2,6 @@ import ssl
 from typing import Any, Dict, List, Optional
 import requests
 import websocket
-from requests import HTTPError
 from urllib3.exceptions import InsecureRequestWarning
 
 from .abstract_smart_home_hub import AbstractSmartHomeHub
@@ -211,10 +210,8 @@ class Hub(AbstractSmartHomeHub):
         return [dict_to_scene(data, self) for data in scenes]
 
     def get_scene_by_id(self, scene_id) -> Scene:
-        try:
-            data = self.get(f"/scenes/{scene_id}")
-        except HTTPError as err:
-            if err.response.status_code == 404:
-                raise ValueError("Scene not found") from err
-            raise err
+        """
+        Fetches a specific scene by a given id
+        """
+        data = self.get(f"/scenes/{scene_id}")
         return dict_to_scene(data, self)

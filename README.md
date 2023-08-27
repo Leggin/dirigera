@@ -10,6 +10,7 @@ This repository provides an unofficial Python client for controlling the IKEA Di
  - [blinds control](#controlling-blinds)
  - [remote controllers](#remote-controllers) (tested with STYRBAR)
  - [environment sensor](#environment-sensor) (tested with VINDSTYRKA)
+ - [scene](#scene)
  - [event listener](#event-listener) for hub events
 
 Support for other features will be added in the future and your input in form of issues and PRs is greatly appreciated.
@@ -214,6 +215,24 @@ room_name: str
 can_receive: list[str]  # list of all available commands ["customName"]
 ```
 
+## [Scene](./src/dirigera/devices/scene.py)
+
+To get the scenes use:
+```python
+scenes = dirigera_hub.get_scenes()
+```
+
+The scene object has the following attributes:
+```python
+scene_id: str
+name: str
+icon: str
+```
+Available methods for scene are:
+
+```python
+scene.trigger()
+```
 
 ## Event Listener
 The event listener allows you to listen to events that are published by your Dirigera hub. This is useful if you want to automate tasks based on events such as when a light is turned on or off, or when the color temperature of a light is changed.
@@ -249,6 +268,16 @@ I can not guarantee that all IKEA lamps offer this functionality.
 ## Contributing
 
 Contributions are welcome! If you have an idea for a new feature or a bug fix, please post and issue or submit a pull request.
+
+### Setup of dev
+For setting up the dev environment I recommend running the setup.sh script, which will create a venv and install the requirements.txt as well as the dev-requirements.txt.
+
+### Tests
+To run the tests execute the `run-test.sh` script or just run `pytest .`  
+For linting you can run the `run-pylint.sh`  
+To test the different python versions you can use the `run-python-verions-test.sh` (this requires a running docker installation).  
+All of these tests are also run when a PR is openend (and the test run is triggered).
+
 
 ## License
 

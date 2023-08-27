@@ -78,7 +78,7 @@ class Hub(AbstractSmartHomeHub):
             verify=False,
         )
         response.raise_for_status()
-        return response.json()
+        return response.text
 
     def get(self, route: str) -> Dict[str, Any]:
         response = requests.get(

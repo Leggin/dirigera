@@ -11,7 +11,7 @@ class Scene:
     name: str
     icon: str
 
-    def trigger(self):
+    def trigger(self) -> None:
         self.dirigera_client.post(route=f"/scenes/{self.scene_id}/trigger")
 
 

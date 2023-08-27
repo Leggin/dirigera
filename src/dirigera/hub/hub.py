@@ -101,7 +101,7 @@ class Hub(AbstractSmartHomeHub):
         response.raise_for_status()
 
         if len(response.content) == 0:
-            return
+            return None
 
         return response.json()
 

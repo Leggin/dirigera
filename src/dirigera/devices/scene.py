@@ -10,9 +10,15 @@ class Scene:
     scene_id: str
     name: str
     icon: str
+    last_completed: str
+    last_triggered: str
+    last_undo: str
 
     def trigger(self) -> None:
         self.dirigera_client.post(route=f"/scenes/{self.scene_id}/trigger")
+
+    def undo(self) -> None:
+        self.dirigera_client.post(route=f"/scenes/{self.scene_id}/undo")
 
 
 def dict_to_scene(data: Dict[str, Any], dirigera_client: AbstractSmartHomeHub) -> Scene:
@@ -20,5 +26,8 @@ def dict_to_scene(data: Dict[str, Any], dirigera_client: AbstractSmartHomeHub) -
         dirigera_client=dirigera_client,
         scene_id=data["id"],
         name=data["info"]["name"],
-        icon=data["info"]["icon"]
+        icon=data["info"]["icon"],
+        last_completed=data["lastCompleted"],
+        last_triggered=data["lastTriggered"],
+        last_undo=data["lastUndo"]
     )

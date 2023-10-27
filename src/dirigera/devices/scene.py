@@ -22,7 +22,7 @@ class Scene:
         self.last_completed=data.get("lastCompleted")
         self.last_triggered=data.get("lastTriggered")
         self.last_undo=data.get("lastUndo")
-        
+
 
     def trigger(self) -> None:
         self.dirigera_client.post(route=f"/scenes/{self.scene_id}/trigger")

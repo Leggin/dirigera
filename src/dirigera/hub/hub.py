@@ -43,15 +43,15 @@ class Hub(AbstractSmartHomeHub):
         return {"Authorization": f"Bearer {self.token}"}
 
     def create_event_listener(
-            self,
-            on_open: Any = None,
-            on_message: Any = None,
-            on_error: Any = None,
-            on_close: Any = None,
-            on_ping: Any = None,
-            on_pong: Any = None,
-            on_data: Any = None,
-            on_cont_message: Any = None,
+        self,
+        on_open: Any = None,
+        on_message: Any = None,
+        on_error: Any = None,
+        on_close: Any = None,
+        on_ping: Any = None,
+        on_pong: Any = None,
+        on_data: Any = None,
+        on_cont_message: Any = None,
     ):
         wsapp = websocket.WebSocketApp(
             self.websocket_base_url,
@@ -155,9 +155,7 @@ class Hub(AbstractSmartHomeHub):
         Fetches all open/close sensors registered in the Hub
         """
         devices = self.get("/devices")
-        sensors = list(
-            filter(lambda x: x["deviceType"] == "openCloseSensor", devices)
-        )
+        sensors = list(filter(lambda x: x["deviceType"] == "openCloseSensor", devices))
         return [dict_to_open_close_sensor(sensor, self) for sensor in sensors]
 
     def get_blinds(self) -> List[Blind]:
@@ -183,12 +181,8 @@ class Hub(AbstractSmartHomeHub):
         Fetches all controllers registered in the Hub
         """
         devices = self.get("/devices")
-        controllers = list(
-            filter(lambda x: x["type"] == "controller", devices)
-        )
-        return [
-            dict_to_controller(controller, self) for controller in controllers
-        ]
+        controllers = list(filter(lambda x: x["type"] == "controller", devices))
+        return [dict_to_controller(controller, self) for controller in controllers]
 
     def get_controller_by_name(self, controller_name: str) -> Controller:
         """

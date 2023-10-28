@@ -4,7 +4,7 @@ from typing import Any, Dict, List, Optional
 
 class AbstractSmartHomeHub(abc.ABC):
     @abc.abstractmethod
-    def patch(self, route: str, data: Dict[str, Any]) -> Dict[str, Any]:
+    def patch(self, route: str, data: List[Dict[str, Any]]) -> Dict[str, Any]:
         raise NotImplementedError
 
     @abc.abstractmethod
@@ -12,7 +12,9 @@ class AbstractSmartHomeHub(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def post(self, route: str, data: Optional[Dict[str, Any]] = None) -> Optional[Dict[str, Any]]:
+    def post(
+        self, route: str, data: Optional[Dict[str, Any]] = None
+    ) -> Optional[Dict[str, Any]]:
         raise NotImplementedError
 
 
@@ -25,6 +27,7 @@ class FakeDirigeraHub(AbstractSmartHomeHub):
 
     def patch(self, route: str, data: Dict[str, Any]) -> Dict[str, Any]:
         self.patch_actions.append({"route": route, "data": data})
+        return {"route": route, "data": data}
 
     def get(self, route: str) -> Dict[str, Any]:
         self.get_actions.append({"route": route})

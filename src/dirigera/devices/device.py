@@ -67,8 +67,8 @@ class Device(BaseModel):
     attributes: Attributes
     capabilities: Capabilities
     room: Room
-    device_set: list[str]
-    remote_links: list[str]
+    device_set: List
+    remote_links: List[str]
     is_hidden: Optional[bool] = None
 
     def _reload(self, data: Dict[str, Any]) -> Device:

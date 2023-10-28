@@ -2,7 +2,7 @@ from __future__ import annotations
 import datetime
 from typing import Dict, Any, List, Optional
 from pydantic import ConfigDict
-from src.dirigera.devices.base_ikea_model import BaseIkeaModel
+from .base_ikea_model import BaseIkeaModel
 from .device import Attributes
 from ..hub.abstract_smart_home_hub import AbstractSmartHomeHub
 

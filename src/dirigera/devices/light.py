@@ -66,7 +66,8 @@ class Light(Device):
             or color_temp > self.attributes.color_temperature_min
         ):
             raise ValueError(
-                f"color_temperature must be a value between {self.attributes.color_temperature_max} and {self.attributes.color_temperature_min}"
+                "color_temperature must be a value between "
+                f"{self.attributes.color_temperature_max} and {self.attributes.color_temperature_min}"
             )
 
         data = [{"attributes": {"colorTemperature": color_temp}}]

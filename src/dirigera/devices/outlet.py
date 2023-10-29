@@ -53,5 +53,7 @@ class Outlet(Device):
         self.attributes.startup_on_off = behaviour
 
 
-def dict_to_outlet(data: Dict[str, Any], dirigera_client: AbstractSmartHomeHub):
+def dict_to_outlet(
+    data: Dict[str, Any], dirigera_client: AbstractSmartHomeHub
+) -> Outlet:
     return Outlet(dirigeraClient=dirigera_client, **data)

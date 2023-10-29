@@ -1,5 +1,5 @@
+from __future__ import annotations
 from typing import Any, Optional, Dict
-
 from .device import Attributes, Device
 from ..hub.abstract_smart_home_hub import AbstractSmartHomeHub
 
@@ -13,7 +13,7 @@ class Controller(Device):
     dirigera_client: AbstractSmartHomeHub
     attributes: ControllerAttributes
 
-    def reload(self) -> None:
+    def reload(self) -> Controller:
         data = self.dirigera_client.get(route=f"/devices/{self.id}")
         return Controller(dirigeraClient=self.dirigera_client, **data)
 

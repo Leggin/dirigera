@@ -1,4 +1,5 @@
 import datetime
+from typing import Any, Dict
 import pytest
 from src.dirigera.hub.abstract_smart_home_hub import FakeDirigeraHub
 from src.dirigera.devices.scene import Scene, dict_to_scene
@@ -12,12 +13,12 @@ TEST_LAST_UNDO = "2023-08-27T10:29:33.049Z"
 
 
 @pytest.fixture(name="fake_client")
-def fixture_fake_client():
+def fixture_fake_client() -> FakeDirigeraHub:
     return FakeDirigeraHub()
 
 
 @pytest.fixture(name="fake_scene")
-def fixture_scene(fake_client: FakeDirigeraHub):
+def fixture_scene(fake_client: FakeDirigeraHub) -> Scene:
     return Scene(
         dirigeraClient=fake_client,
         **{
@@ -55,8 +56,8 @@ def test_trigger(fake_scene: Scene, fake_client: FakeDirigeraHub) -> None:
     assert action["route"] == f"/scenes/{fake_scene.id}/trigger"
 
 
-def test_dict_to_scene(fake_client):
-    data = {
+def test_dict_to_scene(fake_client: FakeDirigeraHub) -> None:
+    data: Dict[str, Any] = {
         "id": "c9bbf831-6dcd-4442-8195-53eedb66a598",
         "info": {"name": "Tesscene", "icon": "scenes_clean_sparkles"},
         "type": "userScene",

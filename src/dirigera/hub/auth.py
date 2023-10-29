@@ -6,10 +6,13 @@ import base64
 import sys
 import requests
 from urllib3.exceptions import InsecureRequestWarning
+import urllib3
 
-requests.packages.urllib3.disable_warnings(  # pylint: disable=no-member
-    category=InsecureRequestWarning
-)
+urllib3.disable_warnings(category=InsecureRequestWarning)
+
+# requests.packages.urllib3.disable_warnings(  # pylint: disable=no-member
+#     category=InsecureRequestWarning
+# )
 
 ALPHABET = f"_-~.{string.ascii_letters}{string.digits}"
 CODE_LENGTH = 128
@@ -19,11 +22,11 @@ def random_char(alphabet: str) -> str:
     return alphabet[random.randrange(0, len(alphabet))]
 
 
-def random_code(alphabet: str, length: int):
+def random_code(alphabet: str, length: int) -> str:
     return "".join([random_char(alphabet) for _ in range(0, length)])
 
 
-def code_challenge(code_verifier: str):
+def code_challenge(code_verifier: str) -> str:
     sha256_hash = hashlib.sha256()
     sha256_hash.update(code_verifier.encode())
     digest = sha256_hash.digest()
@@ -67,7 +70,7 @@ def get_token(ip_address: str, code: str, code_verifier: str) -> str:
     return response.json()["access_token"]
 
 
-def main():
+def main() -> None:
     if len(sys.argv) > 1:
         ip_address = sys.argv[1]
     else:

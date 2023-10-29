@@ -1,3 +1,4 @@
+from typing import Any, Dict
 import pytest
 from src.dirigera.hub.abstract_smart_home_hub import FakeDirigeraHub
 from src.dirigera.devices.blinds import dict_to_blind
@@ -5,12 +6,12 @@ from src.dirigera.devices.blinds import Blind
 
 
 @pytest.fixture(name="fake_client")
-def fixture_fake_client():
+def fixture_fake_client() -> FakeDirigeraHub:
     return FakeDirigeraHub()
 
 
 @pytest.fixture(name="fake_blind")
-def fixture_blind(fake_client: FakeDirigeraHub):
+def fixture_blind(fake_client: FakeDirigeraHub) -> Blind:
     return Blind(
         dirigeraClient=fake_client,
         **{
@@ -54,7 +55,7 @@ def fixture_blind(fake_client: FakeDirigeraHub):
     )
 
 
-def test_set_name(fake_blind: Blind, fake_client: FakeDirigeraHub):
+def test_set_name(fake_blind: Blind, fake_client: FakeDirigeraHub) -> None:
     new_name = "blindedbythelight"
     fake_blind.set_name(new_name)
     action = fake_client.patch_actions.pop()
@@ -73,8 +74,8 @@ def test_set_target_level(fake_blind: Blind, fake_client: FakeDirigeraHub) -> No
     assert fake_blind.attributes.blinds_current_level == 90
 
 
-def test_dict_to_blind(fake_client: FakeDirigeraHub):
-    data = {
+def test_dict_to_blind(fake_client: FakeDirigeraHub) -> None:
+    data: Dict[str, Any] = {
         "id": "1237-343-2dfa",
         "type": "blind",
         "deviceType": "blinds",

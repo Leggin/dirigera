@@ -1,4 +1,5 @@
 import json
+from typing import Any, Dict
 import pytest
 from src.dirigera.hub.abstract_smart_home_hub import FakeDirigeraHub
 from src.dirigera.devices.light import dict_to_light
@@ -7,12 +8,12 @@ from src.dirigera.devices.device import StartupEnum
 
 
 @pytest.fixture(name="fake_client")
-def fixture_fake_client():
+def fixture_fake_client() -> FakeDirigeraHub:
     return FakeDirigeraHub()
 
 
 @pytest.fixture(name="fake_light")
-def fixture_light(fake_client: FakeDirigeraHub):
+def fixture_light(fake_client: FakeDirigeraHub) -> Light:
     data = """{ "id": "23taswdg-sdf-4eeb-99c2-23asdf2gw",
         "type": "light",
         "deviceType": "light",
@@ -64,39 +65,10 @@ def fixture_light(fake_client: FakeDirigeraHub):
         "isHidden": false
     }"""
     return dict_to_light(json.loads(data), fake_client)
-    # return Light(
-    #     dirigera_client=fake_client,
-    #     device_id="abcd",
-    #     is_reachable=True,
-    #     custom_name="good lamp",
-    #     is_on=True,
-    #     startup_on_off=StartupEnum.START_ON,
-    #     light_level=20,
-    #     color_temp=45,
-    #     color_temp_min=4000,
-    #     color_temp_max=2000,
-    #     color_hue=200,
-    #     color_saturation=0.7,
-    #     room_id="123",
-    #     room_name="Upstairs",
-    #     firmware_version="1",
-    #     hardware_version="1",
-    #     model="a",
-    #     manufacturer="IKEA",
-    #     serial_number="abc-abc",
-    #     can_receive=[
-    #         "customName",
-    #         "isOn",
-    #         "lightLevel",
-    #         "colorTemperature",
-    #         "colorHue",
-    #         "colorSaturation",
-    #     ],
-    # )
 
 
-def test_refresh(fake_light: Light, fake_client: FakeDirigeraHub):
-    data = {
+def test_refresh(fake_light: Light, fake_client: FakeDirigeraHub) -> None:
+    data: Dict[str, Any] = {
         "id": "23taswdg-sdf-4eeb-99c2-23asdf2gw",
         "type": "light",
         "deviceType": "light",
@@ -182,7 +154,7 @@ def test_refresh(fake_light: Light, fake_client: FakeDirigeraHub):
     assert fake_light.attributes.serial_number == data["attributes"]["serialNumber"]
 
 
-def test_set_name(fake_light: Light, fake_client: FakeDirigeraHub):
+def test_set_name(fake_light: Light, fake_client: FakeDirigeraHub) -> None:
     new_name = "stadtlampefluss"
     fake_light.set_name(new_name)
     action = fake_client.patch_actions.pop()
@@ -282,8 +254,8 @@ def test_set_startup_behaviour_toggle(
     assert fake_light.attributes.startup_on_off == behaviour
 
 
-def test_dict_to_light_3rdparty(fake_client: FakeDirigeraHub):
-    data = {
+def test_dict_to_light_3rdparty(fake_client: FakeDirigeraHub) -> None:
+    data: Dict[str, Any] = {
         "id": "1237-343-2dfa",
         "type": "light",
         "deviceType": "light",

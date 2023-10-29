@@ -1,3 +1,4 @@
+from typing import Any, Dict
 import pytest
 from src.dirigera.hub.abstract_smart_home_hub import FakeDirigeraHub
 from src.dirigera.devices.controller import dict_to_controller
@@ -5,12 +6,12 @@ from src.dirigera.devices.controller import Controller
 
 
 @pytest.fixture(name="fake_client")
-def fixture_fake_client():
+def fixture_fake_client() -> FakeDirigeraHub:
     return FakeDirigeraHub()
 
 
 @pytest.fixture(name="fake_controller")
-def fixture_controller(fake_client: FakeDirigeraHub):
+def fixture_controller(fake_client: FakeDirigeraHub) -> Controller:
     return Controller(
         dirigeraClient=fake_client,
         **{
@@ -48,7 +49,7 @@ def fixture_controller(fake_client: FakeDirigeraHub):
     )
 
 
-def test_set_name(fake_controller: Controller, fake_client: FakeDirigeraHub):
+def test_set_name(fake_controller: Controller, fake_client: FakeDirigeraHub) -> None:
     new_name = "outofcontrol"
     fake_controller.set_name(new_name)
     action = fake_client.patch_actions.pop()
@@ -57,8 +58,8 @@ def test_set_name(fake_controller: Controller, fake_client: FakeDirigeraHub):
     assert fake_controller.attributes.custom_name == new_name
 
 
-def test_dict_to_controller(fake_client: FakeDirigeraHub):
-    data = {
+def test_dict_to_controller(fake_client: FakeDirigeraHub) -> None:
+    data: Dict[str, Any] = {
         "id": "1237-343-2dfa",
         "type": "controller",
         "deviceType": "lightController",

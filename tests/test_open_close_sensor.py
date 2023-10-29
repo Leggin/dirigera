@@ -8,12 +8,12 @@ from src.dirigera.devices.open_close_sensor import (
 
 
 @pytest.fixture(name="fake_client")
-def fixture_fake_client():
+def fixture_fake_client() -> FakeDirigeraHub:
     return FakeDirigeraHub()
 
 
 @pytest.fixture(name="fake_sensor")
-def fixture_sensor(fake_client: FakeDirigeraHub):
+def fixture_sensor(fake_client: FakeDirigeraHub) -> OpenCloseSensor:
     return OpenCloseSensor(
         dirigeraClient=fake_client,
         **{
@@ -55,7 +55,7 @@ def fixture_sensor(fake_client: FakeDirigeraHub):
 
 
 @pytest.fixture(name="sensor_dict")
-def fixture_sensor_dict():
+def fixture_sensor_dict() -> Dict:
     return {
         "id": "abc123",
         "type": "sensor",
@@ -93,7 +93,7 @@ def fixture_sensor_dict():
     }
 
 
-def test_set_name(fake_sensor: OpenCloseSensor, fake_client: FakeDirigeraHub):
+def test_set_name(fake_sensor: OpenCloseSensor, fake_client: FakeDirigeraHub) -> None:
     new_name = "staubsensor"
     fake_sensor.set_name(new_name)
     action = fake_client.patch_actions.pop()
@@ -102,7 +102,7 @@ def test_set_name(fake_sensor: OpenCloseSensor, fake_client: FakeDirigeraHub):
     assert fake_sensor.attributes.custom_name == new_name
 
 
-def test_dict_to_sensor(fake_client: FakeDirigeraHub, sensor_dict: Dict):
+def test_dict_to_sensor(fake_client: FakeDirigeraHub, sensor_dict: Dict) -> None:
     sensor = dict_to_open_close_sensor(sensor_dict, fake_client)
     assert sensor.id == sensor_dict["id"]
     assert sensor.is_reachable == sensor_dict["isReachable"]

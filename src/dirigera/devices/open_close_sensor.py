@@ -27,5 +27,5 @@ class OpenCloseSensor(Device):
 
 def dict_to_open_close_sensor(
     data: Dict[str, Any], dirigera_client: AbstractSmartHomeHub
-):
+) -> OpenCloseSensor:
     return OpenCloseSensor(dirigeraClient=dirigera_client, **data)

@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Any, Dict
 import pytest
 from src.dirigera.hub.abstract_smart_home_hub import FakeDirigeraHub
 from src.dirigera.devices.outlet import dict_to_outlet
@@ -7,12 +7,12 @@ from src.dirigera.devices.device import StartupEnum
 
 
 @pytest.fixture(name="fake_client")
-def fixture_fake_client():
+def fixture_fake_client() -> FakeDirigeraHub:
     return FakeDirigeraHub()
 
 
 @pytest.fixture(name="fake_outlet_dict")
-def fixture_outlet_dict():
+def fixture_outlet_dict() -> Dict:
     return {
         "id": "f430fd01",
         "type": "outlet",
@@ -54,11 +54,11 @@ def fixture_outlet_dict():
 
 
 @pytest.fixture(name="fake_outlet")
-def fixture_outlet(fake_outlet_dict: Dict, fake_client: FakeDirigeraHub):
+def fixture_outlet(fake_outlet_dict: Dict, fake_client: FakeDirigeraHub) -> Outlet:
     return Outlet(dirigeraClient=fake_client, **fake_outlet_dict)
 
 
-def test_set_name(fake_outlet: Outlet, fake_client: FakeDirigeraHub):
+def test_set_name(fake_outlet: Outlet, fake_client: FakeDirigeraHub) -> None:
     new_name = "teapot"
     fake_outlet.set_name(new_name)
     action = fake_client.patch_actions.pop()
@@ -94,8 +94,8 @@ def test_set_startup_behaviour_off(
     assert fake_outlet.attributes.startup_on_off == behaviour
 
 
-def test_dict_to_outlet(fake_client: FakeDirigeraHub):
-    data = {
+def test_dict_to_outlet(fake_client: FakeDirigeraHub) -> None:
+    data: Dict[str, Any] = {
         "id": "f430fd01",
         "type": "outlet",
         "deviceType": "outlet",

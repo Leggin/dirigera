@@ -15,9 +15,6 @@ from ..devices.scene import Scene, dict_to_scene
 
 
 urllib3.disable_warnings(category=InsecureRequestWarning)
-# requests.packages.urllib3.disable_warnings(  # pylint: disable=no-member type:ignore
-#     category=InsecureRequestWarning
-# )
 
 
 class Hub(AbstractSmartHomeHub):

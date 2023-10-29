@@ -1,21 +1,28 @@
 [build-system]
-requires = [
-   "setuptools",
-   "wheel"
-]
+requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "dirigera"
-version = "0.1.11"
+version = "1.0.0"
 description = "An unofficial Python client for controlling the IKEA Dirigera Smart Home Hub"
 readme = "README.md"
 authors = [{ name = "Leggin", email = "legginsun@gmail.com" }]
 license = { file = "LICENSE" }
-keywords = ["python", "iot", "smarthome", "hub", "lighting", "ikea", "tradfri", "dirigera"]
+keywords = [
+    "python",
+    "iot",
+    "smarthome",
+    "hub",
+    "lighting",
+    "ikea",
+    "tradfri",
+    "dirigera",
+]
 dependencies = [
     "requests >= 2.22.0",
     "websocket-client >= 1.0.0",
+    "pydantic >= 2.0",
 ]
 requires-python = ">=3.7"
 classifiers = [

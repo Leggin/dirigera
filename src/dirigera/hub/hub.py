@@ -1,9 +1,9 @@
 import ssl
 from typing import Any, Dict, List, Optional
 import requests
-import websocket
+import websocket  # type: ignore
+import urllib3
 from urllib3.exceptions import InsecureRequestWarning
-
 from .abstract_smart_home_hub import AbstractSmartHomeHub
 from ..devices.light import Light, dict_to_light
 from ..devices.blinds import Blind, dict_to_blind
@@ -13,9 +13,8 @@ from ..devices.environment_sensor import EnvironmentSensor, dict_to_environment_
 from ..devices.open_close_sensor import OpenCloseSensor, dict_to_open_close_sensor
 from ..devices.scene import Scene, dict_to_scene
 
-requests.packages.urllib3.disable_warnings(  # pylint: disable=no-member
-    category=InsecureRequestWarning
-)
+
+urllib3.disable_warnings(category=InsecureRequestWarning)
 
 
 class Hub(AbstractSmartHomeHub):
@@ -39,20 +38,20 @@ class Hub(AbstractSmartHomeHub):
         self.websocket_base_url = f"wss://{ip_address}:{port}/{api_version}"
         self.token = token
 
-    def headers(self):
+    def headers(self) -> Dict[str, Any]:
         return {"Authorization": f"Bearer {self.token}"}
 
     def create_event_listener(
-            self,
-            on_open: Any = None,
-            on_message: Any = None,
-            on_error: Any = None,
-            on_close: Any = None,
-            on_ping: Any = None,
-            on_pong: Any = None,
-            on_data: Any = None,
-            on_cont_message: Any = None,
-    ):
+        self,
+        on_open: Any = None,
+        on_message: Any = None,
+        on_error: Any = None,
+        on_close: Any = None,
+        on_ping: Any = None,
+        on_pong: Any = None,
+        on_data: Any = None,
+        on_cont_message: Any = None,
+    ) -> None:
         wsapp = websocket.WebSocketApp(
             self.websocket_base_url,
             header={"Authorization": f"Bearer {self.token}"},
@@ -68,7 +67,7 @@ class Hub(AbstractSmartHomeHub):
 
         wsapp.run_forever(sslopt={"cert_reqs": ssl.CERT_NONE})
 
-    def patch(self, route: str, data: Dict[str, Any]) -> Dict[str, Any]:
+    def patch(self, route: str, data: List[Dict[str, Any]]) -> Any:
         response = requests.patch(
             f"{self.api_base_url}{route}",
             headers=self.headers(),
@@ -79,7 +78,7 @@ class Hub(AbstractSmartHomeHub):
         response.raise_for_status()
         return response.text
 
-    def get(self, route: str) -> Dict[str, Any]:
+    def get(self, route: str) -> Any:
         response = requests.get(
             f"{self.api_base_url}{route}",
             headers=self.headers(),
@@ -89,7 +88,7 @@ class Hub(AbstractSmartHomeHub):
         response.raise_for_status()
         return response.json()
 
-    def post(self, route: str, data: Dict[str, Any] = None) -> Optional[Dict[str, Any]]:
+    def post(self, route: str, data: Optional[Dict[str, Any]] = None) -> Any:
         response = requests.post(
             f"{self.api_base_url}{route}",
             headers=self.headers(),
@@ -117,7 +116,7 @@ class Hub(AbstractSmartHomeHub):
         Fetches all lights and returns first result that matches this name
         """
         lights = self.get_lights()
-        lights = list(filter(lambda x: x.custom_name == lamp_name, lights))
+        lights = list(filter(lambda x: x.attributes.custom_name == lamp_name, lights))
         if len(lights) == 0:
             raise AssertionError(f"No light found with name {lamp_name}")
         return lights[0]
@@ -135,7 +134,9 @@ class Hub(AbstractSmartHomeHub):
         Fetches all outlets and returns first result that matches this name
         """
         outlets = self.get_outlets()
-        outlets = list(filter(lambda x: x.custom_name == outlet_name, outlets))
+        outlets = list(
+            filter(lambda x: x.attributes.custom_name == outlet_name, outlets)
+        )
         if len(outlets) == 0:
             raise AssertionError(f"No outlet found with name {outlet_name}")
         return outlets[0]
@@ -155,9 +156,7 @@ class Hub(AbstractSmartHomeHub):
         Fetches all open/close sensors registered in the Hub
         """
         devices = self.get("/devices")
-        sensors = list(
-            filter(lambda x: x["deviceType"] == "openCloseSensor", devices)
-        )
+        sensors = list(filter(lambda x: x["deviceType"] == "openCloseSensor", devices))
         return [dict_to_open_close_sensor(sensor, self) for sensor in sensors]
 
     def get_blinds(self) -> List[Blind]:
@@ -173,7 +172,7 @@ class Hub(AbstractSmartHomeHub):
         Fetches all blinds and returns first result that matches this name
         """
         blinds = self.get_blinds()
-        blinds = list(filter(lambda x: x.custom_name == blind_name, blinds))
+        blinds = list(filter(lambda x: x.attributes.custom_name == blind_name, blinds))
         if len(blinds) == 0:
             raise AssertionError(f"No blind found with name {blind_name}")
         return blinds[0]
@@ -183,12 +182,8 @@ class Hub(AbstractSmartHomeHub):
         Fetches all controllers registered in the Hub
         """
         devices = self.get("/devices")
-        controllers = list(
-            filter(lambda x: x["type"] == "controller", devices)
-        )
-        return [
-            dict_to_controller(controller, self) for controller in controllers
-        ]
+        controllers = list(filter(lambda x: x["type"] == "controller", devices))
+        return [dict_to_controller(controller, self) for controller in controllers]
 
     def get_controller_by_name(self, controller_name: str) -> Controller:
         """
@@ -196,7 +191,7 @@ class Hub(AbstractSmartHomeHub):
         """
         controllers = self.get_controllers()
         controllers = list(
-            filter(lambda x: x.custom_name == controller_name, controllers)
+            filter(lambda x: x.attributes.custom_name == controller_name, controllers)
         )
         if len(controllers) == 0:
             raise AssertionError(f"No controller found with name {controller_name}")
@@ -206,10 +201,10 @@ class Hub(AbstractSmartHomeHub):
         """
         Fetches all scenes
         """
-        scenes = self.get("/scenes")
-        return [dict_to_scene(data, self) for data in scenes]
+        scenes: List = self.get("/scenes")
+        return [dict_to_scene(scene, self) for scene in scenes]
 
-    def get_scene_by_id(self, scene_id) -> Scene:
+    def get_scene_by_id(self, scene_id: str) -> Scene:
         """
         Fetches a specific scene by a given id
         """

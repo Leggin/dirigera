@@ -2,8 +2,7 @@ from __future__ import annotations
 import datetime
 from enum import Enum
 from typing import Any, Dict, Optional, List
-
-from pydantic import BaseModel, ConfigDict, alias_generators
+from .base_ikea_model import BaseIkeaModel
 
 
 class StartupEnum(Enum):
@@ -13,11 +12,7 @@ class StartupEnum(Enum):
     START_TOGGLE = "startToggle"
 
 
-class Attributes(BaseModel):
-    model_config = ConfigDict(
-        alias_generator=alias_generators.to_camel, arbitrary_types_allowed=True
-    )
-
+class Attributes(BaseIkeaModel):
     custom_name: str
     model: str
     manufacturer: str
@@ -33,31 +28,19 @@ class Attributes(BaseModel):
     ota_schedule_end: Optional[datetime.time] = None
 
 
-class Capabilities(BaseModel):
-    model_config = ConfigDict(
-        alias_generator=alias_generators.to_camel, arbitrary_types_allowed=True
-    )
-
+class Capabilities(BaseIkeaModel):
     can_send: List[str]
     can_receive: List[str]
 
 
-class Room(BaseModel):
-    model_config = ConfigDict(
-        alias_generator=alias_generators.to_camel, arbitrary_types_allowed=True
-    )
-
+class Room(BaseIkeaModel):
     id: str
     name: str
     color: str
     icon: str
 
 
-class Device(BaseModel):
-    model_config = ConfigDict(
-        alias_generator=alias_generators.to_camel, arbitrary_types_allowed=True
-    )
-
+class Device(BaseIkeaModel):
     id: str
     type: str
     device_type: str

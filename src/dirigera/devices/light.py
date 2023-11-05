@@ -11,7 +11,7 @@ class LightAttributes(Attributes):
     color_temperature: Optional[int] = None
     color_temperature_min: Optional[int] = None
     color_temperature_max: Optional[int] = None
-    color_hue: Optional[int] = None
+    color_hue: Optional[float] = None
     color_saturation: Optional[float] = None
 
 

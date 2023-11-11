@@ -3,6 +3,7 @@ from typing import Any, Dict, List, Optional
 import requests
 import websocket  # type: ignore
 import urllib3
+from requests import HTTPError
 from urllib3.exceptions import InsecureRequestWarning
 from .abstract_smart_home_hub import AbstractSmartHomeHub
 from ..devices.light import Light, dict_to_light
@@ -103,6 +104,17 @@ class Hub(AbstractSmartHomeHub):
 
         return response.json()
 
+    def _get_device_data_by_id(self, id_: str) -> Dict:
+        """
+        Fetches device data by its id
+        """
+        try:
+            return self.get("/devices/" + id_)
+        except HTTPError as err:
+            if err.response.status_code == 404:
+                raise ValueError("Device id not found") from err
+            raise err
+
     def get_lights(self) -> List[Light]:
         """
         Fetches all lights registered in the Hub
@@ -120,6 +132,15 @@ class Hub(AbstractSmartHomeHub):
         if len(lights) == 0:
             raise AssertionError(f"No light found with name {lamp_name}")
         return lights[0]
+
+    def get_light_by_id(self, id_: str) -> Light:
+        """
+        Fetches a light by its id if that light does not exist or is a device of another type raises ValueError
+        """
+        light = self._get_device_data_by_id(id_)
+        if light["type"] != "light":
+            raise ValueError("Device is not a light")
+        return dict_to_light(light, self)
 
     def get_outlets(self) -> List[Outlet]:
         """
@@ -140,6 +161,15 @@ class Hub(AbstractSmartHomeHub):
         if len(outlets) == 0:
             raise AssertionError(f"No outlet found with name {outlet_name}")
         return outlets[0]
+
+    def get_outlet_by_id(self, id_: str) -> Outlet:
+        """
+        Fetches an outlet by its id if that outlet does not exist or is a device of another type raises ValueError
+        """
+        outlet = self._get_device_data_by_id(id_)
+        if outlet["type"] != "outlet":
+            raise ValueError("Device is not an outlet")
+        return dict_to_outlet(outlet, self)
 
     def get_environment_sensors(self) -> List[EnvironmentSensor]:
         """
@@ -196,6 +226,16 @@ class Hub(AbstractSmartHomeHub):
         if len(controllers) == 0:
             raise AssertionError(f"No controller found with name {controller_name}")
         return controllers[0]
+
+    def get_controller_by_id(self, id_: str) -> Controller:
+        """
+        Fetches a controller by its id
+        if that controller does not exist or is a device of another type raises ValueError
+        """
+        controller = self._get_device_data_by_id(id_)
+        if controller["type"] != "controller":
+            raise ValueError("Device is not a controller")
+        return dict_to_controller(controller, self)
 
     def get_scenes(self) -> List[Scene]:
         """

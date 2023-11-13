@@ -74,7 +74,7 @@ class Light(Device):
         self.dirigera_client.patch(route=f"/devices/{self.id}", data=data)
         self.attributes.color_temperature = color_temp
 
-    def set_light_color(self, hue: int, saturation: float) -> None:
+    def set_light_color(self, hue: float, saturation: float) -> None:
         if (
             "colorHue" not in self.capabilities.can_receive
             or "colorSaturation" not in self.capabilities.can_receive

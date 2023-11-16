@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "dirigera"
-version = "1.0.2"
+version = "1.0.3"
 description = "An unofficial Python client for controlling the IKEA Dirigera Smart Home Hub"
 readme = "README.md"
 authors = [{ name = "Leggin", email = "legginsun@gmail.com" }]
@@ -22,7 +22,7 @@ keywords = [
 dependencies = [
     "requests >= 2.22.0",
     "websocket-client >= 1.0.0",
-    "pydantic >= 2.0",
+    "pydantic >= 1.10.0",
 ]
 requires-python = ">=3.7"
 classifiers = [

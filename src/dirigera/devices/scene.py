@@ -1,7 +1,6 @@
 from __future__ import annotations
 import datetime
 from typing import Dict, Any, List, Optional
-from pydantic import ConfigDict
 from .base_ikea_model import BaseIkeaModel
 from .device import Attributes
 from ..hub.abstract_smart_home_hub import AbstractSmartHomeHub
@@ -28,8 +27,8 @@ class Trigger(BaseIkeaModel):
     disabled: bool
 
 
-class ActionAttributes(BaseIkeaModel):
-    model_config = ConfigDict(extra="allow")
+class ActionAttributes(BaseIkeaModel, extra="allow"):
+    pass
 
 
 class Action(BaseIkeaModel):

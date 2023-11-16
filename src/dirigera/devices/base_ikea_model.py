@@ -1,7 +1,10 @@
-from pydantic import BaseModel, ConfigDict, alias_generators
+from pydantic import BaseModel
 
 
-class BaseIkeaModel(BaseModel):
-    model_config = ConfigDict(
-        alias_generator=alias_generators.to_camel, arbitrary_types_allowed=True
-    )
+def to_camel(string: str) -> str:
+    string_split = string.split("_")
+    return string_split[0] + "".join(word.capitalize() for word in string_split[1:])
+
+
+class BaseIkeaModel(BaseModel, arbitrary_types_allowed=True, alias_generator=to_camel):
+    pass

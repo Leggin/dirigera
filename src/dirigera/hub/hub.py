@@ -11,6 +11,7 @@ from ..devices.blinds import Blind, dict_to_blind
 from ..devices.controller import Controller, dict_to_controller
 from ..devices.outlet import Outlet, dict_to_outlet
 from ..devices.environment_sensor import EnvironmentSensor, dict_to_environment_sensor
+from ..devices.motion_sensor import MotionSensor, dict_to_motion_sensor
 from ..devices.open_close_sensor import OpenCloseSensor, dict_to_open_close_sensor
 from ..devices.scene import Scene, dict_to_scene
 
@@ -180,6 +181,16 @@ class Hub(AbstractSmartHomeHub):
             filter(lambda x: x["deviceType"] == "environmentSensor", devices)
         )
         return [dict_to_environment_sensor(sensor, self) for sensor in sensors]
+    
+    def get_motion_sensors(self) -> List[MotionSensor]:
+        """
+        Fetches all motion sensors registered in the Hub
+        """
+        devices = self.get("/devices")
+        sensors = list(
+            filter(lambda x: x["deviceType"] == "motionSensor", devices))
+        return [dict_to_motion_sensor(sensor, self) for sensor in sensors]
+
 
     def get_open_close_sensors(self) -> List[OpenCloseSensor]:
         """
@@ -250,3 +261,12 @@ class Hub(AbstractSmartHomeHub):
         """
         data = self.get(f"/scenes/{scene_id}")
         return dict_to_scene(data, self)
+    
+    def get_all_devices(self):
+        """
+        Fetches all devices registered in the Hub
+        """
+        devices = self.get("/devices")
+        devices = list(devices)
+
+        return [device for device in devices]

@@ -4,22 +4,19 @@ from .device import Attributes, Device
 from ..hub.abstract_smart_home_hub import AbstractSmartHomeHub
 
 
-class EnvironmentSensorAttributes(Attributes):
-    current_temperature: int
-    current_r_h: int
-    current_p_m25: int
-    max_measured_p_m25: int
-    min_measured_p_m25: int
-    voc_index: int
+class MotionSensorAttributes(Attributes):
+    battery_percentage: int
+    is_on: bool
+    light_level: float
 
 
-class EnvironmentSensor(Device):
+class MotionSensor(Device):
     dirigera_client: AbstractSmartHomeHub
-    attributes: EnvironmentSensorAttributes
+    attributes: MotionSensorAttributes
 
-    def reload(self) -> EnvironmentSensor:
+    def reload(self) -> MotionSensor:
         data = self.dirigera_client.get(route=f"/devices/{self.id}")
-        return EnvironmentSensor(dirigeraClient=self.dirigera_client, **data)
+        return MotionSensor(dirigeraClient=self.dirigera_client, **data)
 
     def set_name(self, name: str) -> None:
         if "customName" not in self.capabilities.can_receive:
@@ -30,7 +27,7 @@ class EnvironmentSensor(Device):
         self.attributes.custom_name = name
 
 
-def dict_to_environment_sensor(
+def dict_to_motion_sensor(
     data: Dict[str, Any], dirigera_client: AbstractSmartHomeHub
-) -> EnvironmentSensor:
-    return EnvironmentSensor(dirigeraClient=dirigera_client, **data)
+) -> MotionSensor:
+    return MotionSensor(dirigeraClient=dirigera_client, **data)

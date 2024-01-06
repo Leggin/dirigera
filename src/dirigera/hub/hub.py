@@ -1,3 +1,4 @@
+# pylint:disable=too-many-public-methods
 import ssl
 from typing import Any, Dict, List, Optional
 import requests
@@ -5,6 +6,8 @@ import websocket  # type: ignore
 import urllib3
 from requests import HTTPError
 from urllib3.exceptions import InsecureRequestWarning
+
+from src.dirigera.devices.device import Device
 from .abstract_smart_home_hub import AbstractSmartHomeHub
 from ..devices.light import Light, dict_to_light
 from ..devices.blinds import Blind, dict_to_blind
@@ -181,16 +184,14 @@ class Hub(AbstractSmartHomeHub):
             filter(lambda x: x["deviceType"] == "environmentSensor", devices)
         )
         return [dict_to_environment_sensor(sensor, self) for sensor in sensors]
-    
+
     def get_motion_sensors(self) -> List[MotionSensor]:
         """
         Fetches all motion sensors registered in the Hub
         """
         devices = self.get("/devices")
-        sensors = list(
-            filter(lambda x: x["deviceType"] == "motionSensor", devices))
+        sensors = list(filter(lambda x: x["deviceType"] == "motionSensor", devices))
         return [dict_to_motion_sensor(sensor, self) for sensor in sensors]
-
 
     def get_open_close_sensors(self) -> List[OpenCloseSensor]:
         """
@@ -261,12 +262,18 @@ class Hub(AbstractSmartHomeHub):
         """
         data = self.get(f"/scenes/{scene_id}")
         return dict_to_scene(data, self)
-    
-    def get_all_devices(self):
+
+    def get_all_devices(self) -> List[Device]:
         """
         Fetches all devices registered in the Hub
         """
-        devices = self.get("/devices")
-        devices = list(devices)
+        devices: List[Device] = []
+        devices.extend(self.get_blinds())
+        devices.extend(self.get_controllers())
+        devices.extend(self.get_environment_sensors())
+        devices.extend(self.get_lights())
+        devices.extend(self.get_motion_sensors())
+        devices.extend(self.get_open_close_sensors())
+        devices.extend(self.get_outlets())
 
-        return [device for device in devices]
+        return devices

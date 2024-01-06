@@ -5,8 +5,10 @@ from ..hub.abstract_smart_home_hub import AbstractSmartHomeHub
 
 
 class MotionSensorAttributes(Attributes):
-    batteryPercentage: int
+    battery_percentage: int
     is_on: bool
+    light_level: float
+
 
 class MotionSensor(Device):
     dirigera_client: AbstractSmartHomeHub
@@ -28,5 +30,4 @@ class MotionSensor(Device):
 def dict_to_motion_sensor(
     data: Dict[str, Any], dirigera_client: AbstractSmartHomeHub
 ) -> MotionSensor:
-    print(data)
     return MotionSensor(dirigeraClient=dirigera_client, **data)

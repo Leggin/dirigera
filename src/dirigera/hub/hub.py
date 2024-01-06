@@ -7,7 +7,7 @@ import urllib3
 from requests import HTTPError
 from urllib3.exceptions import InsecureRequestWarning
 
-from src.dirigera.devices.device import Device
+from ..devices.device import Device
 from .abstract_smart_home_hub import AbstractSmartHomeHub
 from ..devices.light import Light, dict_to_light
 from ..devices.blinds import Blind, dict_to_blind

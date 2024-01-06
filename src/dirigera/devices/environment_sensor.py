@@ -33,5 +33,4 @@ class EnvironmentSensor(Device):
 def dict_to_environment_sensor(
     data: Dict[str, Any], dirigera_client: AbstractSmartHomeHub
 ) -> EnvironmentSensor:
-    print(data)
     return EnvironmentSensor(dirigeraClient=dirigera_client, **data)

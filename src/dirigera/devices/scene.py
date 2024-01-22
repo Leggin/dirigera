@@ -47,7 +47,7 @@ class Scene(BaseIkeaModel):
     created_at: datetime.datetime
     last_completed: Optional[datetime.datetime]
     last_triggered: Optional[datetime.datetime]
-    last_undo: datetime.datetime
+    last_undo: Optional[datetime.datetime]
     commands: List[str]
     undo_allowed_duration: int
 

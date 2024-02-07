@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 from .device import Attributes, Device
 from ..hub.abstract_smart_home_hub import AbstractSmartHomeHub
 
@@ -7,7 +7,7 @@ from ..hub.abstract_smart_home_hub import AbstractSmartHomeHub
 class MotionSensorAttributes(Attributes):
     battery_percentage: int
     is_on: bool
-    light_level: float
+    light_level: Optional[float]
 
 
 class MotionSensor(Device):

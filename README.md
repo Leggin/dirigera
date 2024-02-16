@@ -13,6 +13,7 @@ This repository provides an unofficial Python client for controlling the IKEA Di
 - [remote controllers](#remote-controllers) (tested with STYRBAR)
 - [environment sensor](#environment-sensor) (tested with VINDSTYRKA)
 - [scene](#scene)
+- [motion sensor](#motion-sensor)
 - [event listener](#event-listener) for hub events
 
 Support for other features will be added in the future and your input in form of issues and PRs is greatly appreciated.
@@ -169,7 +170,7 @@ The outlet object has the following attributes (additional to the core attribute
 
 ```python
 is_on: bool
-startup_on_off: Optional[StartupEnum]
+startup_on_off: Optional[StartupEnum] = None
 ```
 
 Available methods for outlet are:
@@ -250,6 +251,12 @@ min_measured_p_m25: int # minimum measurable particulate matter 2.5
 voc_index: int # current volatile organic compound
 ```
 
+Available methods for environment sensor are:
+
+```python
+sensor.set_name(name="Bathroom Sensor")
+```
+
 # [Scene](./src/dirigera/devices/scene.py)
 
 To get the scenes use:
@@ -281,6 +288,48 @@ Available methods for scene are:
 ```python
 scene.trigger()
 scene.undo()
+```
+
+## [Motion Sensor](./src/dirigera/devices/motion_sensor.py)
+
+To get information about the available motion sensors, you can use the `get_motion_sensors()` method:
+
+```python
+motions_sensors = dirigera_hub.get_motion_sensors()
+```
+
+The motion sensor object has the following attributes (additional to the core attributes):
+
+```python
+battery_percentage: int
+is_on: bool
+light_level: Optional[float]
+```
+
+Available methods for outlet are:
+
+```python
+motions_sensor.set_name(name="kitchen sensor 1")
+```
+
+## [Open/Close Sensor](./src/dirigera/devices/open_close_sensor.py)
+
+To get information about the available motion sensors, you can use the `get_open_close_sensors()` method:
+
+```python
+open_close_sensors = dirigera_hub.get_open_close_sensors()
+```
+
+The open_close_sensor object has the following attributes (additional to the core attributes):
+
+```python
+is_open: bool
+```
+
+Available methods for outlet are:
+
+```python
+open_close_sensor.set_name(name="window 1")
 ```
 
 ## Event Listener

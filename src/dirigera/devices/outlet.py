@@ -11,7 +11,7 @@ from ..hub.abstract_smart_home_hub import AbstractSmartHomeHub
 
 class OutletAttributes(Attributes):
     is_on: bool
-    startup_on_off: Optional[StartupEnum]
+    startup_on_off: Optional[StartupEnum] = None
 
 
 class Outlet(Device):

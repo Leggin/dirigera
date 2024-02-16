@@ -10,9 +10,9 @@ class SceneAttributes(Attributes):
     scene_id: str
     name: str
     icon: str
-    last_completed: Optional[str]
-    last_triggered: Optional[str]
-    last_undo: Optional[str]
+    last_completed: Optional[str] = None
+    last_triggered: Optional[str] = None
+    last_undo: Optional[str] = None
 
 
 class Info(BaseIkeaModel):
@@ -45,9 +45,9 @@ class Scene(BaseIkeaModel):
     triggers: List[Trigger]
     actions: List[Action]
     created_at: datetime.datetime
-    last_completed: Optional[datetime.datetime]
-    last_triggered: Optional[datetime.datetime]
-    last_undo: Optional[datetime.datetime]
+    last_completed: Optional[datetime.datetime] = None
+    last_triggered: Optional[datetime.datetime] = None
+    last_undo: Optional[datetime.datetime] = None
     commands: List[str]
     undo_allowed_duration: int
 

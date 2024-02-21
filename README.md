@@ -9,6 +9,7 @@ This repository provides an unofficial Python client for controlling the IKEA Di
 
 - [light control](#controlling-lights)
 - [outlet control](#controlling-outlets)
+- [air purifier control](#controlling-air-purifier)
 - [blinds control](#controlling-blinds)
 - [remote controllers](#remote-controllers) (tested with STYRBAR)
 - [environment sensor](#environment-sensor) (tested with VINDSTYRKA)
@@ -182,6 +183,44 @@ outlet.set_on(outlet_on=True)
 
 outlet.set_startup_behaviour(behaviour=StartupEnum.START_OFF)
 ```
+
+## [Controlling Air Purifier](./src/dirigera/devices/air_purifier.py)
+
+To get information about the available air purifiers, you can use the `get_air_purifiers()` method:
+
+```python
+air_purifiers = dirigera_hub.get_air_purifiers()
+```
+
+The air purifier object has the following attributes (additional to the core attributes):
+
+```python
+fan_mode: FanModeEnum
+fan_mode_sequence: str
+motor_state: int
+child_lock: bool
+status_light: bool
+motor_runtime: int
+filter_alarm_status: bool
+filter_elapsed_time: int
+filter_lifetime: int
+current_p_m25: int
+```
+
+Available methods for blinds are:
+
+```python
+air_purifier.set_name(name="living room purifier")
+
+air_purifier.set_fan_mode(fan_mode=FanModeEnum.AUTO)
+
+air_purifier.set_motor_state(motor_state=42)
+
+air_purifier.set_child_lock(child_lock=True)
+
+air_purifier.set_status_light(light_state=False)
+```
+
 
 ## [Controlling Blinds](./src/dirigera/devices/blinds.py)
 

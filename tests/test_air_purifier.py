@@ -86,7 +86,7 @@ def test_set_name(fake_purifier: AirPurifier, fake_client: FakeDirigeraHub) -> N
     assert action["data"] == [{"attributes": {"customName": new_name}}]
     assert fake_purifier.attributes.custom_name == new_name
 
-def test_set_fan_mode_enum(fake_purifier: AirPurifier, fake_client: FakeDirigeraHub):
+def test_set_fan_mode_enum(fake_purifier: AirPurifier, fake_client: FakeDirigeraHub) -> None:
     new_mode = FanModeEnum.LOW
     fake_purifier.set_fan_mode(new_mode)
     action = fake_client.patch_actions.pop()
@@ -94,7 +94,7 @@ def test_set_fan_mode_enum(fake_purifier: AirPurifier, fake_client: FakeDirigera
     assert action["data"] == [{"attributes": {"fanMode": new_mode.value}}]
     assert fake_purifier.attributes.fan_mode == new_mode
 
-def test_set_motor_state(fake_purifier: AirPurifier, fake_client: FakeDirigeraHub):
+def test_set_motor_state(fake_purifier: AirPurifier, fake_client: FakeDirigeraHub) -> None:
     new_motor_state = 42
     fake_purifier.set_motor_state(new_motor_state)
     action = fake_client.patch_actions.pop()
@@ -102,7 +102,7 @@ def test_set_motor_state(fake_purifier: AirPurifier, fake_client: FakeDirigeraHu
     assert action["data"] == [{"attributes": {"motorState": new_motor_state}}]
     assert fake_purifier.attributes.motor_state == new_motor_state
 
-def test_set_child_lock(fake_purifier: AirPurifier, fake_client: FakeDirigeraHub):
+def test_set_child_lock(fake_purifier: AirPurifier, fake_client: FakeDirigeraHub) -> None:
     new_child_lock = True
     fake_purifier.set_child_lock(new_child_lock)
     action = fake_client.patch_actions.pop()
@@ -110,7 +110,7 @@ def test_set_child_lock(fake_purifier: AirPurifier, fake_client: FakeDirigeraHub
     assert action["data"] == [{"attributes": {"childLock": new_child_lock}}]
     assert fake_purifier.attributes.child_lock == new_child_lock
 
-def test_status_light(fake_purifier: AirPurifier, fake_client: FakeDirigeraHub):
+def test_status_light(fake_purifier: AirPurifier, fake_client: FakeDirigeraHub) -> None:
     new_status_light = False
     fake_purifier.set_status_light(new_status_light)
     action = fake_client.patch_actions.pop()
@@ -148,3 +148,4 @@ def test_dict_to_purifier(fake_client: FakeDirigeraHub, purifier_dict: Dict) -> 
     assert purifier.capabilities.can_receive == purifier_dict["capabilities"]["canReceive"]
     assert purifier.room.id == purifier_dict["room"]["id"]
     assert purifier.room.name == purifier_dict["room"]["name"]
+    

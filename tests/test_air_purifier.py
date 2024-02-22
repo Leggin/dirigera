@@ -148,4 +148,3 @@ def test_dict_to_purifier(fake_client: FakeDirigeraHub, purifier_dict: Dict) -> 
     assert purifier.capabilities.can_receive == purifier_dict["capabilities"]["canReceive"]
     assert purifier.room.id == purifier_dict["room"]["id"]
     assert purifier.room.name == purifier_dict["room"]["name"]
-    

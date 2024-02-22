@@ -9,6 +9,7 @@ from urllib3.exceptions import InsecureRequestWarning
 
 from ..devices.device import Device
 from .abstract_smart_home_hub import AbstractSmartHomeHub
+from ..devices.air_purifier import AirPurifier, dict_to_air_purifier
 from ..devices.light import Light, dict_to_light
 from ..devices.blinds import Blind, dict_to_blind
 from ..devices.controller import Controller, dict_to_controller
@@ -118,6 +119,14 @@ class Hub(AbstractSmartHomeHub):
             if err.response is not None and err.response.status_code == 404:
                 raise ValueError("Device id not found") from err
             raise err
+
+    def get_air_purifiers(self) -> List[AirPurifier]:
+        """
+        Fetches all air purifiers registered in the Hub
+        """
+        devices = self.get("/devices")
+        airpurifiers = list(filter(lambda x: x["type"] == "airPurifier", devices))
+        return [dict_to_air_purifier(air_p, self) for air_p in airpurifiers]
 
     def get_lights(self) -> List[Light]:
         """
@@ -268,6 +277,7 @@ class Hub(AbstractSmartHomeHub):
         Fetches all devices registered in the Hub
         """
         devices: List[Device] = []
+        devices.extend(self.get_air_purifiers())
         devices.extend(self.get_blinds())
         devices.extend(self.get_controllers())
         devices.extend(self.get_environment_sensors())

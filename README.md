@@ -221,7 +221,6 @@ air_purifier.set_child_lock(child_lock=True)
 air_purifier.set_status_light(light_state=False)
 ```
 
-
 ## [Controlling Blinds](./src/dirigera/devices/blinds.py)
 
 To get information about the available blinds, you can use the `get_blinds()` method:
@@ -282,7 +281,7 @@ sensors = dirigera_hub.get_environment_sensors()
 The environment sensor object has the following attributes (additional to the core attributes):
 
 ```python
-current_temperature: int
+current_temperature: float
 current_r_h: int # current humidity
 current_p_m25: int # current particulate matter 2.5
 max_measured_p_m25: int # maximum measurable particulate matter 2.5

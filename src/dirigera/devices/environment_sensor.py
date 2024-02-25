@@ -5,7 +5,7 @@ from ..hub.abstract_smart_home_hub import AbstractSmartHomeHub
 
 
 class EnvironmentSensorAttributes(Attributes):
-    current_temperature: int
+    current_temperature: float
     current_r_h: int
     current_p_m25: int
     max_measured_p_m25: int

@@ -29,7 +29,7 @@ def fixture_sensor_dict() -> Dict:
             "hardwareVersion": "1",
             "serialNumber": "F4B3B1FFFE00101E",
             "productCode": "E2112",
-            "currentTemperature": 21,
+            "currentTemperature": 21.1,
             "currentRH": 61,
             "currentPM25": 1,
             "maxMeasuredPM25": 999,

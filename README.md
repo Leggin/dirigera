@@ -15,6 +15,7 @@ This repository provides an unofficial Python client for controlling the IKEA Di
 - [environment sensor](#environment-sensor) (tested with VINDSTYRKA)
 - [scene](#scene)
 - [motion sensor](#motion-sensor)
+- [open/close sensor](#open-close-sensor)
 - [event listener](#event-listener) for hub events
 
 Support for other features will be added in the future and your input in form of issues and PRs is greatly appreciated.
@@ -221,7 +222,6 @@ air_purifier.set_child_lock(child_lock=True)
 air_purifier.set_status_light(light_state=False)
 ```
 
-
 ## [Controlling Blinds](./src/dirigera/devices/blinds.py)
 
 To get information about the available blinds, you can use the `get_blinds()` method:
@@ -282,7 +282,7 @@ sensors = dirigera_hub.get_environment_sensors()
 The environment sensor object has the following attributes (additional to the core attributes):
 
 ```python
-current_temperature: int
+current_temperature: float
 current_r_h: int # current humidity
 current_p_m25: int # current particulate matter 2.5
 max_measured_p_m25: int # maximum measurable particulate matter 2.5
@@ -351,9 +351,9 @@ Available methods for outlet are:
 motions_sensor.set_name(name="kitchen sensor 1")
 ```
 
-## [Open/Close Sensor](./src/dirigera/devices/open_close_sensor.py)
+## [Open Close Sensor](./src/dirigera/devices/open_close_sensor.py)
 
-To get information about the available motion sensors, you can use the `get_open_close_sensors()` method:
+To get information about the available open/close sensors, you can use the `get_open_close_sensors()` method:
 
 ```python
 open_close_sensors = dirigera_hub.get_open_close_sensors()

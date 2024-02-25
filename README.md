@@ -15,6 +15,7 @@ This repository provides an unofficial Python client for controlling the IKEA Di
 - [environment sensor](#environment-sensor) (tested with VINDSTYRKA)
 - [scene](#scene)
 - [motion sensor](#motion-sensor)
+- [open/close sensor](#open-close-sensor)
 - [event listener](#event-listener) for hub events
 
 Support for other features will be added in the future and your input in form of issues and PRs is greatly appreciated.
@@ -350,9 +351,9 @@ Available methods for outlet are:
 motions_sensor.set_name(name="kitchen sensor 1")
 ```
 
-## [Open/Close Sensor](./src/dirigera/devices/open_close_sensor.py)
+## [Open Close Sensor](./src/dirigera/devices/open_close_sensor.py)
 
-To get information about the available motion sensors, you can use the `get_open_close_sensors()` method:
+To get information about the available open/close sensors, you can use the `get_open_close_sensors()` method:
 
 ```python
 open_close_sensors = dirigera_hub.get_open_close_sensors()

@@ -49,7 +49,7 @@ class Device(BaseIkeaModel):
     last_seen: datetime.datetime
     attributes: Attributes
     capabilities: Capabilities
-    room: Room
+    room: Optional[Room] = None
     device_set: List
     remote_links: List[str]
     is_hidden: Optional[bool] = None

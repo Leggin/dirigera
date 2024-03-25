@@ -8,6 +8,7 @@ class BlindAttributes(Attributes):
     blinds_current_level: Optional[int] = None
     blinds_target_level: Optional[int] = None
     blinds_state: Optional[str] = None
+    battery_percentage: Optional[int] = None
 
 
 class Blind(Device):

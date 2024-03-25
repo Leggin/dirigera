@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 from .device import Attributes, Device
 from ..hub.abstract_smart_home_hub import AbstractSmartHomeHub
 
@@ -7,10 +7,10 @@ from ..hub.abstract_smart_home_hub import AbstractSmartHomeHub
 class EnvironmentSensorAttributes(Attributes):
     current_temperature: float
     current_r_h: int
-    current_p_m25: int
-    max_measured_p_m25: int
-    min_measured_p_m25: int
-    voc_index: int
+    current_p_m25: Optional[int]
+    max_measured_p_m25: Optional[int]
+    min_measured_p_m25: Optional[int]
+    voc_index: Optional[int]
 
 
 class EnvironmentSensor(Device):

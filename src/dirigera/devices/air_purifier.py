@@ -5,6 +5,7 @@ from .device import Attributes, Device
 from ..hub.abstract_smart_home_hub import AbstractSmartHomeHub
 
 class FanModeEnum(Enum):
+    OFF = "off"
     LOW = "low"
     MEDIUM = "medium"
     HIGH = "high"

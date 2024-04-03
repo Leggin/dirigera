@@ -19,9 +19,7 @@ from ..devices.motion_sensor import MotionSensor, dict_to_motion_sensor
 from ..devices.open_close_sensor import OpenCloseSensor, dict_to_open_close_sensor
 from ..devices.scene import Scene, dict_to_scene
 
-
 urllib3.disable_warnings(category=InsecureRequestWarning)
-
 
 class Hub(AbstractSmartHomeHub):
     def __init__(

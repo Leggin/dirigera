@@ -128,6 +128,12 @@ class Hub(AbstractSmartHomeHub):
         airpurifiers = list(filter(lambda x: x["type"] == "airPurifier", devices))
         return [dict_to_air_purifier(air_p, self) for air_p in airpurifiers]
 
+    def get_air_purifier_by_id(self, id_: str) -> AirPurifier:
+        air_purifier_device = self._get_device_data_by_id(id_)
+        if air_purifier_device["deviceType"] != "airPurifier":
+            raise ValueError("Device is not an Air Purifier")
+        return dict_to_air_purifier(air_purifier_device, self)
+        
     def get_lights(self) -> List[Light]:
         """
         Fetches all lights registered in the Hub
@@ -194,6 +200,12 @@ class Hub(AbstractSmartHomeHub):
         )
         return [dict_to_environment_sensor(sensor, self) for sensor in sensors]
 
+    def get_environment_sensor_by_id(self, id_: str) -> EnvironmentSensor:
+        environment_sensor = self._get_device_data_by_id(id_)
+        if environment_sensor["deviceType"] != "environmentSensor":
+            raise ValueError("Device is not an EnvironmentSensor")
+        return dict_to_environment_sensor(environment_sensor, self)
+        
     def get_motion_sensors(self) -> List[MotionSensor]:
         """
         Fetches all motion sensors registered in the Hub
@@ -202,6 +214,12 @@ class Hub(AbstractSmartHomeHub):
         sensors = list(filter(lambda x: x["deviceType"] == "motionSensor", devices))
         return [dict_to_motion_sensor(sensor, self) for sensor in sensors]
 
+    def get_motion_sensor_by_id(self) -> MotionSensor:
+        motion_sensor = self._get_device_data_by_id(id_)
+        if motion_sensor["deviceType"] != "motionSensor":
+            raise ValueError("Device is not an MotionSensor")
+        return dict_to_motion_sensorx(motion_sensor, self)
+        
     def get_open_close_sensors(self) -> List[OpenCloseSensor]:
         """
         Fetches all open/close sensors registered in the Hub
@@ -210,6 +228,12 @@ class Hub(AbstractSmartHomeHub):
         sensors = list(filter(lambda x: x["deviceType"] == "openCloseSensor", devices))
         return [dict_to_open_close_sensor(sensor, self) for sensor in sensors]
 
+    def get_open_close_by_id(self, id_: str) -> OpenCloseSensor:
+        open_close_sensor = self._get_device_data_by_id(id_)
+        if open_close_sensor["deviceType"] != "openCloseSensor":
+            raise ValueError("Device is not an OpenCloseSensor")
+        return dict_to_open_close_sensor(open_close_sensor, self)
+        
     def get_blinds(self) -> List[Blind]:
         """
         Fetches all blinds registered in the Hub
@@ -227,7 +251,13 @@ class Hub(AbstractSmartHomeHub):
         if len(blinds) == 0:
             raise AssertionError(f"No blind found with name {blind_name}")
         return blinds[0]
-
+        
+    def get_blinds_by_id(self, id_: str) -> Blind:
+        blind_sensor = self._get_device_data_by_id(id_)
+        if blind_sensor["deviceType"] != "blinds":
+            raise ValueError("Device is not a Blind")
+        return dict_to_blind(blind_sensor, self)
+        
     def get_controllers(self) -> List[Controller]:
         """
         Fetches all controllers registered in the Hub

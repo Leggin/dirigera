@@ -131,7 +131,7 @@ class Hub(AbstractSmartHomeHub):
         if air_purifier_device["deviceType"] != "airPurifier":
             raise ValueError("Device is not an Air Purifier")
         return dict_to_air_purifier(air_purifier_device, self)
-        
+    
     def get_lights(self) -> List[Light]:
         """
         Fetches all lights registered in the Hub
@@ -203,7 +203,7 @@ class Hub(AbstractSmartHomeHub):
         if environment_sensor["deviceType"] != "environmentSensor":
             raise ValueError("Device is not an EnvironmentSensor")
         return dict_to_environment_sensor(environment_sensor, self)
-        
+    
     def get_motion_sensors(self) -> List[MotionSensor]:
         """
         Fetches all motion sensors registered in the Hub
@@ -217,7 +217,7 @@ class Hub(AbstractSmartHomeHub):
         if motion_sensor["deviceType"] != "motionSensor":
             raise ValueError("Device is not an MotionSensor")
         return dict_to_motion_sensor(motion_sensor, self)
-        
+    
     def get_open_close_sensors(self) -> List[OpenCloseSensor]:
         """
         Fetches all open/close sensors registered in the Hub
@@ -231,7 +231,7 @@ class Hub(AbstractSmartHomeHub):
         if open_close_sensor["deviceType"] != "openCloseSensor":
             raise ValueError("Device is not an OpenCloseSensor")
         return dict_to_open_close_sensor(open_close_sensor, self)
-        
+    
     def get_blinds(self) -> List[Blind]:
         """
         Fetches all blinds registered in the Hub
@@ -249,13 +249,13 @@ class Hub(AbstractSmartHomeHub):
         if len(blinds) == 0:
             raise AssertionError(f"No blind found with name {blind_name}")
         return blinds[0]
-        
+    
     def get_blinds_by_id(self, id_: str) -> Blind:
         blind_sensor = self._get_device_data_by_id(id_)
         if blind_sensor["deviceType"] != "blinds":
             raise ValueError("Device is not a Blind")
         return dict_to_blind(blind_sensor, self)
-        
+    
     def get_controllers(self) -> List[Controller]:
         """
         Fetches all controllers registered in the Hub

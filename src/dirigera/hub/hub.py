@@ -214,7 +214,7 @@ class Hub(AbstractSmartHomeHub):
         sensors = list(filter(lambda x: x["deviceType"] == "motionSensor", devices))
         return [dict_to_motion_sensor(sensor, self) for sensor in sensors]
 
-    def get_motion_sensor_by_id(self) -> MotionSensor:
+    def get_motion_sensor_by_id(self, id_: str) -> MotionSensorX:
         motion_sensor = self._get_device_data_by_id(id_)
         if motion_sensor["deviceType"] != "motionSensor":
             raise ValueError("Device is not an MotionSensor")

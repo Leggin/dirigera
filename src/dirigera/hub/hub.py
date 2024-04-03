@@ -218,7 +218,7 @@ class Hub(AbstractSmartHomeHub):
         motion_sensor = self._get_device_data_by_id(id_)
         if motion_sensor["deviceType"] != "motionSensor":
             raise ValueError("Device is not an MotionSensor")
-        return dict_to_motion_sensorx(motion_sensor, self)
+        return dict_to_motion_sensor(motion_sensor, self)
         
     def get_open_close_sensors(self) -> List[OpenCloseSensor]:
         """

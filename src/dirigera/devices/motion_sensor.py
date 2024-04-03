@@ -7,7 +7,7 @@ from ..hub.abstract_smart_home_hub import AbstractSmartHomeHub
 class MotionSensorAttributes(Attributes):
     battery_percentage: int
     is_on: bool
-    light_level: Optional[float]
+    light_level: Optional[float] = None
 
 
 class MotionSensor(Device):

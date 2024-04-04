@@ -8,6 +8,7 @@ class MotionSensorAttributes(Attributes):
     battery_percentage: int
     is_on: bool
     light_level: Optional[float] = None
+    is_detected: Optional[bool] = False
 
 
 class MotionSensor(Device):

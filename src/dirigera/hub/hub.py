@@ -17,9 +17,10 @@ from ..devices.outlet import Outlet, dict_to_outlet
 from ..devices.environment_sensor import EnvironmentSensor, dict_to_environment_sensor
 from ..devices.motion_sensor import MotionSensor, dict_to_motion_sensor
 from ..devices.open_close_sensor import OpenCloseSensor, dict_to_open_close_sensor
-from ..devices.scene import Scene, dict_to_scene
+from ..devices.scene import Action, Info, Scene, SceneType, Trigger, dict_to_scene
 
 urllib3.disable_warnings(category=InsecureRequestWarning)
+
 
 class Hub(AbstractSmartHomeHub):
     def __init__(
@@ -315,3 +316,38 @@ class Hub(AbstractSmartHomeHub):
         devices.extend(self.get_outlets())
 
         return devices
+
+    def post_scene(
+        self,
+        info: Info,
+        scene_type: SceneType,
+        triggers: List[Trigger],
+        actions: List[Action],
+    ) -> Scene:
+        """Creates a new scene.
+
+        Note:
+        To create an empty scene leave actions and triggers empty.
+
+        Args:
+            info (Info): Name & Icon
+            type (SceneType): typically USER_SCENE
+            triggers (List[Trigger]): Triggers for the Scene (An app trigger will be created automatically)
+            actions (List[Action]): Actions that will be run on Trigger
+
+        Returns:
+            Scene: Returns the newly created scene.
+        """
+        trigger_list = [x.model_dump() for x in triggers]
+        action_list = [x.model_dump() for x in actions]
+        response_dict = self.post(
+            "/scenes/",
+            data={
+                "info": info.model_dump(),
+                "type": scene_type.value,
+                "triggers": trigger_list,
+                "actions": action_list,
+            },
+        )
+        scene_id = response_dict["id"]
+        return self.get_scene_by_id(scene_id)

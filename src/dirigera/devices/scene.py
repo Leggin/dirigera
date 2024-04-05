@@ -62,19 +62,19 @@ class Info(BaseIkeaModel):
 class Trigger(BaseIkeaModel):
     id: str
     type: str
-    triggered_at: datetime.datetime
+    triggered_at: Optional[datetime.datetime] = None
     disabled: bool
 
 
 class ActionAttributes(BaseIkeaModel, extra="allow"):
-    pass
+    is_on: Optional[bool] = None
 
 
 class Action(BaseIkeaModel):
     id: str
     type: str
-    enabled: bool
-    attributes: ActionAttributes
+    enabled: Optional[bool] = None
+    attributes: Optional[ActionAttributes] = None
 
 
 class SceneType(Enum):

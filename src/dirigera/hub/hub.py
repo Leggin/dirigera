@@ -7,6 +7,7 @@ import urllib3
 from requests import HTTPError
 from urllib3.exceptions import InsecureRequestWarning
 
+from .utils import camelize_dict
 from ..devices.device import Device
 from .abstract_smart_home_hub import AbstractSmartHomeHub
 from ..devices.air_purifier import AirPurifier, dict_to_air_purifier
@@ -95,6 +96,23 @@ class Hub(AbstractSmartHomeHub):
 
     def post(self, route: str, data: Optional[Dict[str, Any]] = None) -> Any:
         response = requests.post(
+            f"{self.api_base_url}{route}",
+            headers=self.headers(),
+            json=data,
+            timeout=10,
+            verify=False,
+        )
+        if not response.ok:
+            print(response.text)
+        response.raise_for_status()
+
+        if len(response.content) == 0:
+            return None
+
+        return response.json()
+
+    def delete(self, route: str, data: Optional[Dict[str, Any]] = None) -> Any:
+        response = requests.delete(
             f"{self.api_base_url}{route}",
             headers=self.headers(),
             json=data,
@@ -317,17 +335,17 @@ class Hub(AbstractSmartHomeHub):
 
         return devices
 
-    def post_scene(
+    def create_scene(
         self,
         info: Info,
-        scene_type: SceneType,
-        triggers: List[Trigger],
-        actions: List[Action],
+        scene_type: SceneType = SceneType.USER_SCENE,
+        triggers: Optional[List[Trigger]] = None,
+        actions: Optional[List[Action]] = None,
     ) -> Scene:
         """Creates a new scene.
 
         Note:
-        To create an empty scene leave actions and triggers empty.
+        To create an empty scene leave actions and triggers None.
 
         Args:
             info (Info): Name & Icon
@@ -338,16 +356,32 @@ class Hub(AbstractSmartHomeHub):
         Returns:
             Scene: Returns the newly created scene.
         """
-        trigger_list = [x.model_dump() for x in triggers]
-        action_list = [x.model_dump() for x in actions]
+        trigger_list = []
+        if triggers:
+            trigger_list = [
+                x.model_dump(mode="json", exclude_none=True) for x in triggers
+            ]
+
+        action_list = []
+        if actions:
+            action_list = [
+                x.model_dump(mode="json", exclude_none=True) for x in actions
+            ]
+        data = {
+            "info": info.model_dump(mode="json", exclude_none=True),
+            "type": scene_type.value,
+            "triggers": trigger_list,
+            "actions": action_list,
+        }
+        data = camelize_dict(data)
         response_dict = self.post(
             "/scenes/",
-            data={
-                "info": info.model_dump(),
-                "type": scene_type.value,
-                "triggers": trigger_list,
-                "actions": action_list,
-            },
+            data=data,
         )
         scene_id = response_dict["id"]
         return self.get_scene_by_id(scene_id)
+
+    def delete_scene(self, scene_id: str):
+        self.delete(
+            f"/scenes/{scene_id}",
+        )

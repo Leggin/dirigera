@@ -7,6 +7,7 @@ import urllib3
 from requests import HTTPError
 from urllib3.exceptions import InsecureRequestWarning
 
+from .utils import camelize_dict
 from ..devices.device import Device
 from .abstract_smart_home_hub import AbstractSmartHomeHub
 from ..devices.air_purifier import AirPurifier, dict_to_air_purifier
@@ -17,9 +18,10 @@ from ..devices.outlet import Outlet, dict_to_outlet
 from ..devices.environment_sensor import EnvironmentSensor, dict_to_environment_sensor
 from ..devices.motion_sensor import MotionSensor, dict_to_motion_sensor
 from ..devices.open_close_sensor import OpenCloseSensor, dict_to_open_close_sensor
-from ..devices.scene import Scene, dict_to_scene
+from ..devices.scene import Action, Info, Scene, SceneType, Trigger, dict_to_scene
 
 urllib3.disable_warnings(category=InsecureRequestWarning)
+
 
 class Hub(AbstractSmartHomeHub):
     def __init__(
@@ -94,6 +96,23 @@ class Hub(AbstractSmartHomeHub):
 
     def post(self, route: str, data: Optional[Dict[str, Any]] = None) -> Any:
         response = requests.post(
+            f"{self.api_base_url}{route}",
+            headers=self.headers(),
+            json=data,
+            timeout=10,
+            verify=False,
+        )
+        if not response.ok:
+            print(response.text)
+        response.raise_for_status()
+
+        if len(response.content) == 0:
+            return None
+
+        return response.json()
+
+    def delete(self, route: str, data: Optional[Dict[str, Any]] = None) -> Any:
+        response = requests.delete(
             f"{self.api_base_url}{route}",
             headers=self.headers(),
             json=data,
@@ -315,3 +334,54 @@ class Hub(AbstractSmartHomeHub):
         devices.extend(self.get_outlets())
 
         return devices
+
+    def create_scene(
+        self,
+        info: Info,
+        scene_type: SceneType = SceneType.USER_SCENE,
+        triggers: Optional[List[Trigger]] = None,
+        actions: Optional[List[Action]] = None,
+    ) -> Scene:
+        """Creates a new scene.
+
+        Note:
+        To create an empty scene leave actions and triggers None.
+
+        Args:
+            info (Info): Name & Icon
+            type (SceneType): typically USER_SCENE
+            triggers (List[Trigger]): Triggers for the Scene (An app trigger will be created automatically)
+            actions (List[Action]): Actions that will be run on Trigger
+
+        Returns:
+            Scene: Returns the newly created scene.
+        """
+        trigger_list = []
+        if triggers:
+            trigger_list = [
+                x.model_dump(mode="json", exclude_none=True) for x in triggers
+            ]
+
+        action_list = []
+        if actions:
+            action_list = [
+                x.model_dump(mode="json", exclude_none=True) for x in actions
+            ]
+        data = {
+            "info": info.model_dump(mode="json", exclude_none=True),
+            "type": scene_type.value,
+            "triggers": trigger_list,
+            "actions": action_list,
+        }
+        data = camelize_dict(data)  # type: ignore
+        response_dict = self.post(
+            "/scenes/",
+            data=data,
+        )
+        scene_id = response_dict["id"]
+        return self.get_scene_by_id(scene_id)
+
+    def delete_scene(self, scene_id: str) -> None:
+        self.delete(
+            f"/scenes/{scene_id}",
+        )

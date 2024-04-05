@@ -87,7 +87,7 @@ def test_dict_to_scene(fake_client: FakeDirigeraHub) -> None:
     scene = dict_to_scene(data, fake_client)
     assert scene.id == TEST_ID
     assert scene.info.name == TEST_NAME
-    assert scene.info.icon == TEST_ICON
+    assert scene.info.icon.value == TEST_ICON
     assert scene.last_completed == datetime.datetime.strptime(
         TEST_LAST_COMPLETED, "%Y-%m-%dT%H:%M:%S.%f%z"
     )

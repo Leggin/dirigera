@@ -1,5 +1,6 @@
 from __future__ import annotations
 import datetime
+from enum import Enum
 from typing import Dict, Any, List, Optional
 from .base_ikea_model import BaseIkeaModel
 from .device import Attributes
@@ -15,32 +16,77 @@ class SceneAttributes(Attributes):
     last_undo: Optional[str] = None
 
 
+class Icon(Enum):
+    SCENES_ARRIVE_HOME = "scenes_arrive_home"
+    SCENES_BOOK = "scenes_book"
+    SCENES_BRIEFCASE = "scenes_briefcase"
+    SCENES_BRIGHTNESS_UP = "scenes_brightness_up"
+    SCENES_BROOM = "scenes_broom"
+    SCENES_CAKE = "scenes_cake"
+    SCENES_CLAPPER = "scenes_clapper"
+    SCENES_CLEAN_SPARKLES = "scenes_clean_sparkles"
+    SCENES_CUTLERY = "scenes_cutlery"
+    SCENES_DISCO_BALL = "scenes_disco_ball"
+    SCENES_GAME_PAD = "scenes_game_pad"
+    SCENES_GIFT_BAG = "scenes_gift_bag"
+    SCENES_GIFT_BOX = "scenes_gift_box"
+    SCENES_HEADPHONES = "scenes_headphones"
+    SCENES_HEART = "scenes_heart"
+    SCENES_HOME_FILLED = "scenes_home_filled"
+    SCENES_HOT_DRINK = "scenes_hot_drink"
+    SCENES_LADLE = "scenes_ladle"
+    SCENES_LEAF = "scenes_leaf"
+    SCENES_LEAVE_HOME = "scenes_leave_home"
+    SCENES_MOON = "scenes_moon"
+    SCENES_MUSIC_NOTE = "scenes_music_note"
+    SCENES_PAINTING = "scenes_painting"
+    SCENES_POPCORN = "scenes_popcorn"
+    SCENES_POT_WITH_LID = "scenes_pot_with_lid"
+    SCENES_SPEAKER_GENERIC = "scenes_speaker_generic"
+    SCENES_SPRAY_BOTTLE = "scenes_spray_bottle"
+    SCENES_SUITCASE = "scenes_suitcase"
+    SCENES_SUITCASE_2 = "scenes_suitcase_2"
+    SCENES_SUN_HORIZON = "scenes_sun_horizon"
+    SCENES_TREE = "scenes_tree"
+    SCENES_TROPHY = "scenes_trophy"
+    SCENES_WAKE_UP = "scenes_wake_up"
+    SCENES_WEIGHTS = "scenes_weights"
+    SCENES_YOGA = "scenes_yoga"
+
+
 class Info(BaseIkeaModel):
     name: str
-    icon: str
+    icon: Icon
 
 
 class Trigger(BaseIkeaModel):
     id: str
     type: str
-    triggered_at: datetime.datetime
+    triggered_at: Optional[datetime.datetime] = None
     disabled: bool
 
 
 class ActionAttributes(BaseIkeaModel, extra="allow"):
-    pass
+    is_on: Optional[bool] = None
 
 
 class Action(BaseIkeaModel):
     id: str
     type: str
-    attributes: ActionAttributes
+    enabled: Optional[bool] = None
+    attributes: Optional[ActionAttributes] = None
+
+
+class SceneType(Enum):
+    USER_SCENE = "userScene"
+    CUSTOM_SCENE = "customScene"
+    PLAYLIST_SCENE = "playlistScene"
 
 
 class Scene(BaseIkeaModel):
     dirigera_client: AbstractSmartHomeHub
     id: str
-    type: str
+    type: SceneType
     info: Info
     triggers: List[Trigger]
     actions: List[Action]

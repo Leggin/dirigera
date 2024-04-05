@@ -57,6 +57,7 @@ class Hub(AbstractSmartHomeHub):
         on_pong: Any = None,
         on_data: Any = None,
         on_cont_message: Any = None,
+        ping_intervall: int = 60,
     ) -> None:
         wsapp = websocket.WebSocketApp(
             self.websocket_base_url,
@@ -71,7 +72,9 @@ class Hub(AbstractSmartHomeHub):
             on_cont_message=on_cont_message,
         )
 
-        wsapp.run_forever(sslopt={"cert_reqs": ssl.CERT_NONE})
+        wsapp.run_forever(
+            sslopt={"cert_reqs": ssl.CERT_NONE}, ping_interval=ping_intervall
+        )
 
     def patch(self, route: str, data: List[Dict[str, Any]]) -> Any:
         response = requests.patch(

@@ -373,7 +373,7 @@ class Hub(AbstractSmartHomeHub):
             "triggers": trigger_list,
             "actions": action_list,
         }
-        data = camelize_dict(data)
+        data = camelize_dict(data)  # type: ignore
         response_dict = self.post(
             "/scenes/",
             data=data,
@@ -381,7 +381,7 @@ class Hub(AbstractSmartHomeHub):
         scene_id = response_dict["id"]
         return self.get_scene_by_id(scene_id)
 
-    def delete_scene(self, scene_id: str):
+    def delete_scene(self, scene_id: str) -> None:
         self.delete(
             f"/scenes/{scene_id}",
         )

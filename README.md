@@ -308,14 +308,14 @@ The scene object has the following attributes:
 
 ```python
 id: str
-type: str
+type: SceneType
 info: Info
 triggers: List[Trigger]
 actions: List[Action]
 created_at: datetime.datetime
-last_completed: datetime.datetime
-last_triggered: datetime.datetime
-last_undo: datetime.datetime
+last_completed: Optional[datetime.datetime] = None
+last_triggered: Optional[datetime.datetime] = None
+last_undo: Optional[datetime.datetime] = None
 commands: List[str]
 undo_allowed_duration: int
 ```
@@ -328,6 +328,55 @@ Available methods for scene are:
 scene.trigger()
 scene.undo()
 ```
+
+### Creating a Scene
+
+To create a scene use the `create_scene()` function.  
+Example how to create an empty scene:
+
+```python
+scene = dirigera_hub.create_scene(
+    info=Info(name="This is empty", icon=Icon.SCENES_BOOK),
+)
+```
+
+Actions look like this:
+
+```python
+class Action(BaseIkeaModel):
+    id: str
+    type: str
+    enabled: Optional[bool] = None
+    attributes: Optional[ActionAttributes] = None
+```
+
+Example how create scene with action:
+
+```python
+from dirigera.devices.scene import Info, Icon, SceneType, Action, ActionAttributes
+
+light = dirigera_hub.get_light_by_name("kitchen_lamp")
+
+scene = dirigera_hub.create_scene(
+    info=Info(name="Scene with action", icon=Icon.SCENES_BOOK),
+    scene_type=SceneType.USER_SCENE,
+    triggers=[],
+    actions=[Action(id=light.id, type="device", enabled=True, attributes=ActionAttributes(is_on=False))],
+)
+```
+
+Triggers look like this:
+
+```python
+class Trigger(BaseIkeaModel):
+    id: str
+    type: str
+    triggered_at: Optional[datetime.datetime] = None
+    disabled: bool
+
+```
+
+All available icons can be found here: [Icons](./src/dirigera/devices/scene.py)
 
 ## [Motion Sensor](./src/dirigera/devices/motion_sensor.py)
 
@@ -404,6 +453,7 @@ The primary motivation for this project was to provide users with the ability to
 The default behavior of the hub is to turn on all lights when power is restored, which can be problematic if the user is away from home or on vacation, and a small power fluctuation causes all lights to turn on and stay on. Unfortunately, the IKEA app does not offer a way to change this default behavior.  
 The `set_startup_behaviour()` function enables users to override the default behavior and choose the startup behavior that best suits their needs (START_ON = turn on light when power is back, START_OFF = light stays off when power is back).  
 I can not guarantee that all IKEA lamps offer this functionality.
+EDIT: This is now an exposed feature in the app.
 
 ## Contributing
 

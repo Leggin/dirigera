@@ -59,6 +59,20 @@ class Hub(AbstractSmartHomeHub):
         on_cont_message: Any = None,
         ping_intervall: int = 60,
     ) -> None:
+        """
+        Create an event listener.
+
+        Args:
+            on_open (Any, optional)
+            on_message (Any, optional)
+            on_error (Any, optional)
+            on_close (Any, optional)
+            on_ping (Any, optional)
+            on_pong (Any, optional)
+            on_data (Any, optional)
+            on_cont_message (Any, optional)
+            ping_intervall (int, optional): Ping interval in Seconds. Defaults to 60.
+        """
         wsapp = websocket.WebSocketApp(
             self.websocket_base_url,
             header={"Authorization": f"Bearer {self.token}"},

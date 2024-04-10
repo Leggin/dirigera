@@ -43,6 +43,7 @@ class Hub(AbstractSmartHomeHub):
         self.api_base_url = f"https://{ip_address}:{port}/{api_version}"
         self.websocket_base_url = f"wss://{ip_address}:{port}/{api_version}"
         self.token = token
+        self.wsapp = None
 
     def headers(self) -> Dict[str, Any]:
         return {"Authorization": f"Bearer {self.token}"}
@@ -73,7 +74,7 @@ class Hub(AbstractSmartHomeHub):
             on_cont_message (Any, optional)
             ping_intervall (int, optional): Ping interval in Seconds. Defaults to 60.
         """
-        wsapp = websocket.WebSocketApp(
+        self.wsapp = websocket.WebSocketApp(
             self.websocket_base_url,
             header={"Authorization": f"Bearer {self.token}"},
             on_open=on_open,
@@ -86,10 +87,14 @@ class Hub(AbstractSmartHomeHub):
             on_cont_message=on_cont_message,
         )
 
-        wsapp.run_forever(
+        self.wsapp.run_forever(
             sslopt={"cert_reqs": ssl.CERT_NONE}, ping_interval=ping_intervall
         )
 
+    def stop_event_listener(self):
+        if self.wsapp is not None:
+            self.wsapp.close()
+    
     def patch(self, route: str, data: List[Dict[str, Any]]) -> Any:
         response = requests.patch(
             f"{self.api_base_url}{route}",

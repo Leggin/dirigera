@@ -91,7 +91,7 @@ class Hub(AbstractSmartHomeHub):
             sslopt={"cert_reqs": ssl.CERT_NONE}, ping_interval=ping_intervall
         )
 
-    def stop_event_listener(self):
+    def stop_event_listener(self) -> None:
         if self.wsapp is not None:
             self.wsapp.close()
             self.wsapp = None

@@ -87,7 +87,7 @@ class Hub(AbstractSmartHomeHub):
             on_cont_message=on_cont_message,
         )
 
-        wsapp.run_forever(
+        self.wsapp.run_forever(
             sslopt={"cert_reqs": ssl.CERT_NONE}, ping_interval=ping_intervall
         )
 

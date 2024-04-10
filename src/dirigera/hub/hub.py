@@ -43,7 +43,7 @@ class Hub(AbstractSmartHomeHub):
         self.api_base_url = f"https://{ip_address}:{port}/{api_version}"
         self.websocket_base_url = f"wss://{ip_address}:{port}/{api_version}"
         self.token = token
-        self.wsapp = None
+        self.wsapp : Any = None
 
     def headers(self) -> Dict[str, Any]:
         return {"Authorization": f"Bearer {self.token}"}

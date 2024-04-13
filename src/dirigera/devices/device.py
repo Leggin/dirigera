@@ -42,6 +42,7 @@ class Room(BaseIkeaModel):
 
 class Device(BaseIkeaModel):
     id: str
+    relation_id: Optional[str] = None
     type: str
     device_type: str
     created_at: datetime.datetime

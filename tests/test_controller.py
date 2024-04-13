@@ -113,3 +113,100 @@ def test_dict_to_controller(fake_client: FakeDirigeraHub) -> None:
     )
     assert controller.attributes.model == data["attributes"]["model"]
     assert controller.attributes.manufacturer == data["attributes"]["manufacturer"]
+
+    somrig_button_1: Dict[str, Any] = {
+        "id": "1111aaaa-1111-1111-aa11-1a1aa1a111a1_1",
+        "relationId": "1111aaaa-1111-1111-aa11-1a1aa1a111a1",
+        "type": "controller",
+        "deviceType": "shortcutController",
+        "createdAt": "2024-04-12T20:50:26.000Z",
+        "isReachable": True,
+        "lastSeen": "2024-04-12T20:50:32.000Z",
+        "attributes": {
+          "customName": "Living room button",
+          "model": "SOMRIG shortcut button",
+          "manufacturer": "IKEA of Sweden",
+          "firmwareVersion": "1.0.21",
+          "hardwareVersion": "1",
+          "serialNumber": "1AA1A1AAAA11A1AA",
+          "productCode": "E2213",
+          "batteryPercentage": 85,
+          "switchLabel": "Shortcut 1",
+          "isOn": False,
+          "lightLevel": 1,
+          "permittingJoin": False,
+          "otaStatus": "upToDate",
+          "otaState": "readyToCheck",
+          "otaProgress": 0,
+          "otaPolicy": "autoUpdate",
+          "otaScheduleStart": "00:00",
+          "otaScheduleEnd": "00:00"
+        },
+        "capabilities": {
+          "canSend": [
+            "singlePress",
+            "longPress",
+            "doublePress"
+          ],
+          "canReceive": [
+            "customName"
+          ]
+        },
+        "room": {
+          "id": "1aa1a11a-1a1a-111a-1aaa-111a111a111a",
+          "name": "Living room",
+          "color": "ikea_green_no_65",
+          "icon": "rooms_sofa"
+        },
+        "deviceSet": [],
+        "remoteLinks": [],
+        "isHidden": False
+    }
+
+    controller = dict_to_controller(somrig_button_1, fake_client)
+    assert controller.relation_id == somrig_button_1["relationId"]
+
+    somrig_button_2: Dict[str, Any] = {
+        "id": "1111aaaa-1111-1111-aa11-1a1aa1a111a1_2",
+        "relationId": "1111aaaa-1111-1111-aa11-1a1aa1a111a1",
+        "type": "controller",
+        "deviceType": "shortcutController",
+        "createdAt": "2024-04-12T20:50:26.000Z",
+        "isReachable": True,
+        "lastSeen": "2024-04-12T20:50:32.000Z",
+        "attributes": {
+          "customName": "",
+          "model": "SOMRIG shortcut button",
+          "manufacturer": "IKEA of Sweden",
+          "firmwareVersion": "1.0.21",
+          "hardwareVersion": "1",
+          "serialNumber": "1AA1A1AAAA11A1AA",
+          "productCode": "E2213",
+          "switchLabel": "Shortcut 2",
+          "isOn": False,
+          "lightLevel": 1,
+          "permittingJoin": False,
+          "otaStatus": "upToDate",
+          "otaState": "readyToCheck",
+          "otaProgress": 0,
+          "otaPolicy": "autoUpdate",
+          "otaScheduleStart": "00:00",
+          "otaScheduleEnd": "00:00"
+        },
+        "capabilities": {
+          "canSend": [
+            "singlePress",
+            "longPress",
+            "doublePress"
+          ],
+          "canReceive": [
+            "customName"
+          ]
+        },
+        "deviceSet": [],
+        "remoteLinks": [],
+        "isHidden": False
+    }
+
+    controller = dict_to_controller(somrig_button_2, fake_client)
+    assert controller.relation_id == somrig_button_2["relationId"]

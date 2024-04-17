@@ -3,8 +3,6 @@ import pytest
 from src.dirigera.hub.abstract_smart_home_hub import FakeDirigeraHub
 from src.dirigera.devices.water_sensor import dict_to_water_sensor
 from src.dirigera.devices.water_sensor import WaterSensor
-from src.dirigera.devices.device import StartupEnum
-
 
 @pytest.fixture(name="fake_client")
 def fixture_fake_client() -> FakeDirigeraHub:

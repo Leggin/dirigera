@@ -3,7 +3,6 @@ from typing import Any, Dict
 from .device import Attributes, Device
 from ..hub.abstract_smart_home_hub import AbstractSmartHomeHub
 
-
 class WaterSensorAttributes(Attributes):
     battery_percentage: int
     water_leak_detected: bool

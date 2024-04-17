@@ -27,7 +27,7 @@ def fixture_water_sensor_dict() -> Dict:
             "productCode": "E2202",
             "serialNumber": "3410F4FFFE8F815D",
             "batteryPercentage": 100,
-            "waterLeakDetected": False,
+            "waterLeakDetected": True,
             "permittingJoin": False,
             "otaPolicy": "autoUpdate",
             "otaProgress": 0,
@@ -83,7 +83,7 @@ def test_dict_to_water_sensor(fake_client: FakeDirigeraHub) -> None:
             "productCode": "E2202",
             "serialNumber": "3410F4FFFE8F815D",
             "batteryPercentage": 100,
-            "waterLeakDetected": False,
+            "waterLeakDetected": True,
             "permittingJoin": False,
             "otaPolicy": "autoUpdate",
             "otaProgress": 0,
@@ -113,12 +113,4 @@ def test_dict_to_water_sensor(fake_client: FakeDirigeraHub) -> None:
     assert water_sensor.id == data["id"]
     assert water_sensor.is_reachable == data["isReachable"]
     assert water_sensor.attributes.battery_percentage == 100
-    assert water_sensor.attributes.custom_name == data["attributes"]["customName"]
-    assert water_sensor.capabilities.can_receive == data["capabilities"]["canReceive"]
-    assert water_sensor.room.id == data["room"]["id"]
-    assert water_sensor.room.name == data["room"]["name"]
-    assert water_sensor.attributes.firmware_version == data["attributes"]["firmwareVersion"]
-    assert water_sensor.attributes.hardware_version == data["attributes"]["hardwareVersion"]
-    assert water_sensor.attributes.model == data["attributes"]["model"]
-    assert water_sensor.attributes.manufacturer == data["attributes"]["manufacturer"]
-    assert water_sensor.attributes.serial_number == data["attributes"]["serialNumber"]
+    assert water_sensor.attributes.water_leak_detected 

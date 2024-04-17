@@ -1,4 +1,4 @@
-from typing import Any, Dict
+from typing import Dict
 import pytest
 from src.dirigera.hub.abstract_smart_home_hub import FakeDirigeraHub
 from src.dirigera.devices.water_sensor import dict_to_water_sensor

@@ -19,6 +19,7 @@ from ..devices.environment_sensor import EnvironmentSensor, dict_to_environment_
 from ..devices.motion_sensor import MotionSensor, dict_to_motion_sensor
 from ..devices.open_close_sensor import OpenCloseSensor, dict_to_open_close_sensor
 from ..devices.scene import Action, Info, Scene, SceneType, Trigger, dict_to_scene
+from ..devices.water_sensor import WaterSensor, dict_to_water_sensor
 
 urllib3.disable_warnings(category=InsecureRequestWarning)
 
@@ -341,6 +342,24 @@ class Hub(AbstractSmartHomeHub):
         """
         data = self.get(f"/scenes/{scene_id}")
         return dict_to_scene(data, self)
+
+    def get_water_sensors(self) -> List[WaterSensor]:
+        """
+        Fetches all water sensors registered in the Hub
+        """
+        devices = self.get("/devices")
+        water_sensors = list(filter(lambda x: x["type"] == "waterSensor", devices))
+        return [dict_to_water_sensor(water_sensor, self) for water_sensor in water_sensors]
+
+    def get_water_sensor_by_id(self, id_: str) -> WaterSensor:
+        """
+        Fetches a water sensor by its id
+        if that water sensors does not exist or is a device of another type raises ValueError
+        """
+        water_sensor = self._get_device_data_by_id(id_)
+        if water_sensor["type"] != "waterSensor":
+            raise ValueError("Device is not a WaterSensor")
+        return dict_to_water_sensor(water_sensor, self)
 
     def get_all_devices(self) -> List[Device]:
         """

@@ -348,7 +348,7 @@ class Hub(AbstractSmartHomeHub):
         Fetches all water sensors registered in the Hub
         """
         devices = self.get("/devices")
-        water_sensors = list(filter(lambda x: x["type"] == "waterSensor", devices))
+        water_sensors = list(filter(lambda x: x["deviceType"] == "waterSensor", devices))
         return [dict_to_water_sensor(water_sensor, self) for water_sensor in water_sensors]
 
     def get_water_sensor_by_id(self, id_: str) -> WaterSensor:
@@ -357,7 +357,7 @@ class Hub(AbstractSmartHomeHub):
         if that water sensors does not exist or is a device of another type raises ValueError
         """
         water_sensor = self._get_device_data_by_id(id_)
-        if water_sensor["type"] != "waterSensor":
+        if water_sensor["deviceType"] != "waterSensor":
             raise ValueError("Device is not a WaterSensor")
         return dict_to_water_sensor(water_sensor, self)
 

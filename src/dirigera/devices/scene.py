@@ -81,6 +81,7 @@ class SceneType(Enum):
     USER_SCENE = "userScene"
     CUSTOM_SCENE = "customScene"
     PLAYLIST_SCENE = "playlistScene"
+    WAKEUP_SCENE = "wakeUpScene"
 
 
 class Scene(BaseIkeaModel):

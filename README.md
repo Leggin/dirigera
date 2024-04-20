@@ -70,6 +70,7 @@ All available devices (Light, Controller, Outlet, ...) consist of the core data 
 
 ```python
 id: str
+relation_id: Optional[str] = None
 type: str
 device_type: str
 created_at: datetime.datetime
@@ -261,6 +262,7 @@ The controller object has the following attributes (additional to the core attri
 ```python
 is_on: bool
 battery_percentage: Optional[int] = None
+switch_label: Optional[str] = None
 ```
 
 Available methods for controller are:

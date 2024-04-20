@@ -165,6 +165,10 @@ def test_dict_to_controller(fake_client: FakeDirigeraHub) -> None:
 
     controller = dict_to_controller(somrig_button_1, fake_client)
     assert controller.relation_id == somrig_button_1["relationId"]
+    assert (
+        controller.attributes.switch_label
+        == somrig_button_1["attributes"]["switchLabel"]
+    )
 
     somrig_button_2: Dict[str, Any] = {
         "id": "1111aaaa-1111-1111-aa11-1a1aa1a111a1_2",
@@ -210,3 +214,7 @@ def test_dict_to_controller(fake_client: FakeDirigeraHub) -> None:
 
     controller = dict_to_controller(somrig_button_2, fake_client)
     assert controller.relation_id == somrig_button_2["relationId"]
+    assert (
+        controller.attributes.switch_label
+        == somrig_button_2["attributes"]["switchLabel"]
+    )

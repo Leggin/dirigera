@@ -261,6 +261,7 @@ The controller object has the following attributes (additional to the core attri
 ```python
 is_on: bool
 battery_percentage: Optional[int] = None
+switch_label: Optional[str] = None
 ```
 
 Available methods for controller are:

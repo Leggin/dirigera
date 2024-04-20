@@ -70,6 +70,7 @@ All available devices (Light, Controller, Outlet, ...) consist of the core data 
 
 ```python
 id: str
+relation_id: Optional[str] = None
 type: str
 device_type: str
 created_at: datetime.datetime

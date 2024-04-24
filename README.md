@@ -375,7 +375,22 @@ class Trigger(BaseIkeaModel):
     type: str
     triggered_at: Optional[datetime.datetime] = None
     disabled: bool
+    trigger: Optional[ControllerTrigger] = None
+```
 
+Example how to create scene with trigger:
+```python
+from dirigera.devices.scene import Info, Icon, Trigger, SceneType, ControllerTrigger, ControllerType, ClickPattern
+
+scene = dirigera_hub.create_scene(
+   info=Info(name="Scene with trigger", icon=Icon.SCENES_HEART),
+   scene_type=SceneType.USER_SCENE,
+   triggers=[
+       Trigger(type="app", disabled=False),
+       Trigger(type="controller", disabled=False,
+               trigger=ControllerTrigger(clickPattern=ClickPattern.SINGLE_PRESS, buttonIndex=0,
+                                         deviceId="0000aaaa-0000-0000-aa00-0a0aa0a000a0_1",
+                                         controllerType=ControllerType.SHORTCUT_CONTROLLER))])
 ```
 
 All available icons can be found here: [Icons](./src/dirigera/devices/scene.py)

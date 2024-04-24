@@ -64,6 +64,25 @@ class Trigger(BaseIkeaModel):
     type: str
     triggered_at: Optional[datetime.datetime] = None
     disabled: bool
+    trigger: Optional[ControllerTrigger] = None
+
+
+class ControllerTrigger(BaseIkeaModel):
+    days: Optional[List[str]] = None
+    controllerType: ControllerType
+    buttonIndex: int
+    clickPattern: ClickPattern
+    deviceId: str
+
+
+class ControllerType(Enum):
+    SHORTCUT_CONTROLLER = "shortcutController"
+
+
+class ClickPattern(Enum):
+    LONG_PRESS = "longPress"
+    DOUBLE_PRESS = "doublePress"
+    SINGLE_PRESS = "singlePress"
 
 
 class ActionAttributes(BaseIkeaModel, extra="allow"):

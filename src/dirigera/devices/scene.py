@@ -60,7 +60,7 @@ class Info(BaseIkeaModel):
 
 
 class Trigger(BaseIkeaModel):
-    id: str
+    id: Optional[str] = None # Optional to allow creation of Trigger instances for create_scene()
     type: str
     triggered_at: Optional[datetime.datetime] = None
     disabled: bool

@@ -60,19 +60,21 @@ class Info(BaseIkeaModel):
 
 
 class Trigger(BaseIkeaModel):
-    id: Optional[str] = None # Optional to allow creation of Trigger instances for create_scene()
+    id: Optional[str] = None  # Optional to allow creation of Trigger instances for create_scene()
     type: str
     triggered_at: Optional[datetime.datetime] = None
     disabled: bool
-    trigger: Optional[ControllerTrigger] = None
+    trigger: Optional[TriggerDetails] = None
 
 
-class ControllerTrigger(BaseIkeaModel):
+class TriggerDetails(BaseIkeaModel):
     days: Optional[List[str]] = None
-    controllerType: ControllerType
-    buttonIndex: int
-    clickPattern: ClickPattern
-    deviceId: str
+    controllerType: Optional[ControllerType] = None
+    buttonIndex: Optional[int] = None
+    clickPattern: Optional[ClickPattern] = None
+    deviceId: Optional[str] = None
+    offset: Optional[int] = None
+    type: Optional[str] = None
 
 
 class ControllerType(Enum):

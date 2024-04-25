@@ -126,6 +126,26 @@ def test_dict_to_scene(fake_client: FakeDirigeraHub) -> None:
                     "buttonIndex": 0,
                     "deviceId": "0000aaaa-0000-0000-aa00-0a0aa0a000a0_2"
                 }
+            },
+            {
+                "id": "a0000000-a000-0000-aaaa-0aaa000aa000",
+                "type": "sunriseSunset",
+                "triggeredAt": "2024-04-24T17:49:00.989Z",
+                "disabled": False,
+                "trigger": {
+                    "days": [
+                        "Tue",
+                        "Wed",
+                        "Sun",
+                        "Mon",
+                        "Fri",
+                        "Sat",
+                        "Thu"
+                    ],
+                    "type": "sunset",
+                    "offset": 0
+                },
+                "nextTriggerAt": "2024-04-25T17:49:00.000Z"
             }
         ],
         "actions": [],

@@ -6,7 +6,7 @@ from ..hub.abstract_smart_home_hub import AbstractSmartHomeHub
 
 class OpenCloseSensorAttributes(Attributes):
     is_open: bool
-
+    battery_percentage: Optional[int] = None
 
 class OpenCloseSensor(Device):
     dirigera_client: AbstractSmartHomeHub

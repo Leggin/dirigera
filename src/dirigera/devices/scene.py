@@ -64,7 +64,7 @@ class Trigger(BaseIkeaModel):
     type: str
     triggered_at: Optional[datetime.datetime] = None
     disabled: bool
-    triggers: Optional[TriggerDetails] = None
+    trigger: Optional[TriggerDetails] = None
 
 
 class TriggerDetails(BaseIkeaModel):

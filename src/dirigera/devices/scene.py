@@ -129,6 +129,9 @@ class Scene(BaseIkeaModel):
     def undo(self) -> None:
         self.dirigera_client.post(route=f"/scenes/{self.id}/undo")
 
+Trigger.update_forward_refs()
+Action.update_forward_refs()
+Scene.update_forward_refs()
 
 def dict_to_scene(data: Dict[str, Any], dirigera_client: AbstractSmartHomeHub) -> Scene:
     return Scene(dirigeraClient=dirigera_client, **data)

@@ -5,12 +5,12 @@ from ..hub.abstract_smart_home_hub import AbstractSmartHomeHub
 
 
 class EnvironmentSensorAttributes(Attributes):
-    current_temperature: float
-    current_r_h: int
-    current_p_m25: Optional[int]
-    max_measured_p_m25: Optional[int]
-    min_measured_p_m25: Optional[int]
-    voc_index: Optional[int]
+    current_temperature: Optional[float] = None
+    current_r_h: Optional[int] = None
+    current_p_m25: Optional[int] = None
+    max_measured_p_m25: Optional[int] = None
+    min_measured_p_m25: Optional[int] = None
+    voc_index: Optional[int] = None
 
 
 class EnvironmentSensor(Device):

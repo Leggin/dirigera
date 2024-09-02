@@ -52,6 +52,9 @@ class Icon(Enum):
     SCENES_WAKE_UP = "scenes_wake_up"
     SCENES_WEIGHTS = "scenes_weights"
     SCENES_YOGA = "scenes_yoga"
+    SCENES_COLD_DRINK_CONTENTS = "scenes_cold_drink_contents"
+    SCENES_FLAME = "scenes_flame"
+    SCENES_SNOWFLAKE = "scenes_snowflake"
 
 
 class Info(BaseIkeaModel):
@@ -60,7 +63,9 @@ class Info(BaseIkeaModel):
 
 
 class Trigger(BaseIkeaModel):
-    id: Optional[str] = None  # Optional to allow creation of Trigger instances for create_scene()
+    id: Optional[str] = (
+        None  # Optional to allow creation of Trigger instances for create_scene()
+    )
     type: str
     triggered_at: Optional[datetime.datetime] = None
     disabled: bool

@@ -5,7 +5,7 @@ from ..hub.abstract_smart_home_hub import AbstractSmartHomeHub
 
 
 class ControllerAttributes(Attributes):
-    is_on: bool
+    is_on: Optional[bool] = None
     battery_percentage: Optional[int] = None
     switch_label: Optional[str] = None
 

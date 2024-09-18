@@ -62,6 +62,11 @@ class Info(BaseIkeaModel):
     icon: Icon
 
 
+class EndTriggerEvent(BaseIkeaModel):
+    type: str
+    trigger: TriggerDetails
+
+
 class Trigger(BaseIkeaModel):
     id: Optional[str] = (
         None  # Optional to allow creation of Trigger instances for create_scene()
@@ -70,10 +75,14 @@ class Trigger(BaseIkeaModel):
     triggered_at: Optional[datetime.datetime] = None
     disabled: bool
     trigger: Optional[TriggerDetails] = None
+    next_trigger_at: Optional[datetime.datetime] = None
+    end_trigger: Optional[EndTriggerEvent] = None
+    end_trigger_event: Optional[EndTriggerEvent] = None
 
 
 class TriggerDetails(BaseIkeaModel):
     days: Optional[List[str]] = None
+    time: Optional[str] = None
     controllerType: Optional[ControllerType] = None
     buttonIndex: Optional[int] = None
     clickPattern: Optional[ClickPattern] = None

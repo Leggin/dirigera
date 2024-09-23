@@ -10,8 +10,29 @@ from ..hub.abstract_smart_home_hub import AbstractSmartHomeHub
 
 
 class OutletAttributes(Attributes):
+    custom_name: Optional[str] = None
+    firmware_version: Optional[str] = None
+    hardware_version: Optional[str] = None
+    manufacturer: Optional[str] = None
+    model: Optional[str] = None
+    product_code: Optional[str] = None
+    serial_number: Optional[str] = None
     is_on: bool
     startup_on_off: Optional[StartupEnum] = None
+    energy_consumed_at_last_reset: Optional[float] = None
+    current_active_power: Optional[float] = None
+    current_amps: Optional[float] = None
+    current_voltage: Optional[float] = None
+    total_energy_consumed: Optional[float] = None
+    total_energy_consumed_last_updated: Optional[datetime.datetime] = None
+    status_light: Optional[bool] = None
+    identify_period: Optional[int] = None
+    permitting_join: Optional[bool] = None
+    ota_policy: Optional[str] = None
+    ota_progress: Optional[int] = None
+    ota_state: Optional[str] = None
+    ota_status: Optional[str] = None
+    time_of_last_energy_reset: Optional[datetime.datetime] = None
 
 
 class Outlet(Device):

@@ -1,4 +1,5 @@
 from __future__ import annotations
+import datetime
 from typing import Any, Optional, Dict
 from .device import Attributes, Device, StartupEnum
 from ..hub.abstract_smart_home_hub import AbstractSmartHomeHub

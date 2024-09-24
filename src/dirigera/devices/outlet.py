@@ -11,7 +11,6 @@ from ..hub.abstract_smart_home_hub import AbstractSmartHomeHub
 
 
 class OutletAttributes(Attributes):
-    # pylint: disable=too-many-positional-arguments
     is_on: bool
     startup_on_off: Optional[StartupEnum] = None
     status_light: Optional[bool] = None

@@ -7,4 +7,5 @@ disable =
     C0116, # missing-function-docstring
     R0902, # too-many-instance-attributes
     R0913, # too-many-arguments
-    R0801
+    R0801, # duplicate-code
+    R0917, # too-many-positional-arguments

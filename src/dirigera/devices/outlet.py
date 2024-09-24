@@ -1,4 +1,5 @@
 from __future__ import annotations
+import datetime
 from typing import Any, Optional, Dict
 from .device import Attributes, Device, StartupEnum
 from ..hub.abstract_smart_home_hub import AbstractSmartHomeHub
@@ -10,8 +11,19 @@ from ..hub.abstract_smart_home_hub import AbstractSmartHomeHub
 
 
 class OutletAttributes(Attributes):
+    # pylint: disable=too-many-positional-arguments
     is_on: bool
     startup_on_off: Optional[StartupEnum] = None
+    status_light: Optional[bool] = None
+    identify_period: Optional[int] = None
+    permitting_join: Optional[bool] = None
+    energy_consumed_at_last_reset: Optional[float] = None
+    current_active_power: Optional[float] = None
+    current_amps: Optional[float] = None
+    current_voltage: Optional[float] = None
+    total_energy_consumed: Optional[float] = None
+    total_energy_consumed_last_updated: Optional[datetime.datetime] = None
+    time_of_last_energy_reset: Optional[datetime.datetime] = None
 
 
 class Outlet(Device):

@@ -11,6 +11,7 @@ class EnvironmentSensorAttributes(Attributes):
     max_measured_p_m25: Optional[int] = None
     min_measured_p_m25: Optional[int] = None
     voc_index: Optional[int] = None
+    battery_percentage: Optional[int] = None
 
 
 class EnvironmentSensor(Device):

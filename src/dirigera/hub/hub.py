@@ -343,6 +343,16 @@ class Hub(AbstractSmartHomeHub):
         data = self.get(f"/scenes/{scene_id}")
         return dict_to_scene(data, self)
 
+    def get_scene_by_name(self, scene_name: str) -> Scene:
+        """
+        Fetches all scenes and returns the first result that matches scene_name
+        """
+        scenes = self.get_scenes()
+        scenes = list(filter(lambda x: x.info.name == scene_name, scenes))
+        if len(scenes) == 0:
+            raise AssertionError(f"No Scene found with name {scene_name}")
+        return scenes[0]
+
     def get_water_sensors(self) -> List[WaterSensor]:
         """
         Fetches all water sensors registered in the Hub

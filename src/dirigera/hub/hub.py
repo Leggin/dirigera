@@ -44,7 +44,7 @@ class Hub(AbstractSmartHomeHub):
         self.api_base_url = f"https://{ip_address}:{port}/{api_version}"
         self.websocket_base_url = f"wss://{ip_address}:{port}/{api_version}"
         self.token = token
-        self.wsapp : Any = None
+        self.wsapp: Any = None
 
     def headers(self) -> Dict[str, Any]:
         return {"Authorization": f"Bearer {self.token}"}
@@ -348,8 +348,12 @@ class Hub(AbstractSmartHomeHub):
         Fetches all water sensors registered in the Hub
         """
         devices = self.get("/devices")
-        water_sensors = list(filter(lambda x: x["deviceType"] == "waterSensor", devices))
-        return [dict_to_water_sensor(water_sensor, self) for water_sensor in water_sensors]
+        water_sensors = list(
+            filter(lambda x: x["deviceType"] == "waterSensor", devices)
+        )
+        return [
+            dict_to_water_sensor(water_sensor, self) for water_sensor in water_sensors
+        ]
 
     def get_water_sensor_by_id(self, id_: str) -> WaterSensor:
         """
@@ -374,6 +378,7 @@ class Hub(AbstractSmartHomeHub):
         devices.extend(self.get_motion_sensors())
         devices.extend(self.get_open_close_sensors())
         devices.extend(self.get_outlets())
+        devices.extend(self.get_water_sensors())
 
         return devices
 

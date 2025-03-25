@@ -562,7 +562,7 @@ motions_sensors = dirigera_hub.get_motion_sensors()
 The motion sensor object has the following attributes (additional to the core attributes):
 
 ```python
-battery_percentage: int
+battery_percentage: Optional[int] = None
 is_on: bool
 light_level: Optional[float] = None
 is_detected: Optional[bool] = False

@@ -9,6 +9,51 @@ def fixture_fake_client() -> FakeDirigeraHub:
     return FakeDirigeraHub()
 
 
+@pytest.fixture(name="motion_sensor_dict_non_ikea")
+def fixture_motion_sensor_dict_non_ikea() -> Dict:
+    return {
+        "id": "62e95143-c8b6-4f28-b581-adfd622c0db7_1",
+        "type": "sensor",
+        "deviceType": "motionSensor",
+        "createdAt": "2023-12-14T18:28:57.000Z",
+        "isReachable": True,
+        "lastSeen": "2023-12-14T17:30:48.000Z",
+        "attributes": {
+            "customName": "Bewegungssensor",
+            "firmwareVersion": "",
+            "hardwareVersion": "",
+            "manufacturer": "SONOFF",
+            "model": "Wireless Motion Sensor",
+            "productCode": "SNZB-03",
+            "serialNumber": "9",
+            "isOn": False,
+            "permittingJoin": False,
+            "sensorConfig": {
+                "scheduleOn": False,
+                "onDuration": 120,
+                "schedule": {
+                    "onCondition": {"time": "sunset", "offset": -60},
+                    "offCondition": {"time": "sunrise", "offset": 60},
+                },
+            },
+            "circadianPresets": [],
+        },
+        "capabilities": {
+            "canSend": ["isOn", "lightLevel"],
+            "canReceive": ["customName"],
+        },
+        "room": {
+            "id": "e1631a64-9ceb-4113-a6b3-1d866216503c",
+            "name": "Zimmer",
+            "color": "ikea_beige_1",
+            "icon": "rooms_arm_chair",
+        },
+        "deviceSet": [],
+        "remoteLinks": [],
+        "isHidden": False,
+    }
+
+
 @pytest.fixture(name="motion_sensor_dict")
 def fixture_motion_sensor_dict() -> Dict:
     return {
@@ -84,7 +129,7 @@ def test_set_motion_sensor_name(
     assert fake_motion_sensor.attributes.custom_name == new_name
 
 
-def test_dict_to_blind(motion_sensor_dict: Dict, fake_client: FakeDirigeraHub) -> None:
+def test_dict_to_motion_sensor(motion_sensor_dict: Dict, fake_client: FakeDirigeraHub) -> None:
     motion_sensor = dict_to_motion_sensor(motion_sensor_dict, fake_client)
     assert motion_sensor.dirigera_client == fake_client
     assert motion_sensor.id == motion_sensor_dict["id"]
@@ -121,3 +166,8 @@ def test_dict_to_blind(motion_sensor_dict: Dict, fake_client: FakeDirigeraHub) -
         motion_sensor.attributes.manufacturer
         == motion_sensor_dict["attributes"]["manufacturer"]
     )
+
+def test_dict_to_motion_sensor_optional_fields(motion_sensor_dict_non_ikea: Dict, fake_client: FakeDirigeraHub) -> None:
+    motion_sensor = dict_to_motion_sensor(motion_sensor_dict_non_ikea, fake_client)
+
+    assert motion_sensor.attributes.battery_percentage is None

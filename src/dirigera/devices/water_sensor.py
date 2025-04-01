@@ -1,10 +1,10 @@
 from __future__ import annotations
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 from .device import Attributes, Device
 from ..hub.abstract_smart_home_hub import AbstractSmartHomeHub
 
 class WaterSensorAttributes(Attributes):
-    battery_percentage: int
+    battery_percentage: Optional[int] = None
     water_leak_detected: bool
 
 class WaterSensor(Device):

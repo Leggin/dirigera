@@ -255,6 +255,16 @@ class Hub(AbstractSmartHomeHub):
         sensors = list(filter(lambda x: x["deviceType"] == "motionSensor", devices))
         return [dict_to_motion_sensor(sensor, self) for sensor in sensors]
 
+    def get_motion_sensor_by_name(self, motion_sensor_name: str) -> MotionSensor:
+        """
+        Fetches all motion sensors and returns first result that matches this name
+        """
+        motion_sensors = self.get_motion_sensors()
+        motion_sensors = list(filter(lambda x: x.attributes.custom_name == motion_sensor_name, motion_sensors))
+        if len(motion_sensors) == 0:
+            raise AssertionError(f"No motion sensor found with name {motion_sensor_name}")
+        return motion_sensors[0]
+
     def get_motion_sensor_by_id(self, id_: str) -> MotionSensor:
         motion_sensor = self._get_device_data_by_id(id_)
         if motion_sensor["deviceType"] != "motionSensor":

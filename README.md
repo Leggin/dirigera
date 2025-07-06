@@ -111,6 +111,9 @@ sensor = dirigera_hub.get_environment_sensor_by_id(id_="1")
 # Fetch all motion sensors registered in the hub
 sensors = dirigera_hub.get_motion_sensors()
 
+# Fetch a motion sensor by its name
+light = dirigera_hub.get_motion_sensor_by_name(motion_sensor_name="kitchen motion sensor")
+
 # Fetch a motion sensor by its ID
 sensor = dirigera_hub.get_motion_sensor_by_id(id_="1")
 

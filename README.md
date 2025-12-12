@@ -13,8 +13,10 @@ This repository provides an unofficial Python client for controlling the IKEA Di
 - [blinds control](#controlling-blinds)
 - [remote controllers](#remote-controllers) (tested with STYRBAR)
 - [environment sensor](#environment-sensor) (tested with VINDSTYRKA)
+- [light sensor](#light-sensor) (tested with MYGGSPRAY)
 - [scene](#scene)
 - [motion sensor](#motion-sensor)
+- [occupancy sensor](#occupancy-sensor) (tested with MYGGSPRAY)
 - [open/close sensor](#open-close-sensor)
 - [event listener](#event-listener) for hub events
 
@@ -153,6 +155,18 @@ water_sensors = dirigera_hub.get_water_sensors()
 # Fetch a water sensor by its ID
 water_sensor = dirigera_hub.get_water_sensor_by_id(id_="1")
 
+# Fetch all occupancy sensors registered in the hub
+occupancy_sensors = dirigera_hub.get_occupancy_sensors()
+
+# Fetch an occupancy sensor by its ID
+occupancy_sensor = dirigera_hub.get_occupancy_sensor_by_id(id_="1")
+
+# Fetch all light sensors registered in the hub
+light_sensors = dirigera_hub.get_light_sensors()
+
+# Fetch a light sensor by its ID
+light_sensor = dirigera_hub.get_light_sensor_by_id(id_="1")
+
 # Fetch all devices registered in the hub
 devices = dirigera_hub.get_all_devices()
 
@@ -169,8 +183,6 @@ dirigera_hub.delete_scene(scene_id="1")
 ```
 
 </details>
-
-
 
 # [Devices](./src/dirigera/devices/device.py)
 
@@ -233,7 +245,6 @@ name: str
 color: str
 icon: str
 ```
-
 
 ## [Controlling Lights](./src/dirigera/devices/light.py)
 
@@ -538,6 +549,7 @@ class Trigger(BaseIkeaModel):
 ```
 
 Example how to create scene with trigger:
+
 ```python
 from dirigera.devices.scene import Info, Icon, Trigger, SceneType, TriggerDetails, ControllerType, ClickPattern
 

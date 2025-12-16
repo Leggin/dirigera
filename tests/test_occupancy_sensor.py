@@ -76,5 +76,3 @@ def test_dict_to_occupancy_sensor(
         == occupancy_sensor_dict["attributes"]["batteryPercentage"]
     )
     assert sensor.attributes.is_detected == occupancy_sensor_dict["attributes"]["isDetected"]
-
-

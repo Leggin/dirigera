@@ -75,5 +75,3 @@ def test_dict_to_light_sensor(light_sensor_dict: Dict, fake_client: FakeDirigera
     assert sensor.attributes.illuminance == light_sensor_dict["attributes"]["illuminance"]
     assert sensor.attributes.max_illuminance == light_sensor_dict["attributes"]["maxIlluminance"]
     assert sensor.attributes.min_illuminance == light_sensor_dict["attributes"]["minIlluminance"]
-
-

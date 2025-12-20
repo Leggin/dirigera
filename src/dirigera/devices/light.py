@@ -1,6 +1,8 @@
 from __future__ import annotations
 from typing import Any, Optional, Dict
-from .device import Attributes, Device, StartupEnum
+
+from .base_ikea_model import BaseIkeaModel
+from .device import Attributes, Device, StartupEnum, DeviceOnBehaviorEnum
 from ..hub.abstract_smart_home_hub import AbstractSmartHomeHub
 
 
@@ -13,6 +15,12 @@ class LightAttributes(Attributes):
     color_temperature_max: Optional[int] = None
     color_hue: Optional[float] = None
     color_saturation: Optional[float] = None
+    device_on_behavior: Optional[DeviceOnBehavior] = None
+
+
+class DeviceOnBehavior(BaseIkeaModel):
+    behavior: Optional[DeviceOnBehaviorEnum] = None
+    profile_id: Optional[str] = None
 
 
 class Light(Device):
@@ -103,6 +111,38 @@ class Light(Device):
         data = [{"attributes": {"startupOnOff": behaviour.value}}]
         self.dirigera_client.patch(route=f"/devices/{self.id}", data=data)
         self.attributes.startup_on_off = behaviour
+
+    def set_device_on_behavior(self, device_on_behavior: DeviceOnBehavior) -> None:
+        """Configure the behavior of the device when it is turned on.
+
+        This method allows you to specify how the device should behave upon being powered on.
+        The behavior can be set to either use the adaptive profile or retain the last known state.
+
+        Args:
+            device_on_behavior (DeviceOnBehavior): An instance of `DeviceOnBehavior` that defines
+                the desired behavior. It can be one of the following:
+                - `DeviceOnBehavior.ADAPTIVE_PROFILE`: The device will use the adaptive profile.
+                - `DeviceOnBehavior.LAST_VALUE`: The device will retain its last known state.
+
+        Raises:
+            HTTPError: If the request to update the device configuration fails.
+
+        Side Effects:
+            Updates the device's `device_on_behavior` attribute to reflect the new configuration.
+        """
+        data = [
+            {
+                "attributes": {
+                    "deviceOnBehavior": {
+                        "behavior": device_on_behavior.behavior.value,
+                        "profileId": device_on_behavior.profile_id,
+                    }
+                }
+            }
+        ]
+        self.dirigera_client.patch(route=f"/devices/{self.id}", data=data)
+
+        self.attributes.device_on_behavior = device_on_behavior
 
 
 def dict_to_light(data: Dict[str, Any], dirigera_client: AbstractSmartHomeHub) -> Light:

@@ -12,6 +12,11 @@ class StartupEnum(Enum):
     START_TOGGLE = "startToggle"
 
 
+class DeviceOnBehaviorEnum(Enum):
+    LAST_VALUE = "lastValue"
+    ADAPTIVE_PROFILE = "adaptiveProfile"
+
+
 class Attributes(BaseIkeaModel):
     custom_name: str
     model: str

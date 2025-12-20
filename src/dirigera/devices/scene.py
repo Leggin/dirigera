@@ -1,7 +1,7 @@
 from __future__ import annotations
 import datetime
 from enum import Enum
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, List, Optional, Union
 from .base_ikea_model import BaseIkeaModel
 from .device import Attributes
 from ..hub.abstract_smart_home_hub import AbstractSmartHomeHub
@@ -130,7 +130,7 @@ class Scene(BaseIkeaModel):
     last_completed: Optional[datetime.datetime] = None
     last_triggered: Optional[datetime.datetime] = None
     last_undo: Optional[datetime.datetime] = None
-    commands: List[str]
+    commands: List[Union[str, Dict[str, Any]]]
     undo_allowed_duration: int
 
     def reload(self) -> Scene:

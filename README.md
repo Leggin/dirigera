@@ -7,18 +7,31 @@
 
 This repository provides an unofficial Python client for controlling the IKEA Dirigera Smart Home Hub. Current features:
 
-- [light control](#controlling-lights)
-- [outlet control](#controlling-outlets)
-- [air purifier control](#controlling-air-purifier)
-- [blinds control](#controlling-blinds)
-- [remote controllers](#remote-controllers) (tested with STYRBAR)
-- [environment sensor](#environment-sensor) (tested with VINDSTYRKA)
-- [light sensor](#light-sensor) (tested with MYGGSPRAY)
-- [scene](#scene)
-- [motion sensor](#motion-sensor)
-- [occupancy sensor](#occupancy-sensor) (tested with MYGGSPRAY)
-- [open/close sensor](#open-close-sensor)
-- [event listener](#event-listener) for hub events
+- [Dirigera Python Client](#dirigera-python-client)
+  - [Installation](#installation)
+  - [Quickstart](#quickstart)
+  - [Dirigera Hub](#dirigera-hub)
+- [Devices](#devices)
+    - [Core Device Data](#core-device-data)
+    - [Attributes](#attributes)
+    - [Capabilities](#capabilities)
+    - [Room](#room)
+  - [Controlling Lights](#controlling-lights)
+  - [Controlling Outlets](#controlling-outlets)
+  - [Controlling Air Purifier](#controlling-air-purifier)
+  - [Controlling Blinds](#controlling-blinds)
+  - [Remote Controllers](#remote-controllers)
+  - [Environment Sensor](#environment-sensor)
+- [Scene](#scene)
+    - [Creating a Scene](#creating-a-scene)
+  - [Motion Sensor](#motion-sensor)
+  - [Open Close Sensor](#open-close-sensor)
+  - [Event Listener](#event-listener)
+  - [Motivation](#motivation)
+  - [Contributing](#contributing)
+    - [Setup of dev](#setup-of-dev)
+    - [Tests](#tests)
+  - [License](#license)
 
 Support for other features will be added in the future and your input in form of issues and PRs is greatly appreciated.
 
@@ -452,9 +465,10 @@ The environment sensor object has the following attributes (additional to the co
 current_temperature: Optional[float] = None
 current_r_h: Optional[int] = None  # current humidity
 current_p_m25: Optional[int] = None # current particulate matter 2.5
+current_c_o2: Optional[int] = None # current carbon dioxide in ppm, only for Alpstuga Air Quality Sensor
 max_measured_p_m25: Optional[int] = None # maximum measurable particulate matter 2.5
 min_measured_p_m25: Optional[int] = None # minimum measurable particulate matter 2.5
-voc_index: Optional[int] = None # current volatile organic compound
+voc_index: Optional[int] = None # current volatile organic compound, only for Vindstyrka Air Quality Sensor
 ```
 
 Available methods for environment sensor are:

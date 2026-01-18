@@ -62,12 +62,12 @@ class Light(Device):
         ):
             raise ValueError("Values of color_temp_max or color_temp_min are None")
         if (
-            color_temp < self.attributes.color_temperature_max
-            or color_temp > self.attributes.color_temperature_min
+            color_temp < self.attributes.color_temperature_min
+            or color_temp > self.attributes.color_temperature_max
         ):
             raise ValueError(
                 "color_temperature must be a value between "
-                f"{self.attributes.color_temperature_max} and {self.attributes.color_temperature_min}"
+                f"{self.attributes.color_temperature_min} and {self.attributes.color_temperature_max}"
             )
 
         data = [{"attributes": {"colorTemperature": color_temp}}]

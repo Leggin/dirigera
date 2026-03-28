@@ -62,6 +62,8 @@ class Hub(AbstractSmartHomeHub):
         on_data: Any = None,
         on_cont_message: Any = None,
         ping_intervall: int = 60,
+        dispatcher: Any = None,
+        reconnect: int = None,
     ) -> None:
         """
         Create an event listener.
@@ -76,6 +78,8 @@ class Hub(AbstractSmartHomeHub):
             on_data (Any, optional)
             on_cont_message (Any, optional)
             ping_intervall (int, optional): Ping interval in Seconds. Defaults to 60.
+            dispatcher (Any, optional)
+            reconnect (int, optional)
         """
         self.wsapp = websocket.WebSocketApp(
             self.websocket_base_url,
@@ -91,7 +95,8 @@ class Hub(AbstractSmartHomeHub):
         )
 
         self.wsapp.run_forever(
-            sslopt={"cert_reqs": ssl.CERT_NONE}, ping_interval=ping_intervall
+            sslopt={"cert_reqs": ssl.CERT_NONE}, ping_interval=ping_intervall,
+            dispatcher=dispatcher, reconnect=reconnect
         )
 
     def stop_event_listener(self) -> None:

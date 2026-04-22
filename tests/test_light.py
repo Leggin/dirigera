@@ -3,8 +3,8 @@ from typing import Any, Dict
 import pytest
 from src.dirigera.hub.abstract_smart_home_hub import FakeDirigeraHub
 from src.dirigera.devices.light import dict_to_light
-from src.dirigera.devices.light import Light
-from src.dirigera.devices.device import StartupEnum
+from src.dirigera.devices.light import Light, DeviceOnBehavior
+from src.dirigera.devices.device import StartupEnum, DeviceOnBehaviorEnum
 
 
 @pytest.fixture(name="fake_client")
@@ -328,3 +328,33 @@ def test_dict_to_light_3rdparty(fake_client: FakeDirigeraHub) -> None:
     assert light.attributes.model == data["attributes"]["model"]
     assert light.attributes.manufacturer == data["attributes"]["manufacturer"]
     assert light.attributes.serial_number == data["attributes"]["serialNumber"]
+
+
+def test_set_device_on_behavior_adaptive_profile(
+    fake_light: Light, fake_client: FakeDirigeraHub
+) -> None:
+    behavior = DeviceOnBehavior(
+        behaviour=DeviceOnBehaviorEnum.ADAPTIVE_PROFILE, profile_id="adaptive_123"
+    )
+    fake_light.set_device_on_behavior(behavior)
+    action = fake_client.patch_actions.pop()
+    assert action["route"] == f"/devices/{fake_light.id}"
+    assert action["data"] == [
+        {"attributes": {"deviceOnBehavior": behavior.behaviour.value}}
+    ]
+    assert fake_light.attributes.device_on_behavior == behavior
+
+
+def test_set_device_on_behavior_last_value(
+    fake_light: Light, fake_client: FakeDirigeraHub
+) -> None:
+    behavior = DeviceOnBehavior(
+        behaviour=DeviceOnBehaviorEnum.LAST_VALUE, profile_id="last_value_456"
+    )
+    fake_light.set_device_on_behavior(behavior)
+    action = fake_client.patch_actions.pop()
+    assert action["route"] == f"/devices/{fake_light.id}"
+    assert action["data"] == [
+        {"attributes": {"deviceOnBehavior": behavior.behaviour.value}}
+    ]
+    assert fake_light.attributes.device_on_behavior == behavior

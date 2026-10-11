@@ -8,6 +8,7 @@ from src.dirigera.devices.scene import (
     dict_to_scene,
     ControllerType,
     ClickPattern,
+    EndTriggerEvent,
     Icon,
     Info,
     SceneType,
@@ -284,5 +285,72 @@ def test_create_scene_posts_camel_case_trigger_details(
                 "clickPattern": "doublePress",
                 "deviceId": TEST_DEVICE_ID,
             },
+        }
+    ]
+
+
+def test_trigger_with_duration_end_trigger() -> None:
+    trigger = Trigger(
+        **{
+            "type": "time",
+            "disabled": False,
+            "trigger": {"days": ["Mon"], "time": "00:00"},
+            "endTrigger": {"type": "duration", "trigger": {"duration": 21600}},
+            "endTriggerEvent": {"type": "duration", "trigger": {"duration": 21600}},
+        }
+    )
+    assert trigger.end_trigger is not None
+    assert trigger.end_trigger.type == "duration"
+    assert trigger.end_trigger.trigger.duration == 21600
+    assert trigger.end_trigger_event is not None
+    assert trigger.end_trigger_event.trigger.duration == 21600
+
+
+def test_create_scene_posts_duration_end_trigger(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    hub = Hub(token="token", ip_address="127.0.0.1")
+    post_actions: List[Dict[str, Any]] = []
+
+    def fake_post(route: str, data: Optional[Dict[str, Any]] = None) -> Any:
+        post_actions.append({"route": route, "data": data})
+        return {"id": TEST_ID}
+
+    def fake_get(_route: str) -> Any:
+        return {
+            "id": TEST_ID,
+            "info": {"name": TEST_NAME, "icon": TEST_ICON},
+            "type": "customScene",
+            "triggers": [],
+            "actions": [],
+            "commands": [],
+            "createdAt": "2023-08-27T10:28:48.096Z",
+            "undoAllowedDuration": 30,
+        }
+
+    monkeypatch.setattr(hub, "post", fake_post)
+    monkeypatch.setattr(hub, "get", fake_get)
+
+    hub.create_scene(
+        info=Info(name=TEST_NAME, icon=Icon.SCENES_CLEAN_SPARKLES),
+        scene_type=SceneType.CUSTOM_SCENE,
+        triggers=[
+            Trigger(
+                type="time",
+                disabled=False,
+                trigger=TriggerDetails(days=["Mon"], time="00:00"),
+                endTriggerEvent=EndTriggerEvent(
+                    type="duration", trigger=TriggerDetails(duration=21600)
+                ),
+            )
+        ],
+    )
+
+    assert post_actions[0]["data"]["triggers"] == [
+        {
+            "type": "time",
+            "disabled": False,
+            "trigger": {"days": ["Mon"], "time": "00:00"},
+            "endTriggerEvent": {"type": "duration", "trigger": {"duration": 21600}},
         }
     ]

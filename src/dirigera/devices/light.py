@@ -1,5 +1,6 @@
 from __future__ import annotations
 from typing import Any, Optional, Dict
+from .adaptive_profile import AdaptiveProfileState
 from .device import Attributes, Device, StartupEnum
 from ..hub.abstract_smart_home_hub import AbstractSmartHomeHub
 
@@ -27,6 +28,7 @@ class LightAttributes(Attributes):
 class Light(Device):
     dirigera_client: AbstractSmartHomeHub
     attributes: LightAttributes
+    adaptive_profile: Optional[AdaptiveProfileState] = None
 
     def reload(self) -> Light:
         data = self.dirigera_client.get(route=f"/devices/{self.id}")
@@ -114,6 +116,16 @@ class Light(Device):
         data = [{"attributes": {"startupOnOff": behaviour.value}}]
         self.dirigera_client.patch(route=f"/devices/{self.id}", data=data)
         self.attributes.startup_on_off = behaviour
+
+    def activate_adaptive_profile(self, profile_id: str) -> None:
+        """
+        Lets the lamp follow the schedule of the adaptive profile with the given id.
+        Changing the lamp manually afterwards (e.g. its light level) takes it out of
+        adaptive mode again, call reload() to see the current state.
+        """
+        data = [{"adaptiveProfile": {"id": profile_id, "active": True}}]
+        self.dirigera_client.patch(route=f"/devices/{self.id}", data=data)
+        self.adaptive_profile = AdaptiveProfileState(id=profile_id, active=True)
 
 
 def dict_to_light(data: Dict[str, Any], dirigera_client: AbstractSmartHomeHub) -> Light:

@@ -4,7 +4,10 @@ import pytest
 from src.dirigera.hub.abstract_smart_home_hub import FakeDirigeraHub
 from src.dirigera.devices.light import dict_to_light
 from src.dirigera.devices.light import Light
+from src.dirigera.devices.adaptive_profile import AdaptiveProfileState
 from src.dirigera.devices.device import StartupEnum
+
+PROFILE_ID = "19d31644-5fc5-405b-8f0c-b2f0634190f6"
 
 
 @pytest.fixture(name="fake_client")
@@ -320,6 +323,62 @@ def test_set_startup_behaviour_toggle(
     assert action["route"] == f"/devices/{fake_light.id}"
     assert action["data"] == [{"attributes": {"startupOnOff": behaviour.value}}]
     assert fake_light.attributes.startup_on_off == behaviour
+
+
+def test_adaptive_profile_is_none_if_hub_does_not_report_it(fake_light: Light) -> None:
+    assert fake_light.adaptive_profile is None
+
+
+def test_adaptive_profile_empty_if_not_in_adaptive_mode(
+    fake_light: Light, fake_client: FakeDirigeraHub
+) -> None:
+    data = fake_light.model_dump(by_alias=True, exclude={"dirigera_client"})
+    data["adaptiveProfile"] = {}
+    light = dict_to_light(data, fake_client)
+    assert light.adaptive_profile == AdaptiveProfileState()
+    assert light.adaptive_profile is not None
+    assert light.adaptive_profile.id is None
+    assert light.adaptive_profile.active is None
+
+
+def test_adaptive_profile_active(
+    fake_light: Light, fake_client: FakeDirigeraHub
+) -> None:
+    data = fake_light.model_dump(by_alias=True, exclude={"dirigera_client"})
+    data["adaptiveProfile"] = {"id": PROFILE_ID, "active": True}
+    light = dict_to_light(data, fake_client)
+    assert light.adaptive_profile is not None
+    assert light.adaptive_profile.id == PROFILE_ID
+    assert light.adaptive_profile.active
+
+
+def test_reload_updates_adaptive_profile(
+    fake_light: Light, fake_client: FakeDirigeraHub
+) -> None:
+    data = fake_light.model_dump(by_alias=True, exclude={"dirigera_client"})
+    data["adaptiveProfile"] = {"id": PROFILE_ID, "active": True}
+    fake_client.get_action_replys[f"/devices/{fake_light.id}"] = data
+    fake_light.reload()
+    assert fake_light.adaptive_profile == AdaptiveProfileState(
+        id=PROFILE_ID, active=True
+    )
+
+    # the hub reports an empty profile once the light left adaptive mode
+    data["adaptiveProfile"] = {}
+    fake_light.reload()
+    assert fake_light.adaptive_profile == AdaptiveProfileState()
+
+
+def test_activate_adaptive_profile(
+    fake_light: Light, fake_client: FakeDirigeraHub
+) -> None:
+    fake_light.activate_adaptive_profile(PROFILE_ID)
+    action = fake_client.patch_actions.pop()
+    assert action["route"] == f"/devices/{fake_light.id}"
+    assert action["data"] == [{"adaptiveProfile": {"id": PROFILE_ID, "active": True}}]
+    assert fake_light.adaptive_profile == AdaptiveProfileState(
+        id=PROFILE_ID, active=True
+    )
 
 
 def test_dict_to_light_3rdparty(fake_client: FakeDirigeraHub) -> None:

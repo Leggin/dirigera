@@ -96,6 +96,9 @@ response = dirigera_hub.delete(route="/scenes/1")
 # Fetch all air purifiers registered in the hub
 air_purifiers = dirigera_hub.get_air_purifiers()
 
+# Fetch an air purifier by its name
+air_purifier = dirigera_hub.get_air_purifier_by_name(air_purifier_name="living room air purifier")
+
 # Fetch an air purifier by its ID
 air_purifier = dirigera_hub.get_air_purifier_by_id(id_="1")
 
@@ -120,6 +123,9 @@ outlet = dirigera_hub.get_outlet_by_id(id_="1")
 # Fetch all environment sensors registered in the hub
 sensors = dirigera_hub.get_environment_sensors()
 
+# Fetch an environment sensor by its name
+sensor = dirigera_hub.get_environment_sensor_by_name(environment_sensor_name="living room environment sensor")
+
 # Fetch an environment sensor by its ID
 sensor = dirigera_hub.get_environment_sensor_by_id(id_="1")
 
@@ -134,6 +140,9 @@ sensor = dirigera_hub.get_motion_sensor_by_id(id_="1")
 
 # Fetch all open/close sensors registered in the hub
 sensors = dirigera_hub.get_open_close_sensors()
+
+# Fetch an open/close sensor by its name
+sensor = dirigera_hub.get_open_close_sensor_by_name(open_close_sensor_name="front door sensor")
 
 # Fetch an open/close sensor by its ID
 sensor = dirigera_hub.get_open_close_by_id(id_="1")
@@ -165,17 +174,26 @@ scene = dirigera_hub.get_scene_by_id(scene_id="1")
 # Fetch all water sensors registered in the hub
 water_sensors = dirigera_hub.get_water_sensors()
 
+# Fetch a water sensor by its name
+water_sensor = dirigera_hub.get_water_sensor_by_name(water_sensor_name="bathroom water sensor")
+
 # Fetch a water sensor by its ID
 water_sensor = dirigera_hub.get_water_sensor_by_id(id_="1")
 
 # Fetch all occupancy sensors registered in the hub
 occupancy_sensors = dirigera_hub.get_occupancy_sensors()
 
+# Fetch an occupancy sensor by its name
+occupancy_sensor = dirigera_hub.get_occupancy_sensor_by_name(occupancy_sensor_name="hallway occupancy sensor")
+
 # Fetch an occupancy sensor by its ID
 occupancy_sensor = dirigera_hub.get_occupancy_sensor_by_id(id_="1")
 
 # Fetch all light sensors registered in the hub
 light_sensors = dirigera_hub.get_light_sensors()
+
+# Fetch a light sensor by its name
+light_sensor = dirigera_hub.get_light_sensor_by_name(light_sensor_name="living room light sensor")
 
 # Fetch a light sensor by its ID
 light_sensor = dirigera_hub.get_light_sensor_by_id(id_="1")
@@ -614,6 +632,8 @@ To get information about the available open/close sensors, you can use the `get_
 ```python
 open_close_sensors = dirigera_hub.get_open_close_sensors()
 ```
+
+The hub does not guarantee the order of the returned devices, so look sensors up by their id (`get_open_close_by_id()`) or name (`get_open_close_sensor_by_name()`) instead of by their position in the list.
 
 The open_close_sensor object has the following attributes (additional to the core attributes):
 

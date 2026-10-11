@@ -21,8 +21,8 @@ keywords = [
 ]
 dependencies = [
     "requests >= 2.22.0",
-    "websocket-client >= 1.0.0",
-    "pydantic >= 1.10.0",
+    "websocket-client >= 1.4.0",
+    "pydantic >= 2.0",
 ]
 requires-python = ">=3.7"
 classifiers = [

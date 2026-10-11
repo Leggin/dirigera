@@ -89,6 +89,7 @@ class TriggerDetails(BaseIkeaModel):
     click_pattern: Optional[ClickPattern] = None
     device_id: Optional[str] = None
     offset: Optional[int] = None
+    duration: Optional[int] = None  # seconds, used by end triggers of type "duration"
     type: Optional[str] = None
 
     # Deprecated camelCase accessors, kept so existing code reading the old attribute names keeps working.

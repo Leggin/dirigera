@@ -1,5 +1,6 @@
 from __future__ import annotations
 import datetime
+import warnings
 from enum import Enum
 from typing import Dict, Any, List, Optional, Union
 from .base_ikea_model import BaseIkeaModel
@@ -83,12 +84,49 @@ class Trigger(BaseIkeaModel):
 class TriggerDetails(BaseIkeaModel):
     days: Optional[List[str]] = None
     time: Optional[str] = None
-    controllerType: Optional[ControllerType] = None
-    buttonIndex: Optional[int] = None
-    clickPattern: Optional[ClickPattern] = None
-    deviceId: Optional[str] = None
+    controller_type: Optional[ControllerType] = None
+    button_index: Optional[int] = None
+    click_pattern: Optional[ClickPattern] = None
+    device_id: Optional[str] = None
     offset: Optional[int] = None
     type: Optional[str] = None
+
+    # Deprecated camelCase accessors, kept so existing code reading the old attribute names keeps working.
+    @property
+    def controllerType(self) -> Optional[ControllerType]:  # pylint: disable=invalid-name
+        warnings.warn(
+            "controllerType is deprecated, use controller_type instead",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.controller_type
+
+    @property
+    def buttonIndex(self) -> Optional[int]:  # pylint: disable=invalid-name
+        warnings.warn(
+            "buttonIndex is deprecated, use button_index instead",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.button_index
+
+    @property
+    def clickPattern(self) -> Optional[ClickPattern]:  # pylint: disable=invalid-name
+        warnings.warn(
+            "clickPattern is deprecated, use click_pattern instead",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.click_pattern
+
+    @property
+    def deviceId(self) -> Optional[str]:  # pylint: disable=invalid-name
+        warnings.warn(
+            "deviceId is deprecated, use device_id instead",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.device_id
 
 
 class ControllerType(Enum):

@@ -4,6 +4,15 @@ from .device import Attributes, Device, StartupEnum
 from ..hub.abstract_smart_home_hub import AbstractSmartHomeHub
 
 
+def _bound_to_kelvin(bound: int) -> int:
+    # Some bulbs (e.g. KAJPLATS) report their color temperature bounds in mireds
+    # (153..454) while the color temperature itself is in Kelvin. No light has a
+    # Kelvin value below 1000 and mireds are never above it, so this is unambiguous.
+    if 0 < bound < 1000:
+        return round(1_000_000 / bound)
+    return bound
+
+
 class LightAttributes(Attributes):
     startup_on_off: Optional[StartupEnum] = None
     is_on: bool
@@ -61,13 +70,14 @@ class Light(Device):
             or self.attributes.color_temperature_min is None
         ):
             raise ValueError("Values of color_temp_max or color_temp_min are None")
-        if (
-            color_temp < self.attributes.color_temperature_max
-            or color_temp > self.attributes.color_temperature_min
-        ):
+        bounds = (
+            _bound_to_kelvin(self.attributes.color_temperature_min),
+            _bound_to_kelvin(self.attributes.color_temperature_max),
+        )
+        lower, upper = min(bounds), max(bounds)
+        if color_temp < lower or color_temp > upper:
             raise ValueError(
-                "color_temperature must be a value between "
-                f"{self.attributes.color_temperature_max} and {self.attributes.color_temperature_min}"
+                f"color_temperature must be a value between {lower} and {upper}"
             )
 
         data = [{"attributes": {"colorTemperature": color_temp}}]

@@ -63,7 +63,7 @@ class Hub(AbstractSmartHomeHub):
         on_cont_message: Any = None,
         ping_intervall: int = 60,
         dispatcher: Any = None,
-        reconnect: int = None,
+        reconnect: Optional[int] = None,
     ) -> None:
         """
         Create an event listener.

@@ -135,7 +135,8 @@ class Scene(BaseIkeaModel):
 
     def reload(self) -> Scene:
         data = self.dirigera_client.get(route=f"/scenes/{self.id}")
-        return Scene(dirigeraClient=self.dirigera_client, **data)
+        self._copy_from(Scene(dirigeraClient=self.dirigera_client, **data))
+        return self
 
     def trigger(self) -> None:
         self.dirigera_client.post(route=f"/scenes/{self.id}/trigger")

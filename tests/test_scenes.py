@@ -56,6 +56,27 @@ def test_trigger(fake_scene: Scene, fake_client: FakeDirigeraHub) -> None:
     assert action["route"] == f"/scenes/{fake_scene.id}/trigger"
 
 
+def test_reload_updates_in_place(
+    fake_scene: Scene, fake_client: FakeDirigeraHub
+) -> None:
+    data = fake_scene.model_dump(by_alias=True, exclude={"dirigera_client"})
+    data["info"]["name"] = "Renamed"
+    data["actions"][0]["attributes"]["lightLevel"] = 50
+    data["lastTriggered"] = "2023-08-28T08:00:00.000Z"
+    fake_client.get_action_replys[f"/scenes/{fake_scene.id}"] = data
+    old_info = fake_scene.info
+
+    assert fake_scene.reload() is fake_scene
+    assert fake_scene.info is not old_info
+    assert fake_scene.dirigera_client is fake_client
+    assert fake_scene.info.name == "Renamed"
+    assert fake_scene.actions[0].attributes is not None
+    assert fake_scene.actions[0].attributes.model_extra == {"lightLevel": 50}
+    assert fake_scene.last_triggered == datetime.datetime(
+        2023, 8, 28, 8, 0, tzinfo=datetime.timezone.utc
+    )
+
+
 def test_dict_to_scene(fake_client: FakeDirigeraHub) -> None:
     data1: Dict[str, Any] = {
         "id": "c9bbf831-6dcd-4442-8195-53eedb66a598",

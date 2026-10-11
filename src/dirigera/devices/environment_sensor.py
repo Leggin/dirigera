@@ -24,7 +24,8 @@ class EnvironmentSensor(Device):
 
     def reload(self) -> EnvironmentSensor:
         data = self.dirigera_client.get(route=f"/devices/{self.id}")
-        return EnvironmentSensor(dirigeraClient=self.dirigera_client, **data)
+        self._copy_from(EnvironmentSensor(dirigeraClient=self.dirigera_client, **data))
+        return self
 
     def set_name(self, name: str) -> None:
         if "customName" not in self.capabilities.can_receive:

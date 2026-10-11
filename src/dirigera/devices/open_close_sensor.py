@@ -14,7 +14,8 @@ class OpenCloseSensor(Device):
 
     def reload(self) -> OpenCloseSensor:
         data = self.dirigera_client.get(route=f"/devices/{self.id}")
-        return OpenCloseSensor(dirigeraClient=self.dirigera_client, **data)
+        self._copy_from(OpenCloseSensor(dirigeraClient=self.dirigera_client, **data))
+        return self
 
     def set_name(self, name: str) -> None:
         if "customName" not in self.capabilities.can_receive:

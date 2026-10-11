@@ -154,6 +154,24 @@ def test_refresh(fake_light: Light, fake_client: FakeDirigeraHub) -> None:
     assert fake_light.attributes.serial_number == data["attributes"]["serialNumber"]
 
 
+def test_reload_updates_in_place(
+    fake_light: Light, fake_client: FakeDirigeraHub
+) -> None:
+    data = fake_light.model_dump(by_alias=True, exclude={"dirigera_client"})
+    data["isReachable"] = False
+    data["attributes"]["isOn"] = True
+    data["attributes"]["lightLevel"] = 13
+    fake_client.get_action_replys[f"/devices/{fake_light.id}"] = data
+    old_attributes = fake_light.attributes
+
+    assert fake_light.reload() is fake_light
+    assert fake_light.attributes is not old_attributes
+    assert fake_light.dirigera_client is fake_client
+    assert not fake_light.is_reachable
+    assert fake_light.attributes.is_on
+    assert fake_light.attributes.light_level == 13
+
+
 def test_set_name(fake_light: Light, fake_client: FakeDirigeraHub) -> None:
     new_name = "stadtlampefluss"
     fake_light.set_name(new_name)

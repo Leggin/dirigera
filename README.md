@@ -162,6 +162,9 @@ scenes = dirigera_hub.get_scenes()
 # Fetch a scene by its ID
 scene = dirigera_hub.get_scene_by_id(scene_id="1")
 
+# Fetch a scene by its name
+scene = dirigera_hub.get_scene_by_name(scene_name="movie night")
+
 # Fetch all water sensors registered in the hub
 water_sensors = dirigera_hub.get_water_sensors()
 
@@ -276,7 +279,7 @@ light_level: Optional[int] = None
 color_temperature: Optional[int] = None
 color_temperature_min: Optional[int] = None
 color_temperature_max: Optional[int] = None
-color_hue: Optional[int] = None
+color_hue: Optional[float] = None
 color_saturation: Optional[float] = None
 ```
 
@@ -333,7 +336,7 @@ time_of_last_energy_reset: Optional[datetime.datetime] = None
 Available methods for outlet are:
 
 ```python
-# Reload the air outlet data from the hub
+# Reload the outlet data from the hub
 outlet.reload()
 
 # Set the name of the outlet
@@ -369,7 +372,7 @@ filter_lifetime: int
 current_p_m25: int
 ```
 
-Available methods for blinds are:
+Available methods for air purifier are:
 
 ```python
 # Reload the air purifier data from the hub
@@ -504,7 +507,7 @@ created_at: datetime.datetime
 last_completed: Optional[datetime.datetime] = None
 last_triggered: Optional[datetime.datetime] = None
 last_undo: Optional[datetime.datetime] = None
-commands: List[str]
+commands: List[Union[str, Dict[str, Any]]]
 undo_allowed_duration: int
 ```
 
@@ -588,7 +591,7 @@ All available icons can be found here: [Icons](./src/dirigera/devices/scene.py)
 To get information about the available motion sensors, you can use the `get_motion_sensors()` method:
 
 ```python
-motions_sensors = dirigera_hub.get_motion_sensors()
+motion_sensors = dirigera_hub.get_motion_sensors()
 ```
 
 The motion sensor object has the following attributes (additional to the core attributes):
@@ -600,7 +603,7 @@ light_level: Optional[float] = None
 is_detected: Optional[bool] = False
 ```
 
-Available methods for outlet are:
+Available methods for motion sensor are:
 
 ```python
 # Reload the motion sensor data from the hub
@@ -625,7 +628,7 @@ is_open: bool
 battery_percentage: Optional[int] = None
 ```
 
-Available methods for outlet are:
+Available methods for open/close sensor are:
 
 ```python
 # Reload the open/close sensor data from the hub

@@ -22,6 +22,7 @@ from ..devices.scene import Action, Info, Scene, SceneType, Trigger, dict_to_sce
 from ..devices.water_sensor import WaterSensor, dict_to_water_sensor
 from ..devices.occupancy_sensor import OccupancySensor, dict_to_occupancy_sensor
 from ..devices.light_sensor import LightSensor, dict_to_light_sensor
+from ..devices.electrical_sensor import ElectricalSensor, dict_to_electrical_sensor
 
 urllib3.disable_warnings(category=InsecureRequestWarning)
 
@@ -214,7 +215,7 @@ class Hub(AbstractSmartHomeHub):
         Fetches all outlets registered in the Hub
         """
         devices = self.get("/devices")
-        outlets = list(filter(lambda x: x["type"] == "outlet", devices))
+        outlets = list(filter(lambda x: x["deviceType"] == "outlet", devices))
         return [dict_to_outlet(outlet, self) for outlet in outlets]
 
     def get_outlet_by_name(self, outlet_name: str) -> Outlet:
@@ -234,7 +235,7 @@ class Hub(AbstractSmartHomeHub):
         Fetches an outlet by its id if that outlet does not exist or is a device of another type raises ValueError
         """
         outlet = self._get_device_data_by_id(id_)
-        if outlet["type"] != "outlet":
+        if outlet["deviceType"] != "outlet":
             raise ValueError("Device is not an outlet")
         return dict_to_outlet(outlet, self)
 
@@ -428,6 +429,24 @@ class Hub(AbstractSmartHomeHub):
             raise ValueError("Device is not an OccupancySensor")
         return dict_to_occupancy_sensor(sensor, self)
 
+    def get_electrical_sensors(self) -> List[ElectricalSensor]:
+        """
+        Fetches all electrical sensors registered in the Hub
+        """
+        devices = self.get("/devices")
+        sensors = list(filter(lambda x: x["deviceType"] == "electricalSensor", devices))
+        return [dict_to_electrical_sensor(sensor, self) for sensor in sensors]
+
+    def get_electrical_sensor_by_id(self, id_: str) -> ElectricalSensor:
+        """
+        Fetches an electrical sensor by its id
+        if that electrical sensor does not exist or is a device of another type raises ValueError
+        """
+        sensor = self._get_device_data_by_id(id_)
+        if sensor["deviceType"] != "electricalSensor":
+            raise ValueError("Device is not an ElectricalSensor")
+        return dict_to_electrical_sensor(sensor, self)
+
     def get_all_devices(self) -> List[Device]:
         """
         Fetches all devices registered in the Hub
@@ -444,6 +463,7 @@ class Hub(AbstractSmartHomeHub):
         devices.extend(self.get_water_sensors())
         devices.extend(self.get_occupancy_sensors())
         devices.extend(self.get_light_sensors())
+        devices.extend(self.get_electrical_sensors())
 
         return devices
 

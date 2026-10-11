@@ -26,6 +26,7 @@ This repository provides an unofficial Python client for controlling the IKEA Di
     - [Creating a Scene](#creating-a-scene)
   - [Motion Sensor](#motion-sensor)
   - [Open Close Sensor](#open-close-sensor)
+  - [Electrical Sensor](#electrical-sensor)
   - [Event Listener](#event-listener)
   - [Motivation](#motivation)
   - [Contributing](#contributing)
@@ -182,6 +183,12 @@ light_sensors = dirigera_hub.get_light_sensors()
 
 # Fetch a light sensor by its ID
 light_sensor = dirigera_hub.get_light_sensor_by_id(id_="1")
+
+# Fetch all electrical sensors registered in the hub
+electrical_sensors = dirigera_hub.get_electrical_sensors()
+
+# Fetch an electrical sensor by its ID
+electrical_sensor = dirigera_hub.get_electrical_sensor_by_id(id_="1")
 
 # Fetch all devices registered in the hub
 devices = dirigera_hub.get_all_devices()
@@ -636,6 +643,50 @@ open_close_sensor.reload()
 
 # Set the name of the open/close sensor
 open_close_sensor.set_name(name="window 1")
+```
+
+## [Electrical Sensor](./src/dirigera/devices/electrical_sensor.py)
+
+Plugs with energy metering, like the GRILLPLATS plug, are reported by the hub as two devices that share the same `relation_id`: an outlet (`isOn`, startup behaviour, ...) and an electrical sensor that holds the metering values.
+
+To get the electrical sensors use:
+
+```python
+electrical_sensors = dirigera_hub.get_electrical_sensors()
+```
+
+The electrical sensor object has the following attributes (additional to the core attributes):
+
+```python
+current_active_power: Optional[float] = None
+current_amps: Optional[float] = None
+current_voltage: Optional[float] = None
+energy_consumed_at_last_reset: Optional[float] = None
+total_energy_consumed: Optional[float] = None
+total_energy_consumed_last_updated: Optional[datetime.datetime] = None
+time_of_last_energy_reset: Optional[datetime.datetime] = None
+```
+
+Available methods for electrical sensor are:
+
+```python
+# Reload the electrical sensor data from the hub
+electrical_sensor.reload()
+
+# Set the name of the electrical sensor
+electrical_sensor.set_name(name="grill plug")
+```
+
+To find the electrical sensor that belongs to an outlet, compare their `relation_id`:
+
+```python
+outlet = dirigera_hub.get_outlet_by_name(outlet_name="grill plug")
+electrical_sensor = next(
+    sensor
+    for sensor in dirigera_hub.get_electrical_sensors()
+    if sensor.relation_id == outlet.relation_id
+)
+print(electrical_sensor.attributes.current_active_power)
 ```
 
 ## Event Listener

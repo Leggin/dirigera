@@ -1,8 +1,19 @@
 import datetime
-from typing import Any, Dict
+from typing import Any, Dict, List, Optional
 import pytest
 from src.dirigera.hub.abstract_smart_home_hub import FakeDirigeraHub
-from src.dirigera.devices.scene import Scene, dict_to_scene, ControllerType
+from src.dirigera.hub.hub import Hub
+from src.dirigera.devices.scene import (
+    Scene,
+    dict_to_scene,
+    ControllerType,
+    ClickPattern,
+    Icon,
+    Info,
+    SceneType,
+    Trigger,
+    TriggerDetails,
+)
 
 TEST_ID = "c9bbf831-6dcd-4442-8195-53eedb66a598"
 TEST_NAME = "Tesscene"
@@ -10,6 +21,7 @@ TEST_ICON = "scenes_clean_sparkles"
 TEST_LAST_COMPLETED = "2023-08-27T11:01:14.767Z"
 TEST_LAST_TRIGGERED = "2023-08-27T11:01:14.767Z"
 TEST_LAST_UNDO = "2023-08-27T10:29:33.049Z"
+TEST_DEVICE_ID = "0000aaaa-0000-0000-aa00-0a0aa0a000a0_1"
 
 
 @pytest.fixture(name="fake_client")
@@ -158,4 +170,98 @@ def test_dict_to_scene(fake_client: FakeDirigeraHub) -> None:
 
     scene2 = dict_to_scene(data2, fake_client)
     assert scene2.triggers[1].trigger is not None
-    assert scene2.triggers[1].trigger.controllerType == ControllerType.SHORTCUT_CONTROLLER
+    assert scene2.triggers[1].trigger.controller_type == ControllerType.SHORTCUT_CONTROLLER
+    assert scene2.triggers[1].trigger.click_pattern == ClickPattern.DOUBLE_PRESS
+    assert scene2.triggers[1].trigger.button_index == 0
+    assert (
+        scene2.triggers[1].trigger.device_id
+        == "0000aaaa-0000-0000-aa00-0a0aa0a000a0_2"
+    )
+
+
+def test_trigger_details_camel_case_construction() -> None:
+    trigger = TriggerDetails(
+        controllerType=ControllerType.SHORTCUT_CONTROLLER,
+        buttonIndex=1,
+        clickPattern=ClickPattern.SINGLE_PRESS,
+        deviceId=TEST_DEVICE_ID,
+    )
+    assert trigger.controller_type == ControllerType.SHORTCUT_CONTROLLER
+    assert trigger.button_index == 1
+    assert trigger.click_pattern == ClickPattern.SINGLE_PRESS
+    assert trigger.device_id == TEST_DEVICE_ID
+
+
+def test_trigger_details_deprecated_camel_case_attributes() -> None:
+    trigger = TriggerDetails(
+        controllerType=ControllerType.SHORTCUT_CONTROLLER,
+        buttonIndex=1,
+        clickPattern=ClickPattern.SINGLE_PRESS,
+        deviceId=TEST_DEVICE_ID,
+    )
+    with pytest.warns(DeprecationWarning, match="controller_type"):
+        assert trigger.controllerType == ControllerType.SHORTCUT_CONTROLLER
+    with pytest.warns(DeprecationWarning, match="button_index"):
+        assert trigger.buttonIndex == 1
+    with pytest.warns(DeprecationWarning, match="click_pattern"):
+        assert trigger.clickPattern == ClickPattern.SINGLE_PRESS
+    with pytest.warns(DeprecationWarning, match="device_id"):
+        assert trigger.deviceId == TEST_DEVICE_ID
+
+
+def test_create_scene_posts_camel_case_trigger_details(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    hub = Hub(token="token", ip_address="127.0.0.1")
+    post_actions: List[Dict[str, Any]] = []
+
+    def fake_post(route: str, data: Optional[Dict[str, Any]] = None) -> Any:
+        post_actions.append({"route": route, "data": data})
+        return {"id": TEST_ID}
+
+    def fake_get(_route: str) -> Any:
+        return {
+            "id": TEST_ID,
+            "info": {"name": TEST_NAME, "icon": TEST_ICON},
+            "type": "userScene",
+            "triggers": [],
+            "actions": [],
+            "commands": [],
+            "createdAt": "2023-08-27T10:28:48.096Z",
+            "undoAllowedDuration": 30,
+        }
+
+    monkeypatch.setattr(hub, "post", fake_post)
+    monkeypatch.setattr(hub, "get", fake_get)
+
+    hub.create_scene(
+        info=Info(name=TEST_NAME, icon=Icon.SCENES_CLEAN_SPARKLES),
+        scene_type=SceneType.USER_SCENE,
+        triggers=[
+            Trigger(
+                type="controller",
+                disabled=False,
+                trigger=TriggerDetails(
+                    controllerType=ControllerType.SHORTCUT_CONTROLLER,
+                    buttonIndex=0,
+                    clickPattern=ClickPattern.DOUBLE_PRESS,
+                    deviceId=TEST_DEVICE_ID,
+                ),
+            )
+        ],
+    )
+
+    assert len(post_actions) == 1
+    assert post_actions[0]["route"] == "/scenes/"
+    assert post_actions[0]["data"]["triggers"] == [
+        {
+            "type": "controller",
+            "disabled": False,
+            "trigger": {
+                "controllerType": "shortcutController",
+                "buttonIndex": 0,
+                "clickPattern": "doublePress",
+                "deviceId": TEST_DEVICE_ID,
+            },
+        }
+    ]

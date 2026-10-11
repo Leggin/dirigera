@@ -419,6 +419,9 @@ blind.set_name(name="kitchen blind 1")
 
 # Set the target level of the blind (0-100)
 blind.set_target_level(target_level=90)
+
+# Move the blind up or down, or stop it at its current position
+blind.set_state(state=BlindsStateEnum.STOPPED)
 ```
 
 ## [Remote Controllers](./src/dirigera/devices/controller.py)

@@ -197,6 +197,56 @@ def test_set_color_temperature(fake_light: Light, fake_client: FakeDirigeraHub) 
     assert fake_light.attributes.color_temperature == temp
 
 
+def test_set_color_temperature_out_of_range(
+    fake_light: Light, fake_client: FakeDirigeraHub
+) -> None:
+    for temp in (2201, 4001):
+        with pytest.raises(ValueError, match="between 2202 and 4000"):
+            fake_light.set_color_temperature(temp)
+    assert not fake_client.patch_actions
+
+
+def test_set_color_temperature_ascending_bounds(
+    fake_light: Light, fake_client: FakeDirigeraHub
+) -> None:
+    fake_light.attributes.color_temperature_min = 2202
+    fake_light.attributes.color_temperature_max = 4000
+    temp = 3000
+    fake_light.set_color_temperature(temp)
+    action = fake_client.patch_actions.pop()
+    assert action["data"] == [{"attributes": {"colorTemperature": temp}}]
+    assert fake_light.attributes.color_temperature == temp
+    for invalid_temp in (2201, 4001):
+        with pytest.raises(ValueError, match="between 2202 and 4000"):
+            fake_light.set_color_temperature(invalid_temp)
+    assert not fake_client.patch_actions
+
+
+def test_set_color_temperature_mired_bounds(
+    fake_light: Light, fake_client: FakeDirigeraHub
+) -> None:
+    # KAJPLATS reports its bounds in mireds, but the color temperature in Kelvin
+    fake_light.attributes.color_temperature = 4484
+    fake_light.attributes.color_temperature_min = 153
+    fake_light.attributes.color_temperature_max = 454
+    temp = 2700
+    fake_light.set_color_temperature(temp)
+    action = fake_client.patch_actions.pop()
+    assert action["route"] == f"/devices/{fake_light.id}"
+    assert action["data"] == [{"attributes": {"colorTemperature": temp}}]
+    assert fake_light.attributes.color_temperature == temp
+    for invalid_temp in (448, 7000):
+        with pytest.raises(ValueError, match="between 2203 and 6536"):
+            fake_light.set_color_temperature(invalid_temp)
+    assert not fake_client.patch_actions
+
+
+def test_set_color_temperature_bounds_none(fake_light: Light) -> None:
+    fake_light.attributes.color_temperature_max = None
+    with pytest.raises(ValueError):
+        fake_light.set_color_temperature(3000)
+
+
 def test_set_light_color(fake_light: Light, fake_client: FakeDirigeraHub) -> None:
     hue = 120
     saturation = 0.9

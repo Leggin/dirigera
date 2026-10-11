@@ -22,6 +22,7 @@ from ..devices.scene import Action, Info, Scene, SceneType, Trigger, dict_to_sce
 from ..devices.water_sensor import WaterSensor, dict_to_water_sensor
 from ..devices.occupancy_sensor import OccupancySensor, dict_to_occupancy_sensor
 from ..devices.light_sensor import LightSensor, dict_to_light_sensor
+from ..devices.electrical_sensor import ElectricalSensor, dict_to_electrical_sensor
 
 urllib3.disable_warnings(category=InsecureRequestWarning)
 
@@ -176,6 +177,18 @@ class Hub(AbstractSmartHomeHub):
         airpurifiers = list(filter(lambda x: x["type"] == "airPurifier", devices))
         return [dict_to_air_purifier(air_p, self) for air_p in airpurifiers]
 
+    def get_air_purifier_by_name(self, air_purifier_name: str) -> AirPurifier:
+        """
+        Fetches all air purifiers and returns first result that matches this name
+        """
+        air_purifiers = self.get_air_purifiers()
+        air_purifiers = list(
+            filter(lambda x: x.attributes.custom_name == air_purifier_name, air_purifiers)
+        )
+        if len(air_purifiers) == 0:
+            raise AssertionError(f"No air purifier found with name {air_purifier_name}")
+        return air_purifiers[0]
+
     def get_air_purifier_by_id(self, id_: str) -> AirPurifier:
         air_purifier_device = self._get_device_data_by_id(id_)
         if air_purifier_device["deviceType"] != "airPurifier":
@@ -214,7 +227,7 @@ class Hub(AbstractSmartHomeHub):
         Fetches all outlets registered in the Hub
         """
         devices = self.get("/devices")
-        outlets = list(filter(lambda x: x["type"] == "outlet", devices))
+        outlets = list(filter(lambda x: x["deviceType"] == "outlet", devices))
         return [dict_to_outlet(outlet, self) for outlet in outlets]
 
     def get_outlet_by_name(self, outlet_name: str) -> Outlet:
@@ -234,7 +247,7 @@ class Hub(AbstractSmartHomeHub):
         Fetches an outlet by its id if that outlet does not exist or is a device of another type raises ValueError
         """
         outlet = self._get_device_data_by_id(id_)
-        if outlet["type"] != "outlet":
+        if outlet["deviceType"] != "outlet":
             raise ValueError("Device is not an outlet")
         return dict_to_outlet(outlet, self)
 
@@ -247,6 +260,18 @@ class Hub(AbstractSmartHomeHub):
             filter(lambda x: x["deviceType"] == "environmentSensor", devices)
         )
         return [dict_to_environment_sensor(sensor, self) for sensor in sensors]
+
+    def get_environment_sensor_by_name(self, environment_sensor_name: str) -> EnvironmentSensor:
+        """
+        Fetches all environment sensors and returns first result that matches this name
+        """
+        environment_sensors = self.get_environment_sensors()
+        environment_sensors = list(
+            filter(lambda x: x.attributes.custom_name == environment_sensor_name, environment_sensors)
+        )
+        if len(environment_sensors) == 0:
+            raise AssertionError(f"No environment sensor found with name {environment_sensor_name}")
+        return environment_sensors[0]
 
     def get_environment_sensor_by_id(self, id_: str) -> EnvironmentSensor:
         environment_sensor = self._get_device_data_by_id(id_)
@@ -285,6 +310,18 @@ class Hub(AbstractSmartHomeHub):
         devices = self.get("/devices")
         sensors = list(filter(lambda x: x["deviceType"] == "openCloseSensor", devices))
         return [dict_to_open_close_sensor(sensor, self) for sensor in sensors]
+
+    def get_open_close_sensor_by_name(self, open_close_sensor_name: str) -> OpenCloseSensor:
+        """
+        Fetches all open/close sensors and returns first result that matches this name
+        """
+        open_close_sensors = self.get_open_close_sensors()
+        open_close_sensors = list(
+            filter(lambda x: x.attributes.custom_name == open_close_sensor_name, open_close_sensors)
+        )
+        if len(open_close_sensors) == 0:
+            raise AssertionError(f"No open/close sensor found with name {open_close_sensor_name}")
+        return open_close_sensors[0]
 
     def get_open_close_by_id(self, id_: str) -> OpenCloseSensor:
         open_close_sensor = self._get_device_data_by_id(id_)
@@ -382,6 +419,18 @@ class Hub(AbstractSmartHomeHub):
             dict_to_water_sensor(water_sensor, self) for water_sensor in water_sensors
         ]
 
+    def get_water_sensor_by_name(self, water_sensor_name: str) -> WaterSensor:
+        """
+        Fetches all water sensors and returns first result that matches this name
+        """
+        water_sensors = self.get_water_sensors()
+        water_sensors = list(
+            filter(lambda x: x.attributes.custom_name == water_sensor_name, water_sensors)
+        )
+        if len(water_sensors) == 0:
+            raise AssertionError(f"No water sensor found with name {water_sensor_name}")
+        return water_sensors[0]
+
     def get_water_sensor_by_id(self, id_: str) -> WaterSensor:
         """
         Fetches a water sensor by its id
@@ -399,6 +448,18 @@ class Hub(AbstractSmartHomeHub):
         devices = self.get("/devices")
         sensors = list(filter(lambda x: x["deviceType"] == "lightSensor", devices))
         return [dict_to_light_sensor(sensor, self) for sensor in sensors]
+
+    def get_light_sensor_by_name(self, light_sensor_name: str) -> LightSensor:
+        """
+        Fetches all light sensors and returns first result that matches this name
+        """
+        light_sensors = self.get_light_sensors()
+        light_sensors = list(
+            filter(lambda x: x.attributes.custom_name == light_sensor_name, light_sensors)
+        )
+        if len(light_sensors) == 0:
+            raise AssertionError(f"No light sensor found with name {light_sensor_name}")
+        return light_sensors[0]
 
     def get_light_sensor_by_id(self, id_: str) -> LightSensor:
         """
@@ -418,6 +479,18 @@ class Hub(AbstractSmartHomeHub):
         sensors = list(filter(lambda x: x["deviceType"] == "occupancySensor", devices))
         return [dict_to_occupancy_sensor(sensor, self) for sensor in sensors]
 
+    def get_occupancy_sensor_by_name(self, occupancy_sensor_name: str) -> OccupancySensor:
+        """
+        Fetches all occupancy sensors and returns first result that matches this name
+        """
+        occupancy_sensors = self.get_occupancy_sensors()
+        occupancy_sensors = list(
+            filter(lambda x: x.attributes.custom_name == occupancy_sensor_name, occupancy_sensors)
+        )
+        if len(occupancy_sensors) == 0:
+            raise AssertionError(f"No occupancy sensor found with name {occupancy_sensor_name}")
+        return occupancy_sensors[0]
+
     def get_occupancy_sensor_by_id(self, id_: str) -> OccupancySensor:
         """
         Fetches an occupancy sensor by its id
@@ -427,6 +500,24 @@ class Hub(AbstractSmartHomeHub):
         if sensor["deviceType"] != "occupancySensor":
             raise ValueError("Device is not an OccupancySensor")
         return dict_to_occupancy_sensor(sensor, self)
+
+    def get_electrical_sensors(self) -> List[ElectricalSensor]:
+        """
+        Fetches all electrical sensors registered in the Hub
+        """
+        devices = self.get("/devices")
+        sensors = list(filter(lambda x: x["deviceType"] == "electricalSensor", devices))
+        return [dict_to_electrical_sensor(sensor, self) for sensor in sensors]
+
+    def get_electrical_sensor_by_id(self, id_: str) -> ElectricalSensor:
+        """
+        Fetches an electrical sensor by its id
+        if that electrical sensor does not exist or is a device of another type raises ValueError
+        """
+        sensor = self._get_device_data_by_id(id_)
+        if sensor["deviceType"] != "electricalSensor":
+            raise ValueError("Device is not an ElectricalSensor")
+        return dict_to_electrical_sensor(sensor, self)
 
     def get_all_devices(self) -> List[Device]:
         """
@@ -444,6 +535,7 @@ class Hub(AbstractSmartHomeHub):
         devices.extend(self.get_water_sensors())
         devices.extend(self.get_occupancy_sensors())
         devices.extend(self.get_light_sensors())
+        devices.extend(self.get_electrical_sensors())
 
         return devices
 

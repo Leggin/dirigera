@@ -1,7 +1,14 @@
 from __future__ import annotations
+from enum import Enum
 from typing import Any, Optional, Dict
 from .device import Attributes, Device
 from ..hub.abstract_smart_home_hub import AbstractSmartHomeHub
+
+
+class BlindsStateEnum(Enum):
+    UP = "up"
+    DOWN = "down"
+    STOPPED = "stopped"
 
 
 class BlindAttributes(Attributes):
@@ -40,6 +47,14 @@ class Blind(Device):
         data = [{"attributes": {"blindsTargetLevel": target_level}}]
         self.dirigera_client.patch(route=f"/devices/{self.id}", data=data)
         self.attributes.blinds_target_level = target_level
+
+    def set_state(self, state: BlindsStateEnum) -> None:
+        if "blindsState" not in self.capabilities.can_receive:
+            raise AssertionError("This blind does not support the state function")
+
+        data = [{"attributes": {"blindsState": state.value}}]
+        self.dirigera_client.patch(route=f"/devices/{self.id}", data=data)
+        self.attributes.blinds_state = state.value
 
 
 def dict_to_blind(data: Dict[str, Any], dirigera_client: AbstractSmartHomeHub) -> Blind:

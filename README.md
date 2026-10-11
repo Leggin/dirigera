@@ -26,6 +26,7 @@ This repository provides an unofficial Python client for controlling the IKEA Di
     - [Creating a Scene](#creating-a-scene)
   - [Motion Sensor](#motion-sensor)
   - [Open Close Sensor](#open-close-sensor)
+  - [Electrical Sensor](#electrical-sensor)
   - [Event Listener](#event-listener)
   - [Motivation](#motivation)
   - [Contributing](#contributing)
@@ -96,6 +97,9 @@ response = dirigera_hub.delete(route="/scenes/1")
 # Fetch all air purifiers registered in the hub
 air_purifiers = dirigera_hub.get_air_purifiers()
 
+# Fetch an air purifier by its name
+air_purifier = dirigera_hub.get_air_purifier_by_name(air_purifier_name="living room air purifier")
+
 # Fetch an air purifier by its ID
 air_purifier = dirigera_hub.get_air_purifier_by_id(id_="1")
 
@@ -120,6 +124,9 @@ outlet = dirigera_hub.get_outlet_by_id(id_="1")
 # Fetch all environment sensors registered in the hub
 sensors = dirigera_hub.get_environment_sensors()
 
+# Fetch an environment sensor by its name
+sensor = dirigera_hub.get_environment_sensor_by_name(environment_sensor_name="living room environment sensor")
+
 # Fetch an environment sensor by its ID
 sensor = dirigera_hub.get_environment_sensor_by_id(id_="1")
 
@@ -134,6 +141,9 @@ sensor = dirigera_hub.get_motion_sensor_by_id(id_="1")
 
 # Fetch all open/close sensors registered in the hub
 sensors = dirigera_hub.get_open_close_sensors()
+
+# Fetch an open/close sensor by its name
+sensor = dirigera_hub.get_open_close_sensor_by_name(open_close_sensor_name="front door sensor")
 
 # Fetch an open/close sensor by its ID
 sensor = dirigera_hub.get_open_close_by_id(id_="1")
@@ -162,8 +172,14 @@ scenes = dirigera_hub.get_scenes()
 # Fetch a scene by its ID
 scene = dirigera_hub.get_scene_by_id(scene_id="1")
 
+# Fetch a scene by its name
+scene = dirigera_hub.get_scene_by_name(scene_name="movie night")
+
 # Fetch all water sensors registered in the hub
 water_sensors = dirigera_hub.get_water_sensors()
+
+# Fetch a water sensor by its name
+water_sensor = dirigera_hub.get_water_sensor_by_name(water_sensor_name="bathroom water sensor")
 
 # Fetch a water sensor by its ID
 water_sensor = dirigera_hub.get_water_sensor_by_id(id_="1")
@@ -171,14 +187,26 @@ water_sensor = dirigera_hub.get_water_sensor_by_id(id_="1")
 # Fetch all occupancy sensors registered in the hub
 occupancy_sensors = dirigera_hub.get_occupancy_sensors()
 
+# Fetch an occupancy sensor by its name
+occupancy_sensor = dirigera_hub.get_occupancy_sensor_by_name(occupancy_sensor_name="hallway occupancy sensor")
+
 # Fetch an occupancy sensor by its ID
 occupancy_sensor = dirigera_hub.get_occupancy_sensor_by_id(id_="1")
 
 # Fetch all light sensors registered in the hub
 light_sensors = dirigera_hub.get_light_sensors()
 
+# Fetch a light sensor by its name
+light_sensor = dirigera_hub.get_light_sensor_by_name(light_sensor_name="living room light sensor")
+
 # Fetch a light sensor by its ID
 light_sensor = dirigera_hub.get_light_sensor_by_id(id_="1")
+
+# Fetch all electrical sensors registered in the hub
+electrical_sensors = dirigera_hub.get_electrical_sensors()
+
+# Fetch an electrical sensor by its ID
+electrical_sensor = dirigera_hub.get_electrical_sensor_by_id(id_="1")
 
 # Fetch all devices registered in the hub
 devices = dirigera_hub.get_all_devices()
@@ -277,7 +305,7 @@ light_level: Optional[int] = None
 color_temperature: Optional[int] = None
 color_temperature_min: Optional[int] = None
 color_temperature_max: Optional[int] = None
-color_hue: Optional[int] = None
+color_hue: Optional[float] = None
 color_saturation: Optional[float] = None
 ```
 
@@ -334,7 +362,7 @@ time_of_last_energy_reset: Optional[datetime.datetime] = None
 Available methods for outlet are:
 
 ```python
-# Reload the air outlet data from the hub
+# Reload the outlet data from the hub
 outlet.reload()
 
 # Set the name of the outlet
@@ -370,7 +398,7 @@ filter_lifetime: int
 current_p_m25: int
 ```
 
-Available methods for blinds are:
+Available methods for air purifier are:
 
 ```python
 # Reload the air purifier data from the hub
@@ -420,6 +448,9 @@ blind.set_name(name="kitchen blind 1")
 
 # Set the target level of the blind (0-100)
 blind.set_target_level(target_level=90)
+
+# Move the blind up or down, or stop it at its current position
+blind.set_state(state=BlindsStateEnum.STOPPED)
 ```
 
 ## [Remote Controllers](./src/dirigera/devices/controller.py)
@@ -502,7 +533,7 @@ created_at: datetime.datetime
 last_completed: Optional[datetime.datetime] = None
 last_triggered: Optional[datetime.datetime] = None
 last_undo: Optional[datetime.datetime] = None
-commands: List[str]
+commands: List[Union[str, Dict[str, Any]]]
 undo_allowed_duration: int
 ```
 
@@ -586,7 +617,7 @@ All available icons can be found here: [Icons](./src/dirigera/devices/scene.py)
 To get information about the available motion sensors, you can use the `get_motion_sensors()` method:
 
 ```python
-motions_sensors = dirigera_hub.get_motion_sensors()
+motion_sensors = dirigera_hub.get_motion_sensors()
 ```
 
 The motion sensor object has the following attributes (additional to the core attributes):
@@ -598,7 +629,7 @@ light_level: Optional[float] = None
 is_detected: Optional[bool] = False
 ```
 
-Available methods for outlet are:
+Available methods for motion sensor are:
 
 ```python
 # Reload the motion sensor data from the hub
@@ -616,6 +647,8 @@ To get information about the available open/close sensors, you can use the `get_
 open_close_sensors = dirigera_hub.get_open_close_sensors()
 ```
 
+The hub does not guarantee the order of the returned devices, so look sensors up by their id (`get_open_close_by_id()`) or name (`get_open_close_sensor_by_name()`) instead of by their position in the list.
+
 The open_close_sensor object has the following attributes (additional to the core attributes):
 
 ```python
@@ -623,7 +656,7 @@ is_open: bool
 battery_percentage: Optional[int] = None
 ```
 
-Available methods for outlet are:
+Available methods for open/close sensor are:
 
 ```python
 # Reload the open/close sensor data from the hub
@@ -631,6 +664,50 @@ open_close_sensor.reload()
 
 # Set the name of the open/close sensor
 open_close_sensor.set_name(name="window 1")
+```
+
+## [Electrical Sensor](./src/dirigera/devices/electrical_sensor.py)
+
+Plugs with energy metering, like the GRILLPLATS plug, are reported by the hub as two devices that share the same `relation_id`: an outlet (`isOn`, startup behaviour, ...) and an electrical sensor that holds the metering values.
+
+To get the electrical sensors use:
+
+```python
+electrical_sensors = dirigera_hub.get_electrical_sensors()
+```
+
+The electrical sensor object has the following attributes (additional to the core attributes):
+
+```python
+current_active_power: Optional[float] = None
+current_amps: Optional[float] = None
+current_voltage: Optional[float] = None
+energy_consumed_at_last_reset: Optional[float] = None
+total_energy_consumed: Optional[float] = None
+total_energy_consumed_last_updated: Optional[datetime.datetime] = None
+time_of_last_energy_reset: Optional[datetime.datetime] = None
+```
+
+Available methods for electrical sensor are:
+
+```python
+# Reload the electrical sensor data from the hub
+electrical_sensor.reload()
+
+# Set the name of the electrical sensor
+electrical_sensor.set_name(name="grill plug")
+```
+
+To find the electrical sensor that belongs to an outlet, compare their `relation_id`:
+
+```python
+outlet = dirigera_hub.get_outlet_by_name(outlet_name="grill plug")
+electrical_sensor = next(
+    sensor
+    for sensor in dirigera_hub.get_electrical_sensors()
+    if sensor.relation_id == outlet.relation_id
+)
+print(electrical_sensor.attributes.current_active_power)
 ```
 
 ## Event Listener
@@ -645,8 +722,8 @@ from typing import Any
 def on_message(ws: Any, message: str):
     message_dict = json.loads(message)
     data = message_dict["data"]
-    if data["id"] == bed_light.light_id:
-        print(f"{message_dict['type']} event on {bed_light.custom_name}, attributes: {data['attributes']}")
+    if data["id"] == bed_light.id:
+        print(f"{message_dict['type']} event on {bed_light.attributes.custom_name}, attributes: {data['attributes']}")
 
 def on_error(ws: Any, message: str):
     print(message)
@@ -659,6 +736,28 @@ dirigera_hub.create_event_listener(
 ```
 deviceStateChanged event on Bed Light, attributes: {'isOn': False}
 ```
+
+### Reconnecting
+
+The hub can close the connection on its own (status 1000, "disconnected due to inactivity."). When that happens, `create_event_listener()` returns. The `reconnect` argument doesn't restart it, since it only covers connection errors and not a clean close by the hub. To keep listening, call it in a loop:
+
+```python
+import time
+
+running = True
+
+def stop_listening():
+    # create_event_listener() blocks, so call this from another thread
+    global running
+    running = False
+    dirigera_hub.stop_event_listener()
+
+while running:
+    dirigera_hub.create_event_listener(on_message=on_message, on_error=on_error)
+    time.sleep(5)  # short backoff before listening again
+```
+
+Events that happen while the listener is reconnecting are missed, so re-fetch the device state after reconnecting if you need it (for example in `on_open`).
 
 ## Motivation
 

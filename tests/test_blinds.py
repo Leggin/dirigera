@@ -2,7 +2,7 @@ from typing import Any, Dict
 import pytest
 from src.dirigera.hub.abstract_smart_home_hub import FakeDirigeraHub
 from src.dirigera.devices.blinds import dict_to_blind
-from src.dirigera.devices.blinds import Blind
+from src.dirigera.devices.blinds import Blind, BlindsStateEnum
 
 
 @pytest.fixture(name="fake_client")
@@ -72,6 +72,23 @@ def test_set_target_level(fake_blind: Blind, fake_client: FakeDirigeraHub) -> No
     assert action["data"] == [{"attributes": {"blindsTargetLevel": target_level}}]
     assert fake_blind.attributes.blinds_target_level == target_level
     assert fake_blind.attributes.blinds_current_level == 90
+
+
+def test_set_state(fake_blind: Blind, fake_client: FakeDirigeraHub) -> None:
+    fake_blind.set_state(BlindsStateEnum.STOPPED)
+    action = fake_client.patch_actions.pop()
+    assert action["route"] == f"/devices/{fake_blind.id}"
+    assert action["data"] == [{"attributes": {"blindsState": "stopped"}}]
+    assert fake_blind.attributes.blinds_state == "stopped"
+
+
+def test_set_state_not_supported(
+    fake_blind: Blind, fake_client: FakeDirigeraHub
+) -> None:
+    fake_blind.capabilities.can_receive.remove("blindsState")
+    with pytest.raises(AssertionError):
+        fake_blind.set_state(BlindsStateEnum.UP)
+    assert not fake_client.patch_actions
 
 
 def test_dict_to_blind(fake_client: FakeDirigeraHub) -> None:

@@ -644,8 +644,8 @@ from typing import Any
 def on_message(ws: Any, message: str):
     message_dict = json.loads(message)
     data = message_dict["data"]
-    if data["id"] == bed_light.light_id:
-        print(f"{message_dict['type']} event on {bed_light.custom_name}, attributes: {data['attributes']}")
+    if data["id"] == bed_light.id:
+        print(f"{message_dict['type']} event on {bed_light.attributes.custom_name}, attributes: {data['attributes']}")
 
 def on_error(ws: Any, message: str):
     print(message)
@@ -658,6 +658,28 @@ dirigera_hub.create_event_listener(
 ```
 deviceStateChanged event on Bed Light, attributes: {'isOn': False}
 ```
+
+### Reconnecting
+
+The hub can close the connection on its own (status 1000, "disconnected due to inactivity."). When that happens, `create_event_listener()` returns. The `reconnect` argument doesn't restart it, since it only covers connection errors and not a clean close by the hub. To keep listening, call it in a loop:
+
+```python
+import time
+
+running = True
+
+def stop_listening():
+    # create_event_listener() blocks, so call this from another thread
+    global running
+    running = False
+    dirigera_hub.stop_event_listener()
+
+while running:
+    dirigera_hub.create_event_listener(on_message=on_message, on_error=on_error)
+    time.sleep(5)  # short backoff before listening again
+```
+
+Events that happen while the listener is reconnecting are missed, so re-fetch the device state after reconnecting if you need it (for example in `on_open`).
 
 ## Motivation
 

@@ -17,6 +17,7 @@ This repository provides an unofficial Python client for controlling the IKEA Di
     - [Capabilities](#capabilities)
     - [Room](#room)
   - [Controlling Lights](#controlling-lights)
+    - [Adaptive lighting](#adaptive-lighting)
   - [Controlling Outlets](#controlling-outlets)
   - [Controlling Air Purifier](#controlling-air-purifier)
   - [Controlling Blinds](#controlling-blinds)
@@ -175,6 +176,9 @@ scene = dirigera_hub.get_scene_by_id(scene_id="1")
 # Fetch a scene by its name
 scene = dirigera_hub.get_scene_by_name(scene_name="movie night")
 
+# Fetch all adaptive profiles
+profiles = dirigera_hub.get_adaptive_profiles()
+
 # Fetch all water sensors registered in the hub
 water_sensors = dirigera_hub.get_water_sensors()
 
@@ -309,6 +313,8 @@ color_hue: Optional[float] = None
 color_saturation: Optional[float] = None
 ```
 
+Additionally the light has an `adaptive_profile` field (`Optional[AdaptiveProfileState]`) with the `id` and `active` state of the adaptive profile the light follows. It is empty (`id` and `active` are `None`) if the light is not in adaptive mode.
+
 Available methods for light are:
 
 ```python
@@ -332,6 +338,20 @@ light.set_light_color(hue=128, saturation=0.5)
 
 # Set the startup behavior of the light
 light.set_startup_behaviour(behaviour=StartupEnum.START_OFF)
+
+# Let the light follow an adaptive profile (see Adaptive lighting below)
+light.activate_adaptive_profile(profile_id="1")
+```
+
+### Adaptive lighting
+
+Adaptive profiles are created in the IKEA app and define a schedule of light levels and color temperatures over the day. After `activate_adaptive_profile()` the light follows this schedule, the hub interpolates between the entries of the schedule. Changing the light manually, for example by setting the light level, takes it out of adaptive mode again. Call `light.reload()` and check `light.adaptive_profile.active` to see if the light is still in adaptive mode.
+
+```python
+profile = dirigera_hub.get_adaptive_profiles()[0]  # AdaptiveProfile with id and adaptive_schedule
+light.activate_adaptive_profile(profile_id=profile.id)
+light.reload()
+print(light.adaptive_profile.active)  # True
 ```
 
 ## [Controlling Outlets](./src/dirigera/devices/outlet.py)

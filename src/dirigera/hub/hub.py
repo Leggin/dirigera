@@ -10,6 +10,7 @@ from urllib3.exceptions import InsecureRequestWarning
 from .utils import camelize_dict
 from ..devices.device import Device
 from .abstract_smart_home_hub import AbstractSmartHomeHub
+from ..devices.adaptive_profile import AdaptiveProfile
 from ..devices.air_purifier import AirPurifier, dict_to_air_purifier
 from ..devices.light import Light, dict_to_light
 from ..devices.blinds import Blind, dict_to_blind
@@ -406,6 +407,15 @@ class Hub(AbstractSmartHomeHub):
         if len(scenes) == 0:
             raise AssertionError(f"No Scene found with name {scene_name}")
         return scenes[0]
+
+    def get_adaptive_profiles(self) -> List[AdaptiveProfile]:
+        """
+        Fetches all adaptive profiles
+        """
+        home = self.get("/home")
+        return [
+            AdaptiveProfile(**profile) for profile in home.get("adaptiveProfiles", [])
+        ]
 
     def get_water_sensors(self) -> List[WaterSensor]:
         """

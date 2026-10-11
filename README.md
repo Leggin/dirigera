@@ -227,7 +227,8 @@ dirigera_hub.delete_scene(scene_id="1")
 
 # [Devices](./src/dirigera/devices/device.py)
 
-All available devices (Light, Controller, Outlet, ...) consist of the core data defined in [device.py](./src/dirigera/devices/device.py):
+All available devices (Light, Controller, Outlet, ...) consist of the core data defined in [device.py](./src/dirigera/devices/device.py).
+Calling `reload()` on a device (or scene) fetches the current data from the hub and updates the object in place. It also returns the same object, so `light = light.reload()` works as well.
 
 ### Core Device Data
 

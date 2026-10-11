@@ -1,3 +1,4 @@
+import copy
 from typing import Any, Dict
 import pytest
 from src.dirigera.hub.abstract_smart_home_hub import FakeDirigeraHub
@@ -56,6 +57,24 @@ def fixture_outlet_dict() -> Dict:
 @pytest.fixture(name="fake_outlet")
 def fixture_outlet(fake_outlet_dict: Dict, fake_client: FakeDirigeraHub) -> Outlet:
     return Outlet(dirigeraClient=fake_client, **fake_outlet_dict)
+
+
+def test_reload_updates_in_place(
+    fake_outlet: Outlet, fake_outlet_dict: Dict, fake_client: FakeDirigeraHub
+) -> None:
+    data = copy.deepcopy(fake_outlet_dict)
+    data["isReachable"] = False
+    data["attributes"]["isOn"] = False
+    data["attributes"]["customName"] = "tea"
+    fake_client.get_action_replys[f"/devices/{fake_outlet.id}"] = data
+    old_attributes = fake_outlet.attributes
+
+    assert fake_outlet.reload() is fake_outlet
+    assert fake_outlet.attributes is not old_attributes
+    assert fake_outlet.dirigera_client is fake_client
+    assert not fake_outlet.is_reachable
+    assert not fake_outlet.attributes.is_on
+    assert fake_outlet.attributes.custom_name == "tea"
 
 
 def test_set_name(fake_outlet: Outlet, fake_client: FakeDirigeraHub) -> None:

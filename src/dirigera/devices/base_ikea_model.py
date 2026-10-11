@@ -7,4 +7,7 @@ def to_camel(string: str) -> str:
 
 
 class BaseIkeaModel(BaseModel, arbitrary_types_allowed=True, alias_generator=to_camel):
-    pass
+    def _copy_from(self, other: "BaseIkeaModel") -> None:
+        """Overwrite all fields of this instance with the values of another one."""
+        for name in type(self).model_fields:
+            setattr(self, name, getattr(other, name))

@@ -1,7 +1,7 @@
 from __future__ import annotations
 import datetime
 from enum import Enum
-from typing import Any, Dict, Optional, List
+from typing import Optional, List
 from .base_ikea_model import BaseIkeaModel
 
 
@@ -54,6 +54,3 @@ class Device(BaseIkeaModel):
     device_set: List
     remote_links: List[str]
     is_hidden: Optional[bool] = None
-
-    def _reload(self, data: Dict[str, Any]) -> Device:
-        return Device(**data)

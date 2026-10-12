@@ -1,41 +1,49 @@
-# Dirigera Python Client
+# dirigera
 
-![Test](https://github.com/Leggin/dirigera/actions/workflows/tests.yml/badge.svg)
-![Pypi](https://img.shields.io/pypi/v/dirigera)
+[![Tests](https://github.com/Leggin/dirigera/actions/workflows/tests.yml/badge.svg)](https://github.com/Leggin/dirigera/actions/workflows/tests.yml)
+[![PyPI](https://img.shields.io/pypi/v/dirigera)](https://pypi.org/project/dirigera/)
+[![Python versions](https://img.shields.io/pypi/pyversions/dirigera)](https://pypi.org/project/dirigera/)
 [![Downloads](https://static.pepy.tech/badge/dirigera/month)](https://pepy.tech/project/dirigera)
-![Downloads](https://img.shields.io/pypi/pyversions/dirigera)
 
-This repository provides an unofficial Python client for controlling the IKEA Dirigera Smart Home Hub. Current features:
+A Python client for the IKEA DIRIGERA smart home hub. Control lights, outlets, blinds, air purifiers and scenes, read sensors, and react to events, all through the hub's local API without the IKEA cloud.
 
-- [Dirigera Python Client](#dirigera-python-client)
-  - [Installation](#installation)
-  - [Quickstart](#quickstart)
-  - [Dirigera Hub](#dirigera-hub)
-- [Devices](#devices)
-    - [Core Device Data](#core-device-data)
-    - [Attributes](#attributes)
-    - [Capabilities](#capabilities)
-    - [Room](#room)
-  - [Controlling Lights](#controlling-lights)
-    - [Adaptive lighting](#adaptive-lighting)
-  - [Controlling Outlets](#controlling-outlets)
-  - [Controlling Air Purifier](#controlling-air-purifier)
-  - [Controlling Blinds](#controlling-blinds)
-  - [Remote Controllers](#remote-controllers)
-  - [Environment Sensor](#environment-sensor)
-- [Scene](#scene)
-    - [Creating a Scene](#creating-a-scene)
-  - [Motion Sensor](#motion-sensor)
-  - [Open Close Sensor](#open-close-sensor)
-  - [Electrical Sensor](#electrical-sensor)
-  - [Event Listener](#event-listener)
-  - [Motivation](#motivation)
-  - [Contributing](#contributing)
-    - [Setup of dev](#setup-of-dev)
-    - [Tests](#tests)
-  - [License](#license)
+```python
+import dirigera
 
-Support for other features will be added in the future and your input in form of issues and PRs is greatly appreciated.
+dirigera_hub = dirigera.Hub(token="<your token>", ip_address="192.168.1.20")
+
+lamp = dirigera_hub.get_light_by_name(lamp_name="Desk lamp")
+lamp.set_light(lamp_on=True)
+lamp.set_light_level(light_level=60)
+
+for sensor in dirigera_hub.get_environment_sensors():
+    print(sensor.attributes.custom_name, sensor.attributes.current_temperature)
+```
+
+This is an unofficial project and not affiliated with IKEA. It is based on the hub's undocumented local API, so firmware updates can change its behaviour.
+
+## Contents
+
+- [Installation](#installation)
+- [Getting started](#getting-started)
+- [Supported devices](#supported-devices)
+- [Usage](#usage)
+  - [Finding devices](#finding-devices)
+  - [Working with devices](#working-with-devices)
+  - [Lights](#lights)
+  - [Outlets](#outlets)
+  - [Electrical sensors](#electrical-sensors)
+  - [Blinds](#blinds)
+  - [Air purifiers](#air-purifiers)
+  - [Controllers](#controllers)
+  - [Sensors](#sensors)
+  - [Scenes](#scenes)
+  - [Listening to events](#listening-to-events)
+  - [Raw API access](#raw-api-access)
+- [Troubleshooting](#troubleshooting)
+- [Related projects](#related-projects)
+- [Contributing](#contributing)
+- [License](#license)
 
 ## Installation
 
@@ -43,685 +51,198 @@ Support for other features will be added in the future and your input in form of
 pip install dirigera
 ```
 
-## Quickstart
+The library is tested on Python 3.8 to 3.14.
 
-1. Find out the ip-address of your Dirigera (check your router)
-2. Once you installed `dirigera` with pip you can run the included generate-token script. Here you can directly set the ip-address of you dirigera as parameter.
+## Getting started
+
+1. **Find the IP address of your hub**, for example in your router's list of connected devices. The hub also announces itself on the local network as `gw2-<id>.local`.
+
+2. **Generate a token.** The package installs a `generate-token` command:
+
    ```bash
-   generate-token <Dirigera ip-address>
-   ```
-3. The script starts the auth process. When prompted, you must push the action button on the bottom of your Dirigera.
-4. After that hit ENTER and your `token` will be printed to the console.  
-   Example:
-   ```
-   Press the action button on Dirigera then hit ENTER ...
-   Your Token:
-   mgwB.aXqwpzV89N0aUwBhZMJjD8a.UBPyzy2InGtqgwo2MO5.xX4ug7.uBcVJquwYzLnAijF7SdYKvNxTo0uzQKahV10A-3ZQOz-UAubGP6sHWt1CJx3QmWZyE7ZcMZKgODXjSzWL1lumKgGz5dUIwFi3rhNxgK-IsBGeGVhNXPt8vGrYEcZePwPvNAIg8RqmlH27L-JZPnkAtP2wHoOdW72Djot3yJsohtEsb0p9mJvoZFSavTlTr4LDuf584vuH5fha5xoR9QhhIvvgbAP-s4EHFqENNi6vrYLHKR.sdqnv4sYw6UH-l6oiPnnRLxinoqBPOlWhlcL9doFviXQE.tZ9X8WVqyBrd0NYHlo9iorEvUbnZuD02BEJrg4NLwgh3rZtyF0Mi46HenynzBohbPn4RnuSYYCiHt5EZnWedxBtDqc7mSTm1ZtyD
-   ```
-5. Done. Use this token in the hub setup.
-   ```
-   dirigera.Hub(
-      token="mgwB.aXqwpzV89N0aUwBhZMJjD8a...",
-      ip_address="192.1..."
-   )
+   generate-token 192.168.1.20
    ```
 
-## [Dirigera Hub](./src/dirigera/hub/hub.py)
+   When asked, press the action button on the bottom of the hub, then press ENTER. The token is printed to the console. You only need to do this once.
 
-Setting up the client works by providing the token and ip address.
+3. **Connect to the hub** with the token and IP address:
+
+   ```python
+   import dirigera
+
+   dirigera_hub = dirigera.Hub(token="<your token>", ip_address="192.168.1.20")
+
+   for light in dirigera_hub.get_lights():
+       print(light.attributes.custom_name, light.attributes.is_on)
+   ```
+
+The token gives full control over your hub, so keep it out of your source code, for example by reading it from an environment variable.
+
+## Supported devices
+
+| Device type | Fetch with | Known to work with |
+| --- | --- | --- |
+| Lights | `get_lights()` | TRADFRI bulbs, KAJPLATS, ORMANAS LED strip |
+| Outlets | `get_outlets()` | TRADFRI control outlet, TRETAKT, INSPELNING, GRILLPLATS |
+| Electrical sensors | `get_electrical_sensors()` | GRILLPLATS |
+| Blinds | `get_blinds()` | FYRTUR |
+| Air purifiers | `get_air_purifiers()` | STARKVIND |
+| Controllers | `get_controllers()` | STYRBAR, RODRET, SOMRIG, TRADFRI on/off switch |
+| Environment sensors | `get_environment_sensors()` | VINDSTYRKA, ALPSTUGA |
+| Motion sensors | `get_motion_sensors()` | TRADFRI motion sensor, VALLHORN |
+| Light sensors | `get_light_sensors()` | MYGGSPRAY, VALLHORN |
+| Occupancy sensors | `get_occupancy_sensors()` | MYGGSPRAY |
+| Open/close sensors | `get_open_close_sensors()` | – |
+| Water sensors | `get_water_sensors()` | BADRING |
+
+Devices from other manufacturers that are paired with the hub often work as well, as long as the hub reports them as one of these device types. If a device is missing or fails to load, please [open an issue](https://github.com/Leggin/dirigera/issues) and include its data from `dirigera_hub.get("/devices")`.
+
+## Usage
+
+All examples assume a connected hub:
 
 ```python
 import dirigera
 
-dirigera_hub = dirigera.Hub(
-    token="mgwB.aXqwpzV89N0aUwBhZMJjD8a...",
-    ip_address="192.1..."
-)
+dirigera_hub = dirigera.Hub(token="<your token>", ip_address="192.168.1.20")
 ```
 
-<details>
-  <summary>List dirigera_hub functions</summary>
+### Finding devices
+
+Every device type can be fetched as a list, by its name from the IKEA app, or by its id:
 
 ```python
-# Send a PATCH request to the hub
-response = dirigera_hub.patch(route="/devices/1", data=[{"attributes": {"customName": "new name"}}])
-
-# Send a GET request to the hub
-response = dirigera_hub.get(route="/devices")
-
-# Send a POST request to the hub
-response = dirigera_hub.post(route="/scenes", data={"name": "new scene"})
-
-# Send a DELETE request to the hub
-response = dirigera_hub.delete(route="/scenes/1")
-
-# Fetch all air purifiers registered in the hub
-air_purifiers = dirigera_hub.get_air_purifiers()
-
-# Fetch an air purifier by its name
-air_purifier = dirigera_hub.get_air_purifier_by_name(air_purifier_name="living room air purifier")
-
-# Fetch an air purifier by its ID
-air_purifier = dirigera_hub.get_air_purifier_by_id(id_="1")
-
-# Fetch all lights registered in the hub
 lights = dirigera_hub.get_lights()
+light = dirigera_hub.get_light_by_name(lamp_name="Desk lamp")
+light = dirigera_hub.get_light_by_id(id_=light.id)
 
-# Fetch a light by its name
-light = dirigera_hub.get_light_by_name(lamp_name="kitchen light")
-
-# Fetch a light by its ID
-light = dirigera_hub.get_light_by_id(id_="1")
-
-# Fetch all outlets registered in the hub
-outlets = dirigera_hub.get_outlets()
-
-# Fetch an outlet by its name
-outlet = dirigera_hub.get_outlet_by_name(outlet_name="kitchen outlet")
-
-# Fetch an outlet by its ID
-outlet = dirigera_hub.get_outlet_by_id(id_="1")
-
-# Fetch all environment sensors registered in the hub
-sensors = dirigera_hub.get_environment_sensors()
-
-# Fetch an environment sensor by its name
-sensor = dirigera_hub.get_environment_sensor_by_name(environment_sensor_name="living room environment sensor")
-
-# Fetch an environment sensor by its ID
-sensor = dirigera_hub.get_environment_sensor_by_id(id_="1")
-
-# Fetch all motion sensors registered in the hub
-sensors = dirigera_hub.get_motion_sensors()
-
-# Fetch a motion sensor by its name
-light = dirigera_hub.get_motion_sensor_by_name(motion_sensor_name="kitchen motion sensor")
-
-# Fetch a motion sensor by its ID
-sensor = dirigera_hub.get_motion_sensor_by_id(id_="1")
-
-# Fetch all open/close sensors registered in the hub
-sensors = dirigera_hub.get_open_close_sensors()
-
-# Fetch an open/close sensor by its name
-sensor = dirigera_hub.get_open_close_sensor_by_name(open_close_sensor_name="front door sensor")
-
-# Fetch an open/close sensor by its ID
-sensor = dirigera_hub.get_open_close_by_id(id_="1")
-
-# Fetch all blinds registered in the hub
-blinds = dirigera_hub.get_blinds()
-
-# Fetch a blind by its name
-blind = dirigera_hub.get_blind_by_name(blind_name="living room blind")
-
-# Fetch a blind by its ID
-blind = dirigera_hub.get_blinds_by_id(id_="1")
-
-# Fetch all controllers registered in the hub
-controllers = dirigera_hub.get_controllers()
-
-# Fetch a controller by its name
-controller = dirigera_hub.get_controller_by_name(controller_name="remote control")
-
-# Fetch a controller by its ID
-controller = dirigera_hub.get_controller_by_id(id_="1")
-
-# Fetch all scenes
-scenes = dirigera_hub.get_scenes()
-
-# Fetch a scene by its ID
-scene = dirigera_hub.get_scene_by_id(scene_id="1")
-
-# Fetch a scene by its name
-scene = dirigera_hub.get_scene_by_name(scene_name="movie night")
-
-# Fetch all adaptive profiles
-profiles = dirigera_hub.get_adaptive_profiles()
-
-# Fetch all water sensors registered in the hub
-water_sensors = dirigera_hub.get_water_sensors()
-
-# Fetch a water sensor by its name
-water_sensor = dirigera_hub.get_water_sensor_by_name(water_sensor_name="bathroom water sensor")
-
-# Fetch a water sensor by its ID
-water_sensor = dirigera_hub.get_water_sensor_by_id(id_="1")
-
-# Fetch all occupancy sensors registered in the hub
-occupancy_sensors = dirigera_hub.get_occupancy_sensors()
-
-# Fetch an occupancy sensor by its name
-occupancy_sensor = dirigera_hub.get_occupancy_sensor_by_name(occupancy_sensor_name="hallway occupancy sensor")
-
-# Fetch an occupancy sensor by its ID
-occupancy_sensor = dirigera_hub.get_occupancy_sensor_by_id(id_="1")
-
-# Fetch all light sensors registered in the hub
-light_sensors = dirigera_hub.get_light_sensors()
-
-# Fetch a light sensor by its name
-light_sensor = dirigera_hub.get_light_sensor_by_name(light_sensor_name="living room light sensor")
-
-# Fetch a light sensor by its ID
-light_sensor = dirigera_hub.get_light_sensor_by_id(id_="1")
-
-# Fetch all electrical sensors registered in the hub
-electrical_sensors = dirigera_hub.get_electrical_sensors()
-
-# Fetch an electrical sensor by its ID
-electrical_sensor = dirigera_hub.get_electrical_sensor_by_id(id_="1")
-
-# Fetch all devices registered in the hub
-devices = dirigera_hub.get_all_devices()
-
-# Create a new scene
-scene = dirigera_hub.create_scene(
-    info=Info(name="New Scene", icon=Icon.SCENES_BOOK),
-    scene_type=SceneType.USER_SCENE,
-    triggers=[],
-    actions=[]
-)
-
-# Delete a scene by its ID
-dirigera_hub.delete_scene(scene_id="1")
+devices = dirigera_hub.get_all_devices()  # all supported devices
 ```
+
+The hub doesn't return devices in a fixed order, so look devices up by name or id rather than by their position in a list. Lookups by name raise an `AssertionError` if no device has that name. Lookups by id raise a `ValueError` if the id doesn't exist or belongs to another device type.
+
+<details>
+<summary>All getters</summary>
+
+| Device type | All | By name | By id |
+| --- | --- | --- | --- |
+| Lights | `get_lights()` | `get_light_by_name(lamp_name=...)` | `get_light_by_id(id_=...)` |
+| Outlets | `get_outlets()` | `get_outlet_by_name(outlet_name=...)` | `get_outlet_by_id(id_=...)` |
+| Electrical sensors | `get_electrical_sensors()` | – | `get_electrical_sensor_by_id(id_=...)` |
+| Blinds | `get_blinds()` | `get_blind_by_name(blind_name=...)` | `get_blinds_by_id(id_=...)` |
+| Air purifiers | `get_air_purifiers()` | `get_air_purifier_by_name(air_purifier_name=...)` | `get_air_purifier_by_id(id_=...)` |
+| Controllers | `get_controllers()` | `get_controller_by_name(controller_name=...)` | `get_controller_by_id(id_=...)` |
+| Environment sensors | `get_environment_sensors()` | `get_environment_sensor_by_name(environment_sensor_name=...)` | `get_environment_sensor_by_id(id_=...)` |
+| Motion sensors | `get_motion_sensors()` | `get_motion_sensor_by_name(motion_sensor_name=...)` | `get_motion_sensor_by_id(id_=...)` |
+| Light sensors | `get_light_sensors()` | `get_light_sensor_by_name(light_sensor_name=...)` | `get_light_sensor_by_id(id_=...)` |
+| Occupancy sensors | `get_occupancy_sensors()` | `get_occupancy_sensor_by_name(occupancy_sensor_name=...)` | `get_occupancy_sensor_by_id(id_=...)` |
+| Open/close sensors | `get_open_close_sensors()` | `get_open_close_sensor_by_name(open_close_sensor_name=...)` | `get_open_close_by_id(id_=...)` |
+| Water sensors | `get_water_sensors()` | `get_water_sensor_by_name(water_sensor_name=...)` | `get_water_sensor_by_id(id_=...)` |
+| Scenes | `get_scenes()` | `get_scene_by_name(scene_name=...)` | `get_scene_by_id(scene_id=...)` |
+| Adaptive profiles | `get_adaptive_profiles()` | – | – |
+| All devices | `get_all_devices()` | – | – |
 
 </details>
 
-# [Devices](./src/dirigera/devices/device.py)
+### Working with devices
 
-All available devices (Light, Controller, Outlet, ...) consist of the core data defined in [device.py](./src/dirigera/devices/device.py).
-Calling `reload()` on a device (or scene) fetches the current data from the hub and updates the object in place. It also returns the same object, so `light = light.reload()` works as well.
+Each device is a Python object with these fields:
 
-### Core Device Data
+| Field | Description |
+| --- | --- |
+| `id` | Unique id of the device |
+| `relation_id` | Shared by devices that belong to the same physical product (see below) |
+| `type`, `device_type` | Device type as reported by the hub, e.g. `"light"` |
+| `is_reachable` | Whether the hub can currently reach the device |
+| `last_seen`, `created_at` | Timestamps |
+| `room` | Room from the IKEA app (`id`, `name`, `color`, `icon`), if assigned |
+| `capabilities` | `can_send` and `can_receive`: the attributes the device sends or accepts |
+| `attributes` | The device state, e.g. `is_on` or `current_temperature` (listed per device type below), plus `custom_name`, `model`, `manufacturer`, `firmware_version`, `hardware_version`, `serial_number`, `product_code` and firmware update (`ota_*`) fields |
 
-```python
-id: str
-relation_id: Optional[str] = None
-type: str
-device_type: str
-created_at: datetime.datetime
-is_reachable: bool
-last_seen: datetime.datetime
-attributes: Attributes
-capabilities: Capabilities
-room: Optional[Room] = None
-device_set: List
-remote_links: List[str]
-is_hidden: Optional[bool] = None
-```
+Attribute names are the hub's names in snake_case: the hub's `lightLevel` is `light_level`.
 
-### Attributes
-
-All devices have attributes. Some devices have special attributes (for example Light has `is_on``). These are the core attributes each device has:
+The setter methods send the change to the hub and update the object. Most of them first check the device's capabilities and the allowed value range, and raise an `AssertionError` or `ValueError` without sending anything if the change isn't supported. To get the latest state from the hub, call `reload()`. It updates the object in place:
 
 ```python
-custom_name: str
-model: str
-manufacturer: str
-firmware_version: str
-hardware_version: str
-serial_number: Optional[str] = None
-product_code: Optional[str] = None
-ota_status: Optional[str] = None
-ota_state: Optional[str] = None
-ota_progress: Optional[int] = None
-ota_policy: Optional[str] = None
-ota_schedule_start: Optional[datetime.time] = None
-ota_schedule_end: Optional[datetime.time] = None
-```
-
-### Capabilities
-
-All devices have capabilities (for some it is just empty lists). Capabilities desrcibe what send/receive actions can be performed:
-
-```python
-can_send: List[str]
-can_receive: List[str]
-```
-
-All devices have a room with the corresponging infos.
-
-### Room
-
-```python
-id: str
-name: str
-color: str
-icon: str
-```
-
-## [Controlling Lights](./src/dirigera/devices/light.py)
-
-To get information about the available lights, you can use the `get_lights()` method:
-
-```python
-lights = dirigera_hub.get_lights()
-```
-
-The light object has the following attributes (additional to the core attributes):
-
-```python
-startup_on_off: Optional[StartupEnum] = None # Optional attributes are not present on all lights
-is_on: bool
-light_level: Optional[int] = None
-color_temperature: Optional[int] = None
-color_temperature_min: Optional[int] = None
-color_temperature_max: Optional[int] = None
-color_hue: Optional[float] = None
-color_saturation: Optional[float] = None
-```
-
-Additionally the light has an `adaptive_profile` field (`Optional[AdaptiveProfileState]`) with the `id` and `active` state of the adaptive profile the light follows. It is empty (`id` and `active` are `None`) if the light is not in adaptive mode.
-
-Available methods for light are:
-
-```python
-# Reload the light data from the hub
+light = dirigera_hub.get_light_by_name(lamp_name="Desk lamp")
 light.reload()
+print(light.attributes.is_on)
+```
 
-# Set the name of the light
-light.set_name(name="kitchen light 1")
+Some products appear as several devices that share the same `relation_id`. The VALLHORN, for example, is a motion sensor and a light sensor, and the GRILLPLATS plug is an outlet and an electrical sensor.
 
-# Turn the light on or off
+### Lights
+
+| Attribute | Description |
+| --- | --- |
+| `is_on` | Whether the light is on |
+| `light_level` | Brightness, 1–100 |
+| `color_temperature` | Color temperature in Kelvin |
+| `color_temperature_min`, `color_temperature_max` | Supported color temperature range, as reported by the bulb |
+| `color_hue`, `color_saturation` | Color, hue 0–360 and saturation 0–1 |
+| `startup_on_off` | Behaviour after a power outage (`StartupEnum`) |
+
+```python
+from dirigera.devices.device import StartupEnum
+
+light = dirigera_hub.get_light_by_name(lamp_name="Desk lamp")
+
 light.set_light(lamp_on=True)
-
-# Set the light level (1-100)
-light.set_light_level(light_level=90)
-
-# Set the color temperature
-light.set_color_temperature(color_temp=3000)
-
-# Set the light color using hue (0-360) and saturation (0.0-1.0)
-light.set_light_color(hue=128, saturation=0.5)
-
-# Set the startup behavior of the light
-light.set_startup_behaviour(behaviour=StartupEnum.START_OFF)
-
-# Let the light follow an adaptive profile (see Adaptive lighting below)
-light.activate_adaptive_profile(profile_id="1")
+light.set_light_level(light_level=60)
+light.set_color_temperature(color_temp=2700)  # Kelvin
+light.set_light_color(hue=30, saturation=0.8)
+light.set_startup_behaviour(behaviour=StartupEnum.START_PREVIOUS)
+light.set_name(name="Reading lamp")
 ```
 
-### Adaptive lighting
+`set_color_temperature()` checks the value against the range the bulb reports. Some bulbs report this range in mireds instead of Kelvin; the library converts it, so always pass Kelvin.
 
-Adaptive profiles are created in the IKEA app and define a schedule of light levels and color temperatures over the day. After `activate_adaptive_profile()` the light follows this schedule, the hub interpolates between the entries of the schedule. Changing the light manually, for example by setting the light level, takes it out of adaptive mode again. Call `light.reload()` and check `light.adaptive_profile.active` to see if the light is still in adaptive mode.
+`StartupEnum` controls what happens when power returns after an outage: `START_ON`, `START_OFF`, `START_PREVIOUS` (restore the previous state) or `START_TOGGLE` (switching the power off and on again toggles the light).
+
+#### Adaptive lighting
+
+Adaptive profiles are created in the IKEA app and define light levels and color temperatures over the day. A light that follows a profile is adjusted by the hub automatically, which interpolates between the entries of the schedule.
 
 ```python
-profile = dirigera_hub.get_adaptive_profiles()[0]  # AdaptiveProfile with id and adaptive_schedule
+profile = dirigera_hub.get_adaptive_profiles()[0]
+for entry in profile.adaptive_schedule:
+    print(entry.start_time, entry.light_level, entry.color_temperature)
+
 light.activate_adaptive_profile(profile_id=profile.id)
-light.reload()
-print(light.adaptive_profile.active)  # True
 ```
 
-## [Controlling Outlets](./src/dirigera/devices/outlet.py)
+Changing a light manually, for example by setting its light level, takes it out of adaptive mode. `light.adaptive_profile.active` shows whether a light currently follows a profile (call `light.reload()` first to get the current state).
 
-To get information about the available outlets, you can use the `get_outlets()` method:
+### Outlets
 
-```python
-outlets = dirigera_hub.get_outlets()
-```
+| Attribute | Description |
+| --- | --- |
+| `is_on` | Whether the outlet is switched on |
+| `startup_on_off` | Behaviour after a power outage (`StartupEnum`) |
+| `status_light` | Whether the status light is on |
+| `current_active_power` | Current power in W |
+| `current_amps`, `current_voltage` | Current in A and voltage in V |
+| `total_energy_consumed` | Total energy in kWh |
+| `energy_consumed_at_last_reset`, `time_of_last_energy_reset`, `total_energy_consumed_last_updated` | Energy counter details |
 
-The outlet object has the following attributes (additional to the core attributes):
-
-```python
-is_on: bool
-startup_on_off: Optional[StartupEnum] = None
-status_light: Optional[bool] = None
-identify_period: Optional[int] = None
-permitting_join: Optional[bool] = None
-energy_consumed_at_last_reset: Optional[float] = None
-current_active_power: Optional[float] = None
-current_amps: Optional[float] = None
-current_voltage: Optional[float] = None
-total_energy_consumed: Optional[float] = None
-total_energy_consumed_last_updated: Optional[datetime.datetime] = None
-time_of_last_energy_reset: Optional[datetime.datetime] = None
-```
-
-Available methods for outlet are:
+The energy values are only available on outlets with energy metering, such as INSPELNING.
 
 ```python
-# Reload the outlet data from the hub
-outlet.reload()
+from dirigera.devices.device import StartupEnum
 
-# Set the name of the outlet
-outlet.set_name(name="kitchen socket 1")
+outlet = dirigera_hub.get_outlet_by_name(outlet_name="Coffee machine")
 
-# Turn the outlet on or off
 outlet.set_on(outlet_on=True)
-
-# Set the startup behavior of the outlet
 outlet.set_startup_behaviour(behaviour=StartupEnum.START_OFF)
+outlet.set_name(name="Espresso machine")
 ```
 
-## [Controlling Air Purifier](./src/dirigera/devices/air_purifier.py)
+### Electrical sensors
 
-To get information about the available air purifiers, you can use the `get_air_purifiers()` method:
-
-```python
-air_purifiers = dirigera_hub.get_air_purifiers()
-```
-
-The air purifier object has the following attributes (additional to the core attributes):
+Some plugs, such as GRILLPLATS, report their energy values as a separate electrical sensor instead of on the outlet. It has the same energy attributes as outlets (`current_active_power`, `current_amps`, `current_voltage`, `total_energy_consumed`, ...). The sensor and the outlet share the same `relation_id`:
 
 ```python
-fan_mode: FanModeEnum
-fan_mode_sequence: str
-motor_state: int
-child_lock: bool
-status_light: bool
-motor_runtime: int
-filter_alarm_status: bool
-filter_elapsed_time: int
-filter_lifetime: int
-current_p_m25: int
-```
-
-Available methods for air purifier are:
-
-```python
-# Reload the air purifier data from the hub
-air_purifier.reload()
-
-# Set the name of the air purifier
-air_purifier.set_name(name="living room purifier")
-
-# Set the fan mode of the air purifier
-air_purifier.set_fan_mode(fan_mode=FanModeEnum.AUTO)
-
-# Set the motor state of the air purifier (0-50)
-air_purifier.set_motor_state(motor_state=42)
-
-# Enable or disable the child lock
-air_purifier.set_child_lock(child_lock=True)
-
-# Turn the status light on or off
-air_purifier.set_status_light(light_state=False)
-```
-
-## [Controlling Blinds](./src/dirigera/devices/blinds.py)
-
-To get information about the available blinds, you can use the `get_blinds()` method:
-
-```python
-blinds = dirigera_hub.get_blinds()
-```
-
-The blind object has the following attributes (additional to the core attributes):
-
-```python
-blinds_current_level: Optional[int] = None
-blinds_target_level: Optional[int] = None
-blinds_state: Optional[str] = None
-battery_percentage: Optional[int] = None
-```
-
-Available methods for blinds are:
-
-```python
-# Reload the blind data from the hub
-blind.reload()
-
-# Set the name of the blind
-blind.set_name(name="kitchen blind 1")
-
-# Set the target level of the blind (0-100)
-blind.set_target_level(target_level=90)
-
-# Move the blind up or down, or stop it at its current position
-blind.set_state(state=BlindsStateEnum.STOPPED)
-```
-
-## [Remote Controllers](./src/dirigera/devices/controller.py)
-
-Currently only tested with the STYRBAR remote.
-
-To get information about the available controllers, you can use the `get_controllers()` method:
-
-```python
-controllers = dirigera_hub.get_controllers()
-```
-
-The controller object has the following attributes (additional to the core attributes):
-
-```python
-is_on: Optional[bool] = None
-battery_percentage: Optional[int] = None
-switch_label: Optional[str] = None
-```
-
-Available methods for controller are:
-
-```python
-# Reload the controller data from the hub
-controller.reload()
-
-# Set the name of the controller
-controller.set_name(name="kitchen remote 1")
-```
-
-## [Environment Sensor](./src/dirigera/devices/environment_sensor.py)
-
-Currently only tested with the VINDSTYRKA sensor. If you have other sensors please send me the json and I will add support or create a PR.
-
-To get the environment sensors use:
-
-```python
-sensors = dirigera_hub.get_environment_sensors()
-```
-
-The environment sensor object has the following attributes (additional to the core attributes):
-
-```python
-current_temperature: Optional[float] = None
-current_r_h: Optional[int] = None  # current humidity
-current_p_m25: Optional[int] = None # current particulate matter 2.5
-current_c_o2: Optional[int] = None # current carbon dioxide in ppm, only for Alpstuga Air Quality Sensor
-max_measured_p_m25: Optional[int] = None # maximum measurable particulate matter 2.5
-min_measured_p_m25: Optional[int] = None # minimum measurable particulate matter 2.5
-voc_index: Optional[int] = None # current volatile organic compound, only for Vindstyrka Air Quality Sensor
-```
-
-Available methods for environment sensor are:
-
-```python
-# Reload the environment sensor data from the hub
-sensor.reload()
-
-# Set the name of the environment sensor
-sensor.set_name(name="Bathroom Sensor")
-```
-
-# [Scene](./src/dirigera/devices/scene.py)
-
-To get the scenes use:
-
-```python
-scenes = dirigera_hub.get_scenes()
-```
-
-The scene object has the following attributes:
-
-```python
-id: str
-type: SceneType
-info: Info
-triggers: List[Trigger]
-actions: List[Action]
-created_at: datetime.datetime
-last_completed: Optional[datetime.datetime] = None
-last_triggered: Optional[datetime.datetime] = None
-last_undo: Optional[datetime.datetime] = None
-commands: List[Union[str, Dict[str, Any]]]
-undo_allowed_duration: int
-```
-
-Details to the `Trigger`, `Action` and `Info` class can be found in [scene.py](./src/dirigera/devices/scene.py)
-
-Available methods for scene are:
-
-```python
-scene.reload()
-scene.trigger()
-scene.undo()
-```
-
-### Creating a Scene
-
-To create a scene use the `create_scene()` function.  
-Example how to create an empty scene:
-
-```python
-scene = dirigera_hub.create_scene(
-    info=Info(name="This is empty", icon=Icon.SCENES_BOOK),
-)
-```
-
-Actions look like this:
-
-```python
-class Action(BaseIkeaModel):
-    id: str
-    type: str
-    enabled: Optional[bool] = None
-    attributes: Optional[ActionAttributes] = None
-```
-
-Example how create scene with action:
-
-```python
-from dirigera.devices.scene import Info, Icon, SceneType, Action, ActionAttributes
-
-light = dirigera_hub.get_light_by_name("kitchen_lamp")
-
-scene = dirigera_hub.create_scene(
-    info=Info(name="Scene with action", icon=Icon.SCENES_BOOK),
-    scene_type=SceneType.USER_SCENE,
-    triggers=[],
-    actions=[Action(id=light.id, type="device", enabled=True, attributes=ActionAttributes(is_on=False))],
-)
-```
-
-Triggers look like this:
-
-```python
-class Trigger(BaseIkeaModel):
-    id: Optional[str] = None
-    type: str
-    triggered_at: Optional[datetime.datetime] = None
-    disabled: bool
-    trigger: Optional[TriggerDetails] = None
-```
-
-Example how to create scene with trigger:
-
-```python
-from dirigera.devices.scene import Info, Icon, Trigger, SceneType, TriggerDetails, ControllerType, ClickPattern
-
-scene = dirigera_hub.create_scene(
-   info=Info(name="Scene with trigger", icon=Icon.SCENES_HEART),
-   scene_type=SceneType.USER_SCENE,
-   triggers=[
-       Trigger(type="app", disabled=False),
-       Trigger(type="controller", disabled=False,
-               trigger=TriggerDetails(clickPattern=ClickPattern.SINGLE_PRESS, buttonIndex=0,
-                                      deviceId="0000aaaa-0000-0000-aa00-0a0aa0a000a0_1",
-                                      controllerType=ControllerType.SHORTCUT_CONTROLLER))])
-```
-
-All available icons can be found here: [Icons](./src/dirigera/devices/scene.py)
-
-## [Motion Sensor](./src/dirigera/devices/motion_sensor.py)
-
-To get information about the available motion sensors, you can use the `get_motion_sensors()` method:
-
-```python
-motion_sensors = dirigera_hub.get_motion_sensors()
-```
-
-The motion sensor object has the following attributes (additional to the core attributes):
-
-```python
-battery_percentage: Optional[int] = None
-is_on: bool
-light_level: Optional[float] = None
-is_detected: Optional[bool] = False
-```
-
-Available methods for motion sensor are:
-
-```python
-# Reload the motion sensor data from the hub
-motion_sensor.reload()
-
-# Set the name of the motion sensor
-motion_sensor.set_name(name="kitchen sensor 1")
-```
-
-## [Open Close Sensor](./src/dirigera/devices/open_close_sensor.py)
-
-To get information about the available open/close sensors, you can use the `get_open_close_sensors()` method:
-
-```python
-open_close_sensors = dirigera_hub.get_open_close_sensors()
-```
-
-The hub does not guarantee the order of the returned devices, so look sensors up by their id (`get_open_close_by_id()`) or name (`get_open_close_sensor_by_name()`) instead of by their position in the list.
-
-The open_close_sensor object has the following attributes (additional to the core attributes):
-
-```python
-is_open: bool
-battery_percentage: Optional[int] = None
-```
-
-Available methods for open/close sensor are:
-
-```python
-# Reload the open/close sensor data from the hub
-open_close_sensor.reload()
-
-# Set the name of the open/close sensor
-open_close_sensor.set_name(name="window 1")
-```
-
-## [Electrical Sensor](./src/dirigera/devices/electrical_sensor.py)
-
-Plugs with energy metering, like the GRILLPLATS plug, are reported by the hub as two devices that share the same `relation_id`: an outlet (`isOn`, startup behaviour, ...) and an electrical sensor that holds the metering values.
-
-To get the electrical sensors use:
-
-```python
-electrical_sensors = dirigera_hub.get_electrical_sensors()
-```
-
-The electrical sensor object has the following attributes (additional to the core attributes):
-
-```python
-current_active_power: Optional[float] = None
-current_amps: Optional[float] = None
-current_voltage: Optional[float] = None
-energy_consumed_at_last_reset: Optional[float] = None
-total_energy_consumed: Optional[float] = None
-total_energy_consumed_last_updated: Optional[datetime.datetime] = None
-time_of_last_energy_reset: Optional[datetime.datetime] = None
-```
-
-Available methods for electrical sensor are:
-
-```python
-# Reload the electrical sensor data from the hub
-electrical_sensor.reload()
-
-# Set the name of the electrical sensor
-electrical_sensor.set_name(name="grill plug")
-```
-
-To find the electrical sensor that belongs to an outlet, compare their `relation_id`:
-
-```python
-outlet = dirigera_hub.get_outlet_by_name(outlet_name="grill plug")
+outlet = dirigera_hub.get_outlet_by_name(outlet_name="Grill")
 electrical_sensor = next(
     sensor
     for sensor in dirigera_hub.get_electrical_sensors()
@@ -730,36 +251,182 @@ electrical_sensor = next(
 print(electrical_sensor.attributes.current_active_power)
 ```
 
-## Event Listener
+### Blinds
 
-The event listener allows you to listen to events that are published by your Dirigera hub. This is useful if you want to automate tasks based on events such as when a light is turned on or off, or when the color temperature of a light is changed.
+| Attribute | Description |
+| --- | --- |
+| `blinds_current_level` | Current position, 0–100 |
+| `blinds_target_level` | Position the blind is moving to, 0–100 |
+| `blinds_state` | `"up"`, `"down"` or `"stopped"` |
+| `battery_percentage` | Battery level |
 
 ```python
-import json
-from typing import Any
+from dirigera.devices.blinds import BlindsStateEnum
 
+blind = dirigera_hub.get_blind_by_name(blind_name="Bedroom blind")
 
-def on_message(ws: Any, message: str):
-    message_dict = json.loads(message)
-    data = message_dict["data"]
-    if data["id"] == bed_light.id:
-        print(f"{message_dict['type']} event on {bed_light.attributes.custom_name}, attributes: {data['attributes']}")
+blind.set_target_level(target_level=50)
+blind.set_state(state=BlindsStateEnum.STOPPED)  # or UP / DOWN
+blind.set_name(name="Window blind")
+```
 
-def on_error(ws: Any, message: str):
-    print(message)
+### Air purifiers
 
-dirigera_hub.create_event_listener(
-    on_message=on_message, on_error=on_error
+| Attribute | Description |
+| --- | --- |
+| `fan_mode` | `FanModeEnum`: `OFF`, `ON`, `LOW`, `MEDIUM`, `HIGH` or `AUTO` |
+| `motor_state` | Fan speed, 0–50 |
+| `current_p_m25` | Particulate matter (PM2.5) |
+| `child_lock`, `status_light` | Whether the child lock and status light are on |
+| `filter_alarm_status`, `filter_elapsed_time`, `filter_lifetime` | Filter state |
+| `motor_runtime`, `fan_mode_sequence` | Further fan details |
+
+```python
+from dirigera.devices.air_purifier import FanModeEnum
+
+air_purifier = dirigera_hub.get_air_purifier_by_name(air_purifier_name="Living room purifier")
+
+air_purifier.set_fan_mode(fan_mode=FanModeEnum.AUTO)
+air_purifier.set_motor_state(motor_state=30)  # 0 = off, 1 = auto, up to 50
+air_purifier.set_child_lock(child_lock=True)
+air_purifier.set_status_light(light_state=False)
+air_purifier.set_name(name="Bedroom purifier")
+```
+
+### Controllers
+
+Remotes (`device_type` `"lightController"`) and shortcut buttons such as SOMRIG (`"shortcutController"`) have the attributes `battery_percentage`, `is_on` and `switch_label`, and support `reload()` and `set_name()`.
+
+Button presses are not stored as device state. To react to them, use the [event listener](#listening-to-events) or create a [scene](#scenes) with a controller trigger.
+
+### Sensors
+
+All sensors support `reload()` and `set_name(name=...)`. Battery powered sensors have a `battery_percentage` attribute.
+
+| Sensor | Fetch with | Attributes |
+| --- | --- | --- |
+| Environment sensor | `get_environment_sensors()` | `current_temperature` (°C), `current_r_h` (relative humidity in %), `current_p_m25`, `max_measured_p_m25`, `min_measured_p_m25`, `voc_index` (VINDSTYRKA), `current_c_o2` (ppm, ALPSTUGA) |
+| Motion sensor | `get_motion_sensors()` | `is_detected`, `is_on`, `light_level` |
+| Light sensor | `get_light_sensors()` | `illuminance`, `min_illuminance`, `max_illuminance` |
+| Occupancy sensor | `get_occupancy_sensors()` | `is_detected` |
+| Open/close sensor | `get_open_close_sensors()` | `is_open` |
+| Water sensor | `get_water_sensors()` | `water_leak_detected` |
+
+```python
+door = dirigera_hub.get_open_close_sensor_by_name(open_close_sensor_name="Front door")
+print("open" if door.attributes.is_open else "closed")
+
+for sensor in dirigera_hub.get_water_sensors():
+    if sensor.attributes.water_leak_detected:
+        print(f"Leak at {sensor.attributes.custom_name}!")
+```
+
+### Scenes
+
+```python
+scene = dirigera_hub.get_scene_by_name(scene_name="Movie night")
+
+scene.trigger()  # run the scene
+scene.undo()     # undo it again shortly afterwards
+dirigera_hub.delete_scene(scene_id=scene.id)
+```
+
+A scene has an `info` (`name` and `icon`), a list of `triggers` that start it and a list of `actions` it performs.
+
+#### Creating scenes
+
+`create_scene()` creates a scene and returns it. Without triggers, the scene can be run from the app or with `scene.trigger()`.
+
+The scene models use the hub's camelCase names when you create them, for example `clickPattern=...`, while their fields are read in snake_case, for example `trigger.click_pattern`.
+
+A scene that turns a light off:
+
+```python
+from dirigera.devices.scene import Action, ActionAttributes, Icon, Info
+
+light = dirigera_hub.get_light_by_name(lamp_name="Desk lamp")
+
+scene = dirigera_hub.create_scene(
+    info=Info(name="Desk lamp off", icon=Icon.SCENES_BOOK),
+    actions=[
+        Action(id=light.id, type="device", enabled=True, attributes=ActionAttributes(is_on=False)),
+    ],
 )
 ```
 
-```
-deviceStateChanged event on Bed Light, attributes: {'isOn': False}
+A scene that runs when a shortcut button is pressed:
+
+```python
+from dirigera.devices.scene import ClickPattern, ControllerType, Icon, Info, Trigger, TriggerDetails
+
+button = dirigera_hub.get_controller_by_name(controller_name="Shortcut button")
+
+scene = dirigera_hub.create_scene(
+    info=Info(name="Button scene", icon=Icon.SCENES_HEART),
+    triggers=[
+        Trigger(
+            type="controller",
+            disabled=False,
+            trigger=TriggerDetails(
+                controllerType=ControllerType.SHORTCUT_CONTROLLER,
+                clickPattern=ClickPattern.SINGLE_PRESS,
+                buttonIndex=0,
+                deviceId=button.id,
+            ),
+        ),
+    ],
+)
 ```
 
-### Reconnecting
+A scene that runs every evening at 22:00 and ends after one hour:
 
-The hub can close the connection on its own (status 1000, "disconnected due to inactivity."). When that happens, `create_event_listener()` returns. The `reconnect` argument doesn't restart it, since it only covers connection errors and not a clean close by the hub. To keep listening, call it in a loop:
+```python
+from dirigera.devices.scene import EndTriggerEvent, Icon, Info, Trigger, TriggerDetails
+
+scene = dirigera_hub.create_scene(
+    info=Info(name="Evening", icon=Icon.SCENES_MOON),
+    triggers=[
+        Trigger(
+            type="time",
+            disabled=False,
+            trigger=TriggerDetails(days=["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"], time="22:00"),
+            endTriggerEvent=EndTriggerEvent(type="duration", trigger=TriggerDetails(duration=3600)),
+        ),
+    ],
+)
+```
+
+All icons are listed in the [`Icon` enum](https://github.com/Leggin/dirigera/blob/main/src/dirigera/devices/scene.py).
+
+### Listening to events
+
+The hub publishes an event whenever something changes, for example when a light is switched or a sensor detects motion. `create_event_listener()` connects to the hub and calls your functions for each event. Each message is a JSON string with the event `type` (for example `deviceStateChanged`, `sceneCreated`, `sceneUpdated` or `sceneDeleted`) and its `data`, which includes the `id` of the device or scene:
+
+```python
+import json
+
+light = dirigera_hub.get_light_by_name(lamp_name="Desk lamp")
+
+def on_message(ws, message: str):
+    event = json.loads(message)
+    if event["data"].get("id") == light.id:
+        print(event["type"], event["data"].get("attributes"))
+
+def on_error(ws, error):
+    print(error)
+
+dirigera_hub.create_event_listener(on_message=on_message, on_error=on_error)
+```
+
+```
+deviceStateChanged {'isOn': False}
+```
+
+`create_event_listener()` blocks until the connection is closed. Call `dirigera_hub.stop_event_listener()`, for example from another thread, to close it. It also accepts `on_open`, `on_close` and the other callbacks of [websocket-client's `WebSocketApp`](https://websocket-client.readthedocs.io/en/latest/app.html).
+
+#### Reconnecting
+
+The hub sometimes closes the connection on its own (status 1000, "disconnected due to inactivity."), and `create_event_listener()` then returns. The `reconnect` argument doesn't cover this, as it only reconnects after connection errors. To keep listening, call it in a loop:
 
 ```python
 import time
@@ -774,37 +441,86 @@ def stop_listening():
 
 while running:
     dirigera_hub.create_event_listener(on_message=on_message, on_error=on_error)
-    time.sleep(5)  # short backoff before listening again
+    time.sleep(5)  # short pause before listening again
 ```
 
-Events that happen while the listener is reconnecting are missed, so re-fetch the device state after reconnecting if you need it (for example in `on_open`).
+Events that happen while the listener reconnects are missed. If you need the current state, fetch it again after reconnecting, for example in `on_open`.
 
-## Motivation
+### Raw API access
 
-The primary motivation for this project was to provide users with the ability to control the startup behavior of their smart home lamps when there is a power outage.  
-The default behavior of the hub is to turn on all lights when power is restored, which can be problematic if the user is away from home or on vacation, and a small power fluctuation causes all lights to turn on and stay on. Unfortunately, the IKEA app does not offer a way to change this default behavior.  
-The `set_startup_behaviour()` function enables users to override the default behavior and choose the startup behavior that best suits their needs (START_ON = turn on light when power is back, START_OFF = light stays off when power is back).  
-I can not guarantee that all IKEA lamps offer this functionality.
-EDIT: This is now an exposed feature in the app.
+For anything the library doesn't cover yet, you can send requests to the hub's API directly. The hub responds with the raw JSON data:
+
+```python
+devices = dirigera_hub.get("/devices")
+
+light = dirigera_hub.get_light_by_name(lamp_name="Desk lamp")
+dirigera_hub.patch(route=f"/devices/{light.id}", data=[{"attributes": {"lightLevel": 30}}])
+```
+
+`post()` and `delete()` work the same way.
+
+## Troubleshooting
+
+<details>
+<summary><code>generate-token</code> times out</summary>
+
+Check the MTU of the network interface that connects to the hub. A mismatch, such as jumbo frames (MTU 9000) on your computer while the hub uses 1500, makes the connection time out. Setting the interface to an MTU of 1500 fixes it.
+
+</details>
+
+<details>
+<summary>The token stopped working</summary>
+
+Generate a new token with `generate-token`, for example after a factory reset of the hub.
+
+</details>
+
+<details>
+<summary>Loading devices fails with a <code>ValidationError</code>, or a device is missing</summary>
+
+The device reports data that the library doesn't expect yet, or its device type isn't supported. Please [open an issue](https://github.com/Leggin/dirigera/issues) with the device's data, which you get with `dirigera_hub.get("/devices")`. Remove the serial number if you like.
+
+</details>
+
+<details>
+<summary>A setter raises <code>AssertionError: ... does not support ...</code></summary>
+
+The device doesn't accept this attribute. `device.capabilities.can_receive` lists what it does accept.
+
+</details>
+
+<details>
+<summary>The event listener stops after a while</summary>
+
+The hub closes idle connections on its own. See [Reconnecting](#reconnecting).
+
+</details>
+
+<details>
+<summary>Why is the hub's certificate not verified?</summary>
+
+The hub uses a self-signed certificate, so the library connects without verifying it.
+
+</details>
+
+## Related projects
+
+- [dirigera_platform](https://github.com/sanjoyg/dirigera_platform): Home Assistant integration built on this library
+- [lpgera/dirigera](https://github.com/lpgera/dirigera): TypeScript client for the DIRIGERA hub
 
 ## Contributing
 
-Contributions are welcome! If you have an idea for a new feature or a bug fix, please post and issue or submit a pull request.
+Contributions are welcome: [open an issue](https://github.com/Leggin/dirigera/issues) for bugs and device support, or send a pull request.
 
-### Setup of dev
+To set up a development environment, run `setup.sh`. It creates a virtual environment and installs `requirements.txt` and `dev-requirements.txt`. Then:
 
-For setting up the dev environment I recommend running the `setup.sh` script, which will create a venv and install the `requirements.txt` as well as the `dev-requirements.txt`.
+- `run-test.sh` or `pytest` runs the tests
+- `run-pylint.sh` runs the linter
+- `run-mypy.sh` runs the type checks
+- `run-python-versions-test.sh` runs the tests on all supported Python versions (requires Docker)
 
-### Tests
-
-To run the tests execute the `run-test.sh` script or just run `pytest .`  
-For linting you can run the `run-pylint.sh`.  
-For types you can run the `run-mypy.sh`  
-To test the different python versions you can use the `run-python-verions-test.sh` (this requires a running docker installation).  
-All of these tests are also run when a PR is openend (and the test run is triggered).
+The same checks run automatically on every pull request.
 
 ## License
 
-The MIT License (MIT)
-
-Copyright (c) 2023 Leggin
+[MIT](https://github.com/Leggin/dirigera/blob/main/LICENSE)

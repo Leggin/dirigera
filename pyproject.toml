@@ -46,3 +46,6 @@ generate-token = "dirigera.hub.auth:main"
 
 [project.urls]
 Homepage = "https://github.com/Leggin/dirigera"
+
+[tool.setuptools.package-data]
+dirigera = ["py.typed"]

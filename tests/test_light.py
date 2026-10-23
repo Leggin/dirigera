@@ -211,11 +211,13 @@ def test_set_light_level(fake_light: Light, fake_client: FakeDirigeraHub) -> Non
 
 def test_set_color_temperature(fake_light: Light, fake_client: FakeDirigeraHub) -> None:
     temp = 2203
+    fake_light.attributes.color_mode = "color"
     fake_light.set_color_temperature(temp)
     action = fake_client.patch_actions.pop()
     assert action["route"] == f"/devices/{fake_light.id}"
     assert action["data"] == [{"attributes": {"colorTemperature": temp}}]
     assert fake_light.attributes.color_temperature == temp
+    assert fake_light.attributes.color_mode == "temperature"
 
 
 def test_set_color_temperature_out_of_range(
@@ -279,6 +281,11 @@ def test_set_light_color(fake_light: Light, fake_client: FakeDirigeraHub) -> Non
     ]
     assert fake_light.attributes.color_hue == hue
     assert fake_light.attributes.color_saturation == saturation
+    assert fake_light.attributes.color_mode == "color"
+
+
+def test_color_mode(fake_light: Light) -> None:
+    assert fake_light.attributes.color_mode == "temperature"
 
 
 def test_set_startup_behaviour_off(

@@ -171,3 +171,15 @@ def test_dict_to_motion_sensor_optional_fields(motion_sensor_dict_non_ikea: Dict
     motion_sensor = dict_to_motion_sensor(motion_sensor_dict_non_ikea, fake_client)
 
     assert motion_sensor.attributes.battery_percentage is None
+
+
+def test_dict_to_motion_sensor_without_is_on(
+    motion_sensor_dict: Dict, fake_client: FakeDirigeraHub
+) -> None:
+    # Some sensors, such as MYGGSPRAY, do not report isOn
+    del motion_sensor_dict["attributes"]["isOn"]
+    motion_sensor_dict["attributes"]["isDetected"] = True
+    motion_sensor = dict_to_motion_sensor(motion_sensor_dict, fake_client)
+
+    assert motion_sensor.attributes.is_on is None
+    assert motion_sensor.attributes.is_detected is True

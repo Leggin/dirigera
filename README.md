@@ -180,6 +180,7 @@ Some products appear as several devices that share the same `relation_id`. The V
 | `color_temperature` | Color temperature in Kelvin |
 | `color_temperature_min`, `color_temperature_max` | Supported color temperature range, as reported by the bulb |
 | `color_hue`, `color_saturation` | Color, hue 0–360 and saturation 0–1 |
+| `color_mode` | Whether the light is showing a color temperature (`"temperature"`) or a hue/saturation color (`"color"`). `None` if the bulb does not report it |
 | `startup_on_off` | Behaviour after a power outage (`StartupEnum`) |
 
 ```python
@@ -306,7 +307,7 @@ All sensors support `reload()` and `set_name(name=...)`. Battery powered sensors
 | Sensor | Fetch with | Attributes |
 | --- | --- | --- |
 | Environment sensor | `get_environment_sensors()` | `current_temperature` (°C), `current_r_h` (relative humidity in %), `current_p_m25`, `max_measured_p_m25`, `min_measured_p_m25`, `voc_index` (VINDSTYRKA), `current_c_o2` (ppm, ALPSTUGA) |
-| Motion sensor | `get_motion_sensors()` | `is_detected`, `is_on`, `light_level` |
+| Motion sensor | `get_motion_sensors()` | `is_detected`, `is_on` (`None` on sensors that do not report it), `light_level` |
 | Light sensor | `get_light_sensors()` | `illuminance`, `min_illuminance`, `max_illuminance` |
 | Occupancy sensor | `get_occupancy_sensors()` | `is_detected` |
 | Open/close sensor | `get_open_close_sensors()` | `is_open` |

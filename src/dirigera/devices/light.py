@@ -23,6 +23,7 @@ class LightAttributes(Attributes):
     color_temperature_max: Optional[int] = None
     color_hue: Optional[float] = None
     color_saturation: Optional[float] = None
+    color_mode: Optional[str] = None
 
 
 class Light(Device):
@@ -86,6 +87,7 @@ class Light(Device):
         data = [{"attributes": {"colorTemperature": color_temp}}]
         self.dirigera_client.patch(route=f"/devices/{self.id}", data=data)
         self.attributes.color_temperature = color_temp
+        self.attributes.color_mode = "temperature"
 
     def set_light_color(self, hue: float, saturation: float) -> None:
         if (
@@ -104,6 +106,7 @@ class Light(Device):
         self.dirigera_client.patch(route=f"/devices/{self.id}", data=data)
         self.attributes.color_hue = hue
         self.attributes.color_saturation = saturation
+        self.attributes.color_mode = "color"
 
     def set_startup_behaviour(self, behaviour: StartupEnum) -> None:
         """

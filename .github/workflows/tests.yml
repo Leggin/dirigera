@@ -13,7 +13,8 @@ permissions:
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    # ubuntu-latest (26.04) has no Python 3.8 or 3.9 builds.
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:

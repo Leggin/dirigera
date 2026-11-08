@@ -1,5 +1,7 @@
 # pylint:disable=too-many-public-methods
 import ssl
+from threading import Lock
+from time import monotonic
 from typing import Any, Dict, List, Optional
 import requests
 import websocket  # type: ignore
@@ -27,6 +29,11 @@ from ..devices.electrical_sensor import ElectricalSensor, dict_to_electrical_sen
 
 urllib3.disable_warnings(category=InsecureRequestWarning)
 
+# The hub closes connections that were idle for about 5 s, and a request sent
+# just as it does so fails or hangs until the timeout. So a connection idle for
+# longer than this is not reused.
+MAX_IDLE_SECONDS = 3
+
 
 class Hub(AbstractSmartHomeHub):
     def __init__(
@@ -49,6 +56,11 @@ class Hub(AbstractSmartHomeHub):
         self.websocket_base_url = f"wss://{ip_address}:{port}/{api_version}"
         self.token = token
         self.wsapp: Any = None
+        # Requests share one session, so they reuse an open connection instead
+        # of doing a new TLS handshake with the hub every time.
+        self._session = requests.Session()
+        self._session_lock = Lock()
+        self._session_last_used = monotonic()
 
     def headers(self) -> Dict[str, Any]:
         return {"Authorization": f"Bearer {self.token}"}
@@ -106,35 +118,49 @@ class Hub(AbstractSmartHomeHub):
             self.wsapp.close()
             self.wsapp = None
 
-    def patch(self, route: str, data: List[Dict[str, Any]]) -> Any:
-        response = requests.patch(
+    def _send(self, method: str, route: str, data: Any) -> requests.Response:
+        return self._session.request(
+            method,
             f"{self.api_base_url}{route}",
             headers=self.headers(),
             json=data,
             timeout=10,
             verify=False,
         )
+
+    def _request(self, method: str, route: str, data: Any = None) -> requests.Response:
+        with self._session_lock:
+            if monotonic() - self._session_last_used > MAX_IDLE_SECONDS:
+                # close() drops all pooled connections, the session itself
+                # stays usable and opens a new connection.
+                self._session.close()
+            self._session_last_used = monotonic()
+        try:
+            return self._send(method, route, data)
+        except requests.ConnectionError as err:
+            # The hub may still have dropped the connection. The request is
+            # then sent once more on a new connection, except a POST, which
+            # could create a scene twice, and a connect timeout, which means
+            # the hub is not reachable at all.
+            self._session.close()
+            if method == "POST" or isinstance(err, requests.ConnectTimeout):
+                raise
+            return self._send(method, route, data)
+        finally:
+            self._session_last_used = monotonic()
+
+    def patch(self, route: str, data: List[Dict[str, Any]]) -> Any:
+        response = self._request("PATCH", route, data)
         response.raise_for_status()
         return response.text
 
     def get(self, route: str) -> Any:
-        response = requests.get(
-            f"{self.api_base_url}{route}",
-            headers=self.headers(),
-            timeout=10,
-            verify=False,
-        )
+        response = self._request("GET", route)
         response.raise_for_status()
         return response.json()
 
     def post(self, route: str, data: Optional[Dict[str, Any]] = None) -> Any:
-        response = requests.post(
-            f"{self.api_base_url}{route}",
-            headers=self.headers(),
-            json=data,
-            timeout=10,
-            verify=False,
-        )
+        response = self._request("POST", route, data)
         if not response.ok:
             print(response.text)
         response.raise_for_status()
@@ -145,13 +171,7 @@ class Hub(AbstractSmartHomeHub):
         return response.json()
 
     def delete(self, route: str, data: Optional[Dict[str, Any]] = None) -> Any:
-        response = requests.delete(
-            f"{self.api_base_url}{route}",
-            headers=self.headers(),
-            json=data,
-            timeout=10,
-            verify=False,
-        )
+        response = self._request("DELETE", route, data)
         response.raise_for_status()
 
         if len(response.content) == 0:
